@@ -1,3 +1,5 @@
+# Cannot play yet
+# Gra jeszcze nie skończona
 # Survivaling
 Randomly Generated Turn-based Tactical Surviving Game
 
