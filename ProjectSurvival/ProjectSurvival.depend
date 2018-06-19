@@ -1,0 +1,552 @@
+# depslib dependency file v1.0
+1529361439 source:c:\users\damian\desktop\the game\projectsurvival\main.cpp
+	"grafika.h"
+	"gra.h"
+	<iostream>
+
+1441893012 c:\allegro\include\allegro5\allegro.h
+	"allegro5/base.h"
+	"allegro5/altime.h"
+	"allegro5/bitmap.h"
+	"allegro5/bitmap_draw.h"
+	"allegro5/bitmap_io.h"
+	"allegro5/bitmap_lock.h"
+	"allegro5/blender.h"
+	"allegro5/clipboard.h"
+	"allegro5/color.h"
+	"allegro5/config.h"
+	"allegro5/cpu.h"
+	"allegro5/debug.h"
+	"allegro5/display.h"
+	"allegro5/drawing.h"
+	"allegro5/error.h"
+	"allegro5/events.h"
+	"allegro5/file.h"
+	"allegro5/fixed.h"
+	"allegro5/fmaths.h"
+	"allegro5/fshook.h"
+	"allegro5/fullscreen_mode.h"
+	"allegro5/haptic.h"
+	"allegro5/joystick.h"
+	"allegro5/keyboard.h"
+	"allegro5/memory.h"
+	"allegro5/monitor.h"
+	"allegro5/mouse.h"
+	"allegro5/mouse_cursor.h"
+	"allegro5/path.h"
+	"allegro5/render_state.h"
+	"allegro5/shader.h"
+	"allegro5/system.h"
+	"allegro5/threads.h"
+	"allegro5/timer.h"
+	"allegro5/tls.h"
+	"allegro5/touch_input.h"
+	"allegro5/transformations.h"
+	"allegro5/utf8.h"
+	"allegro5/alcompat.h"
+
+1481473228 c:\allegro\include\allegro5\base.h
+	<errno.h>
+	<limits.h>
+	<limits.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<sys/types.h>
+	<fortify/fortify.h>
+	<dmalloc.h>
+	"allegro5/internal/alconfig.h"
+
+1469613030 c:\allegro\include\allegro5\internal\alconfig.h
+	"allegro5/platform/alplatf.h"
+	"allegro5/platform/alwatcom.h"
+	"allegro5/platform/almngw32.h"
+	"allegro5/platform/albcc32.h"
+	"allegro5/platform/almsvc.h"
+	"allegro5/platform/aliphonecfg.h"
+	"allegro5/platform/alosxcfg.h"
+	"allegro5/platform/alandroidcfg.h"
+	"allegro5/platform/alraspberrypicfg.h"
+	"allegro5/platform/alucfg.h"
+	"allegro5/platform/allegro_sdl_config.h"
+	"allegro5/platform/astdint.h"
+	"allegro5/platform/astdbool.h"
+
+1481483178 c:\allegro\include\allegro5\platform\alplatf.h
+
+1468673596 c:\allegro\include\allegro5\platform\alwatcom.h
+	<io.h>
+	<i86.h>
+	<conio.h>
+	<fcntl.h>
+	<direct.h>
+	<malloc.h>
+
+1365790468 c:\allegro\include\allegro5\platform\almngw32.h
+	<io.h>
+	<fcntl.h>
+	<direct.h>
+	<malloc.h>
+	"allegro5/platform/alplatf.h"
+
+1468673596 c:\allegro\include\allegro5\platform\albcc32.h
+	<io.h>
+	<fcntl.h>
+	<direct.h>
+	<malloc.h>
+
+1468673596 c:\allegro\include\allegro5\platform\almsvc.h
+	<io.h>
+	<fcntl.h>
+	<direct.h>
+	<malloc.h>
+	"allegro5/platform/alplatf.h"
+
+1354158640 c:\allegro\include\allegro5\platform\aliphonecfg.h
+	<fcntl.h>
+	<unistd.h>
+
+1365790468 c:\allegro\include\allegro5\platform\alosxcfg.h
+	"allegro5/platform/alplatf.h"
+
+1324157452 c:\allegro\include\allegro5\platform\alandroidcfg.h
+
+1354158640 c:\allegro\include\allegro5\platform\alraspberrypicfg.h
+	<fcntl.h>
+	<unistd.h>
+	<sys/types.h>
+
+1365789794 c:\allegro\include\allegro5\platform\alucfg.h
+	<fcntl.h>
+	<unistd.h>
+	"alunix.h"
+	"allegro5/platform/alplatf.h"
+
+1266892920 c:\allegro\include\allegro5\platform\alunix.h
+
+1405851830 c:\allegro\include\allegro5\platform\allegro_sdl_config.h
+	<fcntl.h>
+	<unistd.h>
+
+1280983246 c:\allegro\include\allegro5\platform\astdint.h
+	<inttypes.h>
+	<stdint.h>
+
+1280983246 c:\allegro\include\allegro5\platform\astdbool.h
+	<stdbool.h>
+
+1285048182 c:\allegro\include\allegro5\altime.h
+	"allegro5/base.h"
+
+1469908662 c:\allegro\include\allegro5\bitmap.h
+	"allegro5/color.h"
+
+1440781992 c:\allegro\include\allegro5\color.h
+	"allegro5/base.h"
+
+1354588034 c:\allegro\include\allegro5\bitmap_draw.h
+	"allegro5/bitmap.h"
+
+1443001018 c:\allegro\include\allegro5\bitmap_io.h
+	"allegro5/bitmap.h"
+	"allegro5/file.h"
+
+1419178822 c:\allegro\include\allegro5\file.h
+	"allegro5/base.h"
+	"allegro5/path.h"
+	"allegro5/utf8.h"
+
+1337464194 c:\allegro\include\allegro5\path.h
+	"allegro5/base.h"
+
+1337140490 c:\allegro\include\allegro5\utf8.h
+	"allegro5/base.h"
+
+1418591216 c:\allegro\include\allegro5\bitmap_lock.h
+	"allegro5/bitmap.h"
+
+1459687576 c:\allegro\include\allegro5\blender.h
+	"allegro5/base.h"
+	"allegro5/color.h"
+
+1441545620 c:\allegro\include\allegro5\clipboard.h
+	"allegro5/base.h"
+	"allegro5/display.h"
+	"allegro5/utf8.h"
+
+1469908662 c:\allegro\include\allegro5\display.h
+	"allegro5/bitmap.h"
+	"allegro5/color.h"
+	"allegro5/events.h"
+
+1455696592 c:\allegro\include\allegro5\events.h
+	"allegro5/altime.h"
+
+1351427358 c:\allegro\include\allegro5\config.h
+	"allegro5/file.h"
+
+1441893012 c:\allegro\include\allegro5\cpu.h
+	"allegro5/base.h"
+
+1351609390 c:\allegro\include\allegro5\debug.h
+	<assert.h>
+	"allegro5/base.h"
+
+1354588034 c:\allegro\include\allegro5\drawing.h
+	"allegro5/color.h"
+
+1280983246 c:\allegro\include\allegro5\error.h
+	"allegro5/base.h"
+
+1280983246 c:\allegro\include\allegro5\fixed.h
+	"allegro5/base.h"
+
+1280983246 c:\allegro\include\allegro5\fmaths.h
+	"allegro5/base.h"
+	"allegro5/fixed.h"
+	"allegro5/inline/fmaths.inl"
+
+1468673596 c:\allegro\include\allegro5\inline\fmaths.inl
+	"allegro5/error.h"
+
+1405989438 c:\allegro\include\allegro5\fshook.h
+	"allegro5/base.h"
+	"allegro5/file.h"
+	"allegro5/path.h"
+	<sys/types.h>
+
+1459687576 c:\allegro\include\allegro5\fullscreen_mode.h
+	"allegro5/base.h"
+
+1457174840 c:\allegro\include\allegro5\haptic.h
+	"allegro5/base.h"
+	"allegro5/display.h"
+	"allegro5/events.h"
+	"allegro5/joystick.h"
+	"allegro5/keyboard.h"
+	"allegro5/mouse.h"
+	"allegro5/touch_input.h"
+
+1354588034 c:\allegro\include\allegro5\joystick.h
+	"allegro5/base.h"
+	"allegro5/events.h"
+
+1354588034 c:\allegro\include\allegro5\keyboard.h
+	"allegro5/base.h"
+	"allegro5/events.h"
+	"allegro5/keycodes.h"
+
+1374863802 c:\allegro\include\allegro5\keycodes.h
+
+1422997932 c:\allegro\include\allegro5\mouse.h
+	"allegro5/base.h"
+	"allegro5/events.h"
+
+1456054588 c:\allegro\include\allegro5\touch_input.h
+	"allegro5/base.h"
+	"allegro5/events.h"
+
+1459687576 c:\allegro\include\allegro5\memory.h
+	"allegro5/base.h"
+
+1459687576 c:\allegro\include\allegro5\monitor.h
+	"allegro5/base.h"
+
+1354588034 c:\allegro\include\allegro5\mouse_cursor.h
+	"allegro5/base.h"
+
+1459687576 c:\allegro\include\allegro5\render_state.h
+	"allegro5/base.h"
+
+1462097082 c:\allegro\include\allegro5\shader.h
+	"allegro5/base.h"
+	"allegro5/transformations.h"
+
+1427915264 c:\allegro\include\allegro5\transformations.h
+	"allegro5/display.h"
+
+1333119278 c:\allegro\include\allegro5\system.h
+	"allegro5/config.h"
+	"allegro5/path.h"
+
+1289058410 c:\allegro\include\allegro5\threads.h
+	"allegro5/altime.h"
+
+1459687576 c:\allegro\include\allegro5\timer.h
+	"allegro5/base.h"
+	"allegro5/events.h"
+
+1440967396 c:\allegro\include\allegro5\tls.h
+	"allegro5/base.h"
+
+1459085056 c:\allegro\include\allegro5\alcompat.h
+
+1459687576 c:\allegro\include\allegro5\allegro_image.h
+	"allegro5/base.h"
+
+1393613266 c:\allegro\include\allegro5\allegro_primitives.h
+	<allegro5/allegro.h>
+
+1529355336 source:c:\users\damian\desktop\the game\projectsurvival\gra.cpp
+	"gra.h"
+	"allegro5/allegro.h"
+
+1499157080 source:c:\users\damian\desktop\the game\projectsurvival\menu.cpp
+
+1529369271 source:c:\users\damian\desktop\the game\projectsurvival\swiat.cpp
+	"swiat.h"
+	"swiat2.h"
+	<iostream>
+	<fstream>
+	<algorithm>
+	<windows.h>
+
+1529361485 c:\users\damian\desktop\the game\projectsurvival\swiat.h
+	<cstdio>
+	"structy.h"
+	<iostream>
+	<stack>
+	<list>
+	"przedmiot.h"
+	"allegro5/allegro.h"
+
+1529356182 source:c:\users\damian\desktop\the game\projectsurvival\grafika.cpp
+	"grafika.h"
+	<iostream>
+	<sstream>
+	<windows.h>
+
+1528389139 c:\users\damian\desktop\the game\projectsurvival\grafika.h
+	"allegro5/allegro.h"
+	"allegro5/allegro_image.h"
+	"allegro5/allegro_primitives.h"
+	<string>
+	"structy.h"
+
+1529369440 source:c:\users\damian\desktop\the game\projectsurvival\objekt.cpp
+	"swiat.h"
+	"swiat2.h"
+	<windows.h>
+
+1500040224 c:\users\damian\desktop\the game\projectsurvival\objekt.h
+	<stack>
+
+1529362302 c:\users\damian\desktop\the game\projectsurvival\gra.h
+	"swiat.h"
+	"swiat2.h"
+	"structy.h"
+	<string>
+	<iostream>
+	<windows.h>
+	"allegro5/allegro.h"
+	"allegro5/allegro_image.h"
+	"allegro5/allegro_primitives.h"
+
+1529355832 c:\users\damian\desktop\the game\projectsurvival\structy.h
+	<ctime>
+	<cstdlib>
+	<random>
+	<cmath>
+	<iostream>
+	<algorithm>
+	<memory>
+	<mutex>
+	"allegro5/allegro.h"
+
+1523661064 source:c:\users\damian\desktop\the game\projectsurvival\structy.cpp
+	"structy.h"
+
+1500041204 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\gra.cpp
+	"gra.h"
+
+1500028005 c:\users\damian\desktop\the game ó kopia\projectsurvival\gra.h
+	"swiat.h"
+	"structy.h"
+	<string>
+	<iostream>
+	"allegro5/allegro.h"
+	"allegro5/allegro_image.h"
+	"allegro5/allegro_primitives.h"
+
+1500041507 c:\users\damian\desktop\the game ó kopia\projectsurvival\swiat.h
+	<cstdio>
+	"structy.h"
+	<iostream>
+	<stack>
+
+1500027525 c:\users\damian\desktop\the game ó kopia\projectsurvival\structy.h
+	<ctime>
+	<cstdlib>
+	<random>
+	<cmath>
+
+1500034601 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\grafika.cpp
+	"grafika.h"
+	<iostream>
+
+1499253904 c:\users\damian\desktop\the game ó kopia\projectsurvival\grafika.h
+	"allegro5/allegro.h"
+	"allegro5/allegro_image.h"
+	"allegro5/allegro_primitives.h"
+	<string>
+	"structy.h"
+
+1500027525 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\main.cpp
+	"grafika.h"
+	"gra.h"
+	<iostream>
+
+1500040701 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\objekt.cpp
+	"swiat.h"
+
+1499688256 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\structy.cpp
+	"structy.h"
+
+1500040701 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\swiat.cpp
+	"swiat.h"
+
+1529369440 source:c:\users\damian\desktop\the game\projectsurvival\zwierzeta.cpp
+	"swiat.h"
+	<windows.h>
+	"swiat2.h"
+
+1529363877 source:c:\users\damian\desktop\the game\projectsurvival\zombie.cpp
+	"swiat.h"
+	"swiat2.h"
+
+1529081522 source:c:\users\damian\desktop\the game\projectsurvival\elementy_stale.cpp
+	"swiat.h"
+	"windows.h"
+	"swiat2.h"
+
+1528310536 c:\users\damian\desktop\the game\projectsurvival\przedmiot.h
+	<iostream>
+	"structy.h"
+
+1529356088 source:c:\users\damian\desktop\the game\projectsurvival\przedmiot.cpp
+	"przedmiot.h"
+
+1527629472 source:c:\users\damian\desktop\the game\projectsurvival\funkcje_przedmiotow.cpp
+	"gra.h"
+
+1529364315 source:c:\users\damian\desktop\the game\projectsurvival\gra_ruch_gracza.cpp
+	"gra.h"
+
+1520530410 source:c:\users\damian\desktop\the game\projectsurvival\zwierzeta2.cpp
+	"swiat.h"
+	<windows.h>
+
+1529081522 c:\users\damian\desktop\the game\projectsurvival\swiat2.h
+	"swiat.h"
+
+1527874342 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\elementy_stale.cpp
+	"swiat.h"
+	"windows.h"
+	"swiat2.h"
+
+1527878756 c:\users\szukamåniegu\desktop\the game\projectsurvival\swiat.h
+	<cstdio>
+	"structy.h"
+	<iostream>
+	<stack>
+	<list>
+	"przedmiot.h"
+	"allegro5/allegro.h"
+
+1527870872 c:\users\szukamåniegu\desktop\the game\projectsurvival\structy.h
+	<ctime>
+	<cstdlib>
+	<random>
+	<cmath>
+	<iostream>
+	<algorithm>
+	<memory>
+	<mutex>
+	"allegro5/allegro.h"
+
+1527626022 c:\users\szukamåniegu\desktop\the game\projectsurvival\przedmiot.h
+	<iostream>
+	"structy.h"
+
+1526504820 c:\users\szukamåniegu\desktop\the game\projectsurvival\swiat2.h
+	"swiat.h"
+
+1527625872 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\funkcje_przedmiotow.cpp
+	"gra.h"
+
+1527879213 c:\users\szukamåniegu\desktop\the game\projectsurvival\gra.h
+	"swiat.h"
+	"swiat2.h"
+	"structy.h"
+	<string>
+	<iostream>
+	<windows.h>
+	"allegro5/allegro.h"
+	"allegro5/allegro_image.h"
+	"allegro5/allegro_primitives.h"
+
+1527869660 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\gra.cpp
+	"gra.h"
+	"allegro5/allegro.h"
+
+1527876302 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\gra_ruch_gracza.cpp
+	"gra.h"
+
+1527873036 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\grafika.cpp
+	"grafika.h"
+	<iostream>
+	<sstream>
+	<windows.h>
+
+1527870787 c:\users\szukamåniegu\desktop\the game\projectsurvival\grafika.h
+	"allegro5/allegro.h"
+	"allegro5/allegro_image.h"
+	"allegro5/allegro_primitives.h"
+	<string>
+	"structy.h"
+
+1527628098 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\main.cpp
+	"grafika.h"
+	"gra.h"
+	<iostream>
+
+1527631046 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\objekt.cpp
+	"swiat.h"
+	"swiat2.h"
+	<windows.h>
+
+1527875689 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\przedmiot.cpp
+	"przedmiot.h"
+
+1523657464 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\structy.cpp
+	"structy.h"
+
+1527879197 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\swiat.cpp
+	"swiat.h"
+	"swiat2.h"
+	<iostream>
+	<fstream>
+	<algorithm>
+	<windows.h>
+
+1527685114 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\zombie.cpp
+	"swiat.h"
+
+1527681826 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\zwierzeta.cpp
+	"swiat.h"
+	<windows.h>
+
+1520530410 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\zwierzeta2.cpp
+	"swiat.h"
+	<windows.h>
+
+1528389227 source:c:\users\damian\desktop\the game\projectsurvival\graficzny.cpp
+	"grafika.h"
+
+1499156604 c:\allegro\include\allegro5
+
+1527870787 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\graficzny.cpp
+	"grafika.h"
+

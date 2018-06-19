@@ -1,0 +1,1053 @@
+#include "przedmiot.h"
+
+void Skrzynka::init(int xx, int yy)
+{
+         x=xx; y=yy;
+         if(xx==0 && yy==0)zawartosc=NULL; else {zawartosc=new Przedmiot**[y]; for(int i=0; i<y;++i) zawartosc[i]=new Przedmiot*[x];
+         for(int i=0; i<y; ++i){for(int j=0;j<x;++j){zawartosc[i][j]=NULL;}}}
+         ++wersja;
+}
+
+Skrzynka::Skrzynka(int xx, int yy)
+{
+         init(xx, yy);
+}
+
+Skrzynka::Skrzynka(Kontener<Item> *a,int xx, int yy)
+{
+         init(xx, yy);
+         for(int i=0; i<a->ilosc; ++i)
+         {
+                 wloz_przedmiot(new Przedmiot(a->obiekt[i]));
+         }
+}
+
+Skrzynka* Skrzynka::zamien_itemy_na_skrzynke(Kontener<Item> *a,int xx, int yy)
+{
+         Skrzynka*b=new Skrzynka(a,xx,yy); delete a; return b;
+}
+
+Skrzynka::~Skrzynka()
+{
+         for(int i=items.ilosc-1; i>-1; --i)
+         {
+                  Przedmiot *p=items.obiekt[i];
+                  wyjmij_przedmiot(p);
+                  p->usun_calego();
+         }
+
+         for(int i=0; i<y;++i) delete [] zawartosc[i];
+         delete [] zawartosc;
+
+         ++wersja;
+}
+
+bool Skrzynka::wyjmij_przedmiot(Przedmiot*a)
+{
+         items.usun_objekt(a);
+         switch(a->typ_wielkosci())
+         {
+                  case 1:zawartosc[a->y][a->x]=NULL;break;
+                  case 2:zawartosc[a->y][a->x]=NULL;zawartosc[a->y+1][a->x]=NULL;break;
+                  case 3:for(int i=a->x;i<a->x+2;++i){for(int j=a->y;j<a->y+8;++j){zawartosc[j][i]=NULL;}}break;
+                  case 4:for(int i=a->x;i<a->x+9;++i){for(int j=a->y;j<a->y+6;++j){zawartosc[j][i]=NULL;}}break;
+                  case 5:for(int i=a->x;i<a->x+2;++i){for(int j=a->y;j<a->y+6;++j){zawartosc[j][i]=NULL;}}break;
+                  case 6:for(int i=a->x;i<a->x+9;++i){for(int j=a->y;j<a->y+3;++j){zawartosc[j][i]=NULL;}}break;
+                  case 7:for(int i=a->x;i<a->x+1;++i){for(int j=a->y;j<a->y+8;++j){zawartosc[j][i]=NULL;}}break;
+                  case 8:for(int i=a->x;i<a->x+2;++i){for(int j=a->y;j<a->y+2;++j){zawartosc[j][i]=NULL;}}break;
+                  case 9:for(int i=a->x;i<a->x+2;++i){for(int j=a->y;j<a->y+1;++j){zawartosc[j][i]=NULL;}}break;
+                  case 10:for(int i=a->x;i<a->x+2;++i){for(int j=a->y;j<a->y+11;++j){zawartosc[j][i]=NULL;}}break;
+                  case 11:for(int i=a->x;i<a->x+9;++i){for(int j=a->y;j<a->y+2;++j){zawartosc[j][i]=NULL;}}break;
+                  case 12:for(int i=a->x;i<a->x+1;++i){for(int j=a->y;j<a->y+8;++j){zawartosc[j][i]=NULL;}}break;
+                  case 13:for(int i=a->x;i<a->x+1;++i){for(int j=a->y;j<a->y+5;++j){zawartosc[j][i]=NULL;}}break;
+                  case 14:for(int i=a->x;i<a->x+1;++i){for(int j=a->y;j<a->y+4;++j){zawartosc[j][i]=NULL;}}break;
+                  case 15:for(int i=a->x;i<a->x+3;++i){for(int j=a->y;j<a->y+2;++j){zawartosc[j][i]=NULL;}}break;
+                  default: {std::cout<<"ja nie wiem jak wyjac ten przedmiot"<<std::endl; throw "ja nie wiem jak wyjac ten przedmiot";}
+         }
+         ++wersja;return true;
+}
+
+bool Skrzynka::wloz_przedmiot(int xx, int yy, Przedmiot*a)
+{
+         if(xx<0 || xx>=x || yy<0 || yy>=y) return false;
+         items.dodaj_obiekt(a); int aa,bb;
+         switch(a->typ_wielkosci())
+         {
+                  case 1: if(zawartosc[yy][xx]==NULL) {zawartosc[yy][xx]=a; a->y=yy; a->x=xx; ++wersja;return true;} break;
+                  case 2: if(yy+1<y && zawartosc[yy][xx]==NULL && zawartosc[yy+1][xx]==NULL) {zawartosc[yy][xx]=a;zawartosc[yy+1][xx]=a; a->y=yy; a->x=xx; ++wersja;return true;} break;
+                  case 3: if(xx+1<x && yy+7<y){bool zle=false;for(int i=xx;i<xx+2;++i){for(int j=yy;j<yy+8;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+2;++i){for(int j=yy;j<yy+8;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 4: if(xx+8<x && yy+5<y){bool zle=false;for(int i=xx;i<xx+9;++i){for(int j=yy;j<yy+6;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+9;++i){for(int j=yy;j<yy+6;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 5: if(xx+1<x && yy+5<y){bool zle=false;for(int i=xx;i<xx+2;++i){for(int j=yy;j<yy+6;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+2;++i){for(int j=yy;j<yy+6;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 6: if(xx+8<x && yy+2<y){bool zle=false;for(int i=xx;i<xx+9;++i){for(int j=yy;j<yy+3;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+9;++i){for(int j=yy;j<yy+3;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 7: aa=1,bb=8;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 8: aa=2,bb=2;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 9: aa=2,bb=1;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 10: aa=2,bb=11;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 11: aa=9,bb=2;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 12: aa=1,bb=8;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 13: aa=1,bb=5;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 14: aa=1,bb=4;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  case 15: aa=3,bb=2;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;return true;}break;
+                  default: {std::cout<<"ja nie wiem jak wlozyc ten przedmiot"<<std::endl; throw "ja nie wiem jak wlozyc ten przedmiot";}
+         }
+         items.usun_objekt(a);return false;
+}
+
+bool Skrzynka::wloz_przedmiot(Przedmiot*a)
+{
+         switch(a->typ_wielkosci())
+         {
+                  case 1: for(int i=0;i<y;++i){for(int j=0;j<x;++j){if(zawartosc[i][j]==NULL) {wloz_przedmiot(j,i,a);return true;}}} break;
+                  case 2: for(int i=0;i<=y-2;++i){for(int j=0;j<x;++j){if(zawartosc[i][j]==NULL && zawartosc[i+1][j]==NULL) {wloz_przedmiot(j,i,a);return true;}}} break;
+                  case 3: for(int i=0;i<=y-8;++i){for(int j=0;j<=x-2;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 4: for(int i=0;i<=y-6;++i){for(int j=0;j<=x-9;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 5: for(int i=0;i<=y-6;++i){for(int j=0;j<=x-2;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 6: for(int i=0;i<=y-3;++i){for(int j=0;j<=x-9;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 7: for(int i=0;i<=y-1;++i){for(int j=0;j<=x-8;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 8: for(int i=0;i<=y-2;++i){for(int j=0;j<=x-2;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 9: for(int i=0;i<=y-1;++i){for(int j=0;j<=x-2;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 10: for(int i=0;i<=y-11;++i){for(int j=0;j<=x-2;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 11: for(int i=0;i<=y-2;++i){for(int j=0;j<=x-9;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 12: for(int i=0;i<=y-8;++i){for(int j=0;j<=x-1;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 13: for(int i=0;i<=y-5;++i){for(int j=0;j<=x-1;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 14: for(int i=0;i<=y-4;++i){for(int j=0;j<=x-1;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  case 15: for(int i=0;i<=y-2;++i){for(int j=0;j<=x-3;++j){if(wloz_przedmiot(j, i, a)) return true;}} break;
+                  default: {std::cout<<"ja nie wiem jak wlozyc ten przedmiot"<<std::endl; throw "ja nie wiem jak wlozyc ten przedmiot";}
+         }
+         return false;
+}
+
+Kontener<Item>* Skrzynka::lista_itemow()
+{
+         Kontener<Item>*a=new Kontener<Item>();
+         for(int i=0;i<items.ilosc;i++) a->dodaj_obiekt(items.obiekt[i]->item);
+         return a;
+}
+
+void Skrzynka::wyjmij_wszystko_z_usunieciem_tylko_oslonki_itemow_czyli_przedmiotow()
+{
+         for(int i=items.ilosc-1;i>-1;--i)
+         {
+                  Przedmiot *a=items.obiekt[i];
+                  wyjmij_przedmiot(a);
+                  delete a; ///on nie usuwa itemow
+         }
+}
+
+Kontener<Item>* Skrzynka::zamien_skrzynke_na_itemy(Skrzynka *a)
+{
+         Kontener<Item>*b=a->lista_itemow();
+         a->wyjmij_wszystko_z_usunieciem_tylko_oslonki_itemow_czyli_przedmiotow();
+         delete a;
+         return b;
+}
+
+Przedmiot::Przedmiot(Item *item)
+{
+         this->item=item;
+}
+
+Przedmiot::~Przedmiot()
+{
+         ///nie moze usuwac itemow
+}
+
+void Przedmiot::usun_calego()
+{
+         delete item; delete this;
+}
+
+int Przedmiot::get_co_to()
+{
+         if(item!=NULL) return item->get_co_to(); else return -1;
+}
+
+int Przedmiot::typ_wielkosci()
+{
+         if(item!=NULL) return item->typ_wielkosci(); else return -1;
+}
+
+bool Item::mozna_do_plecaka()
+{
+         return !jest_plecakiem() && czym_jest!=4009;
+}
+
+bool Przedmiot::jest_plecakiem(){return item->czym_jest>=3000 && item->czym_jest<4000;}
+bool Przedmiot::jest_kapeluszem(){return item->czym_jest>=5000 && item->czym_jest<5500;}
+bool Przedmiot::jest_korpusem(){return item->czym_jest>=5500 && item->czym_jest<6000;}
+bool Przedmiot::jest_spodniami(){return item->czym_jest>=6000 && item->czym_jest<6500;}
+bool Przedmiot::jest_butami(){return item->czym_jest>=6500 && item->czym_jest<7000;}
+bool Przedmiot::jest_rekawicami(){return item->czym_jest>=7000 && item->czym_jest<7500;}
+bool Przedmiot::jest_bronia(){return item->czym_jest>=4000 && item->czym_jest<4999;}
+bool Przedmiot::jest_bronia_na_ramie(){return item->czym_jest>=4000 && item->czym_jest<4499;}
+bool Przedmiot::jest_ubraniem(){return item->czym_jest>=5000 && item->czym_jest<7500;}
+
+bool Item::jest_plecakiem(){if(this==NULL)return false;return czym_jest>=3000 &&czym_jest<4000;}
+bool Item::jest_kapeluszem(){if(this==NULL)return false;return czym_jest>=5000 && czym_jest<5500;}
+bool Item::jest_korpusem(){if(this==NULL)return false;return czym_jest>=5500 && czym_jest<6000;}
+bool Item::jest_spodniami(){if(this==NULL)return false;return czym_jest>=6000 && czym_jest<6500;}
+bool Item::jest_butami(){if(this==NULL)return false;return czym_jest>=6500 && czym_jest<7000;}
+bool Item::jest_rekawicami(){if(this==NULL)return false;return czym_jest>=7000 && czym_jest<7500;}
+bool Item::jest_bronia(){if(this==NULL)return false;return czym_jest>=4000 && czym_jest<4999;}
+bool Item::jest_bronia_na_ramie(){if(this==NULL)return false;return czym_jest>=4000 && czym_jest<4499;}
+bool Item::jest_ubraniem(){if(this==NULL)return false;return czym_jest>=5000 && czym_jest<7500;}
+bool Item::jest_mala_bronia(){if(this==NULL)return false;return czym_jest>=4500 && czym_jest<5000;}
+bool Item::jest_kluczem(){if(this==NULL)return false; return czym_jest==8010 || czym_jest==8011 || czym_jest==8012;}
+bool Item::jest_klodkom(){if(this==NULL)return false; return czym_jest==8007 || czym_jest==8008 || czym_jest==8009;}
+
+int Item::typ_wielkosci()
+{
+         switch(czym_jest)
+         {
+                  case 2001: case 2006: case 3001: case 4501: case 5001: case 2007: case 8001: case 6003: case 5002:
+                           case 2002:case 3002:case 3003:case 3004:case 3005:case 3006:case 2102:case 2103:case 2104:
+                                    case 2201: case 8004: case 4502: case 4503: case 4009: return 1;
+                  case 4251: case 4252: case 4255: case 4253: return 6;
+                  case 4004: return 3;
+                  case 4005: return 5;
+                  case 2101: case 2003:case 2004:case 2005:case 8003:return 2;
+                  case 4006: return 10;
+                  case 6505: case 4752: case 4751:case 8002:return 8;
+                  case 6504:case 6503:case 6502:case 6501:case 6004: case 6002:case 6001:case 5503:case 5502:case 5501:
+                           case 4753: return 9;
+                  case 4256: case 4254:return 11;
+                  case 4003: return 12;
+                  case 4007: return 14;
+                  case 4008: return 13;
+                  case 8006: return 15;
+                  default:return 1;///std::cout<<"Nie wiem jak duze to jest"; throw "n";///UWAGA OPCJA WYKORZYSTANA
+         }
+}
+int Item::get_co_to()
+{
+         if(czym_jest==8010 || czym_jest==8011 || czym_jest==8012) return czym_jest+(((Klucz*)this)->do_czego!=NULL)*4;
+         if(this==NULL) return 0;
+         if(czym_jest==4252) {if(((Bron*)this)->mag>0)return 4251; else return czym_jest;}
+         if(czym_jest==4752) {if(((Bron*)this)->mag>0)return 4751; else return czym_jest;}
+         if(czym_jest==4255) {if(((Bron*)this)->mag>0)return 4253; else return czym_jest;}
+         if(czym_jest==4256) {if(((Bron*)this)->mag>0)return 4254; else return czym_jest;}
+         return czym_jest;
+}
+
+Item* Item::stworz_obiekt(int co)
+{
+         Item*a;
+         if(co==8010 || co==8011 || co==8012) return new Klucz(co);
+         if(co==8007 || co==8008 || co==8009) return new Klodka(co);
+         if(co>=3000 && co<4000) {a=new Plecak(co);return a;}
+         else if(co>=5000 && co<7500)  {a=new Ubranie(co);return a;}
+         else if(co>=4000 && co<5000) {a=new Bron(co);return a;}
+         else if(co>=2000 && co<3000)
+                  {if(co==2101)a=new Konsumpcjum(co,32);
+                  else if(co==2102)a=new Konsumpcjum(co,18);
+                  else if(co==2103)a=new Konsumpcjum(co,6);
+                  else if(co==2104)a=new Konsumpcjum(co,5);
+                  else if(co==2201)a=new Konsumpcjum(co,20);
+                  else a=new Konsumpcjum(co,1);
+                  return a;
+                  }
+                  else return new Inne(co);
+         //else throw "n";
+}
+
+bool Item::jest_bronia_palna()
+{return (czym_jest>4250&&czym_jest<4500)||(czym_jest>4750&&czym_jest<5000);}
+
+bool Item::jest_bronia_biala()
+{return (czym_jest>4000&&czym_jest<4250)||(czym_jest>4500&&czym_jest<4750);}
+
+int Item::wartosc_ataku_rzucanego()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 4009: return losuj(20, 40);
+                  default:
+                  switch(typ_wielkosci())
+                  {
+                           case 1: return losuj(1,3);
+                           case 2: return losuj(2,7);
+                           case 3: return losuj(10,15);
+                           case 4: return losuj(15,20);
+                           case 5: return losuj(2,9);
+                           case 6: return losuj(12,17);
+                           case 7: return losuj(10,13);
+                           case 8: return losuj(3,8);
+                           case 9: return losuj(2,7);
+                           case 10: return losuj(9,14);
+                           case 11: return losuj(10,14);
+                           case 12: return losuj(10,13);
+                           case 13: return losuj(10,13);
+                           case 14: return losuj(10,13);
+                           default:return losuj(0,3);
+                  }
+         }
+}
+
+bool Item::mozna_do_kieszeni()
+{
+         if(this==NULL) return 0;
+         if(jest_plecakiem() || czym_jest == 4009) return false;
+         switch(typ_wielkosci())
+         {
+                  case 1:case 2:case 9:case 8:return true;
+                  case 3: case 4: case 5: case 6: case 7:  case 10:case 11: case 12:case 13:case 14: case 15: return false;
+                  default:return true;
+         }
+}
+
+Item* Item::wylosuj_item(int szansa_na_ubranie, int szansa_na_plecak, int szansa_na_bron,int szansa_na_inne,int szansa_na_jedzenie,int szansa_na_medykamenty)
+{
+         int los=losuj(1, szansa_na_ubranie+szansa_na_plecak+szansa_na_bron+szansa_na_inne+szansa_na_jedzenie+szansa_na_medykamenty);
+         if(los<=szansa_na_ubranie)
+         {
+                  switch(losuj(1,5))
+                  {
+                           case 1: return stworz_obiekt(5000+losuj(1,2));
+                           case 2: return stworz_obiekt(5500+losuj(1,3));
+                           case 3: return stworz_obiekt(6000+losuj(1,4));
+                           case 4: return stworz_obiekt(6500+losuj(1,5));
+                           case 5: return stworz_obiekt(5000+losuj(1,2));
+                  }
+         }
+         else if(los<=szansa_na_plecak+szansa_na_ubranie)
+         {
+                  return stworz_obiekt(3000+losuj(1,6));
+         }
+         else if(los<=szansa_na_bron+szansa_na_plecak+szansa_na_ubranie)
+         {
+                  int los=losuj(1,11);
+                  if(los<=6)///biala
+                  {
+                           switch(losuj(1,7))
+                           {
+                                    case 1: return stworz_obiekt(4003);
+                                    case 2: return stworz_obiekt(4005);
+                                    case 3: return stworz_obiekt(4006);
+                                    case 4: return stworz_obiekt(4007);
+                                    case 5: return stworz_obiekt(4008);
+                                    case 6: return stworz_obiekt(4502);
+                                    case 7: return stworz_obiekt(4503);
+                           }
+                  }
+                  else if(los<9)///amunicja
+                  {
+                           return stworz_obiekt(2100+losuj(1,4));
+                  }
+                  else///palna
+                  {
+                           switch(losuj(1,4))
+                           {
+                                    case 1: return stworz_obiekt(4252);
+                                    case 2: return stworz_obiekt(4256);
+                                    case 3: return stworz_obiekt(4752);
+                                    case 4: return stworz_obiekt(4753);
+                           }
+                  }
+         }
+         else if(los<=szansa_na_inne+szansa_na_bron+szansa_na_plecak+szansa_na_ubranie)
+         {
+                  switch(losuj(1,2))
+                  {
+                           case 1: return stworz_obiekt(8001);
+                           case 2: return stworz_obiekt(8003);
+                           case 3: return stworz_obiekt(2201);
+                  }
+         }
+         else if(los<=szansa_na_jedzenie+szansa_na_bron+szansa_na_inne+szansa_na_plecak+szansa_na_ubranie)
+         {
+                  switch(losuj(1,2))
+                  {
+                           case 1: return stworz_obiekt(2001);
+                           case 2: return stworz_obiekt(2006);
+                  }
+         }
+         else if(los<=szansa_na_medykamenty+szansa_na_bron+szansa_na_jedzenie+szansa_na_inne+szansa_na_plecak+szansa_na_ubranie)
+         {
+                  return stworz_obiekt(2007);
+         }
+         else {return stworz_obiekt(2007);}
+}
+
+Item** Item::wylosuj_liste_itemow(int szansa_na_ubranie,int szansa_na_plecak,int szansa_na_bron,int szansa_na_inne,int szansa_na_jedzenie,int szansa_na_medykamenty)
+{
+         short ile = 0; Item** a = new Item*[7];
+         if(losuj(1, 100) <= szansa_na_ubranie)
+         {
+                  switch(losuj(1,5))
+                  {
+                           case 1: a[ile++]= stworz_obiekt(5000+losuj(1,2)); break;
+                           case 2: a[ile++]= stworz_obiekt(5500+losuj(1,3)); break;
+                           case 3: a[ile++]= stworz_obiekt(6000+losuj(1,4)); break;
+                           case 4: a[ile++]= stworz_obiekt(6500+losuj(1,5)); break;
+                           case 5: a[ile++]= stworz_obiekt(5000+losuj(1,2)); break;
+                  }
+         }
+         if(losuj(1,100) <= szansa_na_plecak) a[ile++] = stworz_obiekt(3000+losuj(1,6));
+         if(losuj(1,100) <= szansa_na_inne)
+                  switch(losuj(1,2))
+                  {
+                           case 1: a[ile++] = stworz_obiekt(8001); break;
+                           case 2: a[ile++] = stworz_obiekt(8003); break;
+                           case 3: a[ile++] = stworz_obiekt(2201); break;
+                  }
+         if(losuj(1,100) <= szansa_na_jedzenie)
+                  switch(losuj(1,2))
+                  {
+                           case 1: a[ile++] = stworz_obiekt(2001); break;
+                           case 2: a[ile++] = stworz_obiekt(2006); break;
+                  }
+         if(losuj(1,100) <= szansa_na_medykamenty) a[ile++] = stworz_obiekt(2007);
+         if(losuj(1,100) <= szansa_na_bron)
+         {
+                  short los=losuj(1,11);
+                  if(los<=6)///biala
+                  {
+                           switch(losuj(1,7))
+                           {
+                                    case 1: a[ile++] = stworz_obiekt(4003); break;
+                                    case 2: a[ile++] = stworz_obiekt(4005); break;
+                                    case 3: a[ile++] = stworz_obiekt(4006); break;
+                                    case 4: a[ile++] = stworz_obiekt(4007); break;
+                                    case 5: a[ile++] = stworz_obiekt(4008); break;
+                                    case 6: a[ile++] = stworz_obiekt(4502); break;
+                                    case 7: a[ile++] = stworz_obiekt(4503); break;
+                           }
+                  }
+                  else if(los<9)///amunicja
+                  {
+                           a[ile++] = stworz_obiekt(2100+losuj(1,4));
+                  }
+                  else///palna
+                  {
+                           switch(losuj(1,4))
+                           {
+                                    case 1: a[ile++] = stworz_obiekt(4252); if(losuj(1,2) == 1) a[ile++] = stworz_obiekt(2101); break;
+                                    case 2: a[ile++] = stworz_obiekt(4256); if(losuj(1,2) == 1) a[ile++] = stworz_obiekt(2104); break;
+                                    case 3: a[ile++] = stworz_obiekt(4752); if(losuj(1,2) == 1) a[ile++] = stworz_obiekt(2102); break;
+                                    case 4: a[ile++] = stworz_obiekt(4753); if(losuj(1,2) == 1) a[ile++] = stworz_obiekt(2103); break;
+                           }
+                  }
+         }
+         Item **g = new Item*[ile + 1];
+         for(short i = 0; i<ile; ++i) g[i] = a[i];
+         g[ile] = NULL;
+         delete [] a;
+         return g;
+}
+
+Item* Item::wylosuj_item(char skad)
+{
+        return wylosuj_item(25,10,10,10,30,15);
+}
+
+Ubranie::Ubranie(int ktore)
+{
+         czym_jest=ktore;
+}
+
+Ubranie::~Ubranie()
+{
+
+}
+
+int Ubranie::cieplo()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 5001: return 6;
+                  case 5002: return 3;
+                  case 5501: return 5;
+                  case 5502: return 7;
+                  case 5503: return 7;
+                  case 6001: return 6;
+                  case 6002: return 5;
+                  case 6003: return 1;
+                  case 6004: return 3;
+                  case 6501: return 3;
+                  case 6502: return 2;
+                  case 6503: return 4;
+                  case 6504: return 3;
+                  case 6505: return 6;
+                  default: return 0;
+         }
+}
+
+int Ubranie::ochrona()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 5001: return 20;
+                  case 5002: return 10;
+                  case 5501: return 33;
+                  case 5502: return 25;
+                  case 5503: return 33;
+                  case 6001: return 26;
+                  case 6002: return 20;
+                  case 6003: return 4;
+                  case 6004: return 9;
+                  case 6501: return 40;
+                  case 6502: return 42;
+                  case 6503: return 33;
+                  case 6504: return 45;
+                  case 6505: return 40;
+                  default: return 0;
+         }
+}
+
+int Ubranie::kamuflaz()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 5001: return 3;
+                  case 5002: return -2;
+                  case 5501: return 3;
+                  case 5502: return 0;
+                  case 5503: return -5;
+                  case 6001: return 0;
+                  case 6002: return 6;
+                  case 6003: return -2;
+                  case 6004: return 3;
+                  case 6501: return -2;
+                  case 6502: return 0;
+                  case 6503: return 2;
+                  case 6504: return 3;
+                  case 6505: return 3;
+                  default: return 0;
+         }
+}
+
+bool Ubranie::wykorzystaj()
+{
+         if(this==NULL) return false;
+         if(wytrzymalosc>1) {--wytrzymalosc;return false;}
+         else return true;
+}
+
+Konsumpcjum::Konsumpcjum(int ktore,int pozostalo_uz)
+{
+         czym_jest=ktore;pozostalo_uzyc=pozostalo_uz;
+}
+
+Konsumpcjum::~Konsumpcjum()
+{
+
+}
+
+bool Konsumpcjum::wykorzystaj()
+{
+         --pozostalo_uzyc;
+         if(pozostalo_uzyc<=0)return true;
+         return false;
+}
+
+Plecak::Plecak(int ktore)
+{
+         czym_jest=ktore;
+         switch(ktore)
+         {
+                  case 3001: s=new Skrzynka(6,4); break;
+                  case 3002: s=new Skrzynka(9,9); break;
+                  case 3003: s=new Skrzynka(8,7); break;
+                  case 3004: s=new Skrzynka(9,4); break;
+                  case 3005: s=new Skrzynka(9,13); break;
+                  case 3006: s=new Skrzynka(9,11); break;
+                  default: s=new Skrzynka(0,0); break;
+         }
+}
+
+Plecak::~Plecak()
+{
+         delete s;
+}
+
+int Plecak::kamuflaz()
+{
+         if(this==NULL) return losuj(1,6);
+         switch(czym_jest)
+         {
+                  case 3001: return -4; break;
+                  case 3002: return 7; break;
+                  case 3003: return 0; break;
+                  case 3004: return 2; break;
+                  case 3005: return -2; break;
+                  case 3006: return 5; break;
+         }
+}
+
+Bron::Bron(int ktore)
+{
+         czym_jest=ktore;
+         switch(czym_jest)
+         {
+                  case 4006: wytrzymalosc=35;break;
+                  case 4003: wytrzymalosc=30;break;
+                  case 4004: wytrzymalosc=45;break;
+                  case 4501: wytrzymalosc=20;break;
+                  case 4005: wytrzymalosc=30;break;
+                  case 4007: wytrzymalosc=50;break;
+                  case 4008: wytrzymalosc=30;break;
+                  case 4009: wytrzymalosc=30;break;
+                  case 4502: wytrzymalosc=30;break;
+                  case 4503: wytrzymalosc=30;break;
+
+                  case 4255: wytrzymalosc=1;break;
+                  case 4256: wytrzymalosc=1;break;
+                  case 4252: wytrzymalosc=1;break;
+                  case 4752: wytrzymalosc=1;break;
+                  case 4753: wytrzymalosc=1;break;
+         }
+}
+
+Bron::~Bron()
+{
+
+}
+
+struct punkt Bron::obrazenia()
+{
+         struct punkt a;
+         if(this==NULL) {a.x=1;a.y=6;}
+         else
+         switch(czym_jest)
+         {
+                  case 4006: a.x=46;a.y=60;break;
+                  case 4003: a.x=25;a.y=30;break;
+                  case 4004: a.x=30;a.y=37;break;
+                  case 4501: a.x=10;a.y=15;break;
+                  case 4005: a.x=45;a.y=50;break;
+                  case 4007: a.x=25;a.y=30;break;
+                  case 4008: a.x=35;a.y=40;break;
+                  case 4009: a.x=35;a.y=40;break;
+                  case 4502: a.x=5;a.y=15;break;
+                  case 4503: a.x=13;a.y=22;break;
+
+                  case 4255: a.x=60;a.y=80;break;
+                  case 4256: a.x=55;a.y=70;break;
+                  case 4252: a.x=20;a.y=25;break;
+                  case 4752: a.x=17;a.y=25;break;
+                  case 4753: a.x=35;a.y=45;break;
+         }
+         return a;
+}
+
+int Bron::get_obrazenia()
+{
+         return losuj(obrazenia().x,obrazenia().y);
+}
+
+int Bron::get_szansa()
+{
+         if(this==NULL) return 60;
+         switch(czym_jest)
+         {
+                  case 4006: return 90;
+                  case 4003: return 80;
+                  case 4004: return 80;
+                  case 4501: return 95;
+                  case 4500: return 70;
+                  case 4007: return 80;
+                  case 4008: return 90;
+                  case 4009: return 90;
+                  case 4502: return 70;
+                  case 4503: return 90;
+                  case 4005: return 75;
+
+                  case 4255: return 100;
+                  case 4256: return 95;
+                  case 4252: return 85;
+                  case 4752: return 90;
+                  case 4753: return 85;
+                  default: return 0;
+         }
+}
+
+int Bron::get_krytyk()
+{
+         if(this==NULL) return 3;
+         switch(czym_jest)
+         {
+                  case 4006: return 20;
+                  case 4003: return 15;
+                  case 4004: return 20;
+                  case 4501: return 40;
+                  case 4500: return 10;
+                  case 4007: return 10;
+                  case 4008: return 30;
+                  case 4009: return 20;
+                  case 4502: return 15;
+                  case 4503: return 30;
+
+                  case 4255: return 50;
+                  case 4256: return 40;
+                  case 4252: return 15;
+                  case 4752: return 20;
+                  case 4753: return 10;
+                  default: return 0;
+         }
+}
+
+struct punkt Bron::blok()
+{
+         struct punkt a;
+         if(this==NULL) {a.x=0;a.y=8;}
+         else
+         switch(czym_jest)
+         {
+                  case 4006: a.x=60;a.y=80;break;
+                  case 4003: a.x=35;a.y=45;break;
+                  case 4004: a.x=40;a.y=45;break;
+                  case 4501: a.x=10;a.y=15;break;
+                  case 4005: a.x=30;a.y=35;break;
+                  case 4007: a.x=30;a.y=35;break;
+                  case 4008: a.x=15;a.y=20;break;
+                  case 4009: a.x=10;a.y=15;break;
+                  case 4502: a.x=0;a.y=8;break;
+                  case 4503: a.x=2;a.y=8;break;
+                  default : a.x=0;a.y=0;break;
+         }
+         return a;
+};
+
+int Bron::get_blok()
+{
+         return losuj(blok().x, blok().y);
+}
+
+int Bron::UB()
+{
+         int a=20; ///korekta
+         if(this==NULL) return 30+a;
+         switch(czym_jest)
+         {
+                  case 4006: return -30+a;
+                  case 4003: return 0+a;
+                  case 4004: return 0+a;
+                  case 4501: return 30+a;
+                  case 4500: return -10+a;
+                  case 4007: return 0+a;
+                  case 4008:case 4009: return 0+a;
+                  case 4502: return 30+a;
+                  case 4503: return 30+a;
+
+                  case 4255: return -30+a;
+                  case 4256: return -30+a;
+                  case 4252: return -15+a;
+                  case 4752: return 20+a;
+                  case 4753: return 20+a;
+                  default: return 0;
+         }
+}
+
+int Bron::KB()
+{
+         int a=0;
+         if(this==NULL) return 30;
+         switch(czym_jest)
+         {
+                  case 4006: return -20;
+                  case 4003: return 0;
+                  case 4004: return 0;
+                  case 4501: return 30;
+                  case 4500: return -10;
+                  case 4007: return 10+a;
+                  case 4008: case 4009: return 10+a;
+                  case 4502: return 30+a;
+                  case 4503: return 30+a;
+
+                  case 4255: return -30;
+                  case 4256: return -30;
+                  case 4252: return -15;
+                  case 4752: return 20;
+                  case 4753: return 20;
+                  default: return 0;
+         }
+}
+
+bool Bron::wykorzystaj()///true jesli wykorzystany
+{
+         if(this==NULL) return false;
+         if(wytrzymalosc<2) return true;
+         --wytrzymalosc;return false;
+}
+
+int Bron::ilosc_strzalow_w_serii()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 4255: return 1;
+                  case 4256: return 1;
+                  case 4252: return 4;
+                  case 4752: return 2;
+                  case 4753: return 1;
+                  default: return 0;
+         }
+}
+
+int Bron::grubosc_strzalu()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 4255: return 3;
+                  case 4256: return 3;
+                  case 4252: return 1;
+                  case 4752: return 1;
+                  case 4753: return 3;
+                  default: return 0;
+         }
+}
+
+int Bron::glosnosc_broni()
+{
+         if(this==NULL) return 0;
+         switch(czym_jest)
+         {
+                  case 4255: return 10;
+                  case 4256: return 10;
+                  case 4252: return 7;
+                  case 4752: return 6;
+                  case 4753: return 8;
+                  default: return 0;
+         }
+}
+
+Inne::Inne(int co)
+{
+         czym_jest=co;
+}
+
+Klucz::Klucz(int co)
+{
+         czym_jest=co;
+}
+
+Klucz::Klucz(int co,Klodka*do_cz)
+{
+         czym_jest=co;do_czego=do_cz;
+}
+
+Klodka::Klodka(int co)
+{
+         czym_jest=co;
+         switch(co)
+         {
+                  case 8007: HP=300; break;
+                  case 8008: HP=250; break;
+                  case 8009: HP=200; break;
+         }
+}
+
+int Klodka::max_hp()
+{
+         switch(czym_jest)
+         {
+                  case 8007: return 300;case 8008: return 250;case 8009: return 200;
+         }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Crafting_recipes::Crafting_recipes()
+{
+         ile_kategorii = 1;short *wiersze = new short[200];
+         kategoria = new Przepis**[ile_kategorii+1]; kategoria[ile_kategorii] = NULL;
+
+         for(short y=0; y<ile_kategorii; ++y)
+         {
+                  Przepis **a = daj_liste_przepisow(y);
+                  short h=0;
+                  double suma_wierszy = 0;
+                  for(short h=0; a[h]!=NULL; ++h)
+                  {
+                           wiersze[h] = a[h]->potrzebne_wiersze(rozmiary(0, y));
+                           suma_wierszy += 1.5*((double)wiersze[h]) + 1;
+                  }
+                  short ilosc_stron = int(suma_wierszy/11) + ((int(suma_wierszy)%11)>0 ? 1 : 0);
+                  kategoria[y] = new Przepis *[ilosc_stron+1];
+                  kategoria[y][ilosc_stron] = NULL;
+
+                  short ktora_str = 0;
+                  float licznik_wierszy = 0;
+                  short *ilosci_itemow_na_stronie = new short[ilosc_stron]; for(short k=0;k<ilosc_stron;++k) ilosci_itemow_na_stronie[k]=0;
+                  for(short k=0; a[k]!=NULL; ++k)
+                  {
+                           if(licznik_wierszy+float(wiersze[k])+0.5<=11)
+                           {
+                                    ilosci_itemow_na_stronie[ktora_str]++; licznik_wierszy+=wiersze[k]+0.5;
+                           }
+                           else
+                           {
+                                    licznik_wierszy = wiersze[k]+0.5; ktora_str++; ilosci_itemow_na_stronie[ktora_str]++;
+                           }
+                  }
+                  for(short k=0;k<ilosc_stron;++k)
+                  {
+                           kategoria[y][k]=new Przepis[ilosci_itemow_na_stronie[k]+1];
+                           kategoria[y][k][ilosci_itemow_na_stronie[k]].ilosc_substratow = -1;
+                  }
+
+                  short ktory_item = 0;
+                  for(short k=0; k<ilosc_stron; ++k)
+                  {
+                           for(h=0; h<ilosci_itemow_na_stronie[k]; ++h)
+                           {
+                                    kategoria[y][k][h].przenies(a[ktory_item++]);
+                           }
+                  }
+
+                  for(h=0; a[h]!=NULL; ++h)
+                  {
+                           delete a[h];
+                  }
+                  delete a[h];
+                  delete [] a;
+                  delete [] ilosci_itemow_na_stronie;
+
+         }
+         delete [] wiersze;
+
+         for(short y=0;kategoria[0][y]!=NULL;++y) std::cout<<y<<" ";
+}
+
+Przepis* Crafting_recipes::daj_strone_z_kategorii(short strona, short kat)
+{
+         return kategoria[kat][strona];
+}
+
+bool Crafting_recipes::jest_taka_strona_z_tej_kategorii(short strona, short kat)
+{
+         for(short t=0; kategoria[t]!=NULL; ++t)
+         {
+                  if(t==kat)
+                  {
+                           for(short y=0; kategoria[t][y]!=NULL; ++y)
+                           {
+                                    if(y==strona) return true;
+                           }
+                           return false;
+                  }
+         }
+         return false;
+}
+
+int* stworz_inty(short a, short ile) {int *g = new int[1]; ((short*)g)[0]=a;((short*)g)[1]=ile; return g;}
+int* stworz_inty(short a, short ile, short b, short ilee) {int *g = new int[2];  ((short*)g)[0]=a;((short*)g)[1]=ile;  ((short*)g)[2]=b;((short*)g)[3]=ilee; return g;}
+int* stworz_inty(short a, short ile, short b, short ilee, short c, short ileee) {int *g = new int[3]; ((short*)g)[0]=a;((short*)g)[1]=ile;  ((short*)g)[2]=b;((short*)g)[3]=ilee;  ((short*)g)[4]=c;((short*)g)[5]=ileee;  return g;}
+
+
+Przepis** Crafting_recipes::daj_liste_przepisow(short kategoria)///ostatni null
+{///Przepis(int *subs, int *obj, int *kat, int *rez, int*umj, short sub, short ob, short ka, short re, short um);
+         if(kategoria == 0)
+         {
+                 int * u = new int[7];
+                  short*h = (short*)u; for(short j=0;j<14;j+=2) {h[j]=2201;h[j+1]=5;}
+                  Przepis **t = new Przepis*[5];
+
+                  //t[0] = new Przepis(NULL,u,NULL,stworz_inty(4255, 1),NULL,0,1,0,1,0);
+                  /*t[0] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[1] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  for(short k=2;k<8;++k)t[k] = new Przepis(u,NULL,NULL,stworz_inty(4255, 1),NULL,8,0,0,1,0);*/
+
+                  t[4] = NULL;
+
+
+                  //Przepis **t = new Przepis*[9];
+                  t[0] = new Przepis(stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),u,1,1,1,1,7);
+                  t[1] = new Przepis(stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),u,1,1,1,1,7);
+
+                   u = new int[7];
+                  h = (short*)u; for(short j=0;j<14;j+=2) {h[j]=2201;h[j+1]=5;}
+                  t[2] = new Przepis(stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),u,1,1,1,1,7);
+                  t[3] = new Przepis(stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),stworz_inty(4255, 1),u,1,1,1,1,7);
+                  //t[0] = new Przepis(u,u,u,u,u,6,6,6,6,6);
+                  /*t[1] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[2] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[3] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[4] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[5] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[6] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[7] = new Przepis(stworz_inty(4256, 1, 8003, 1, 4256, 1),NULL,NULL,stworz_inty(4255, 1),NULL,3,0,0,1,0);
+                  t[8] = NULL;*/
+
+                  return t;
+         }
+         std::cout<<"niezdefiniowany kategoiria w daj_liste-przemdiotow"; throw "D";
+}
+
+rozmiary_tabeli Crafting_recipes::rozmiary(short strona, short kategoria)
+{
+
+         if(kategoria == 0 && strona == 0)
+         {
+                  return rozmiary_tabeli(5,1,1,1,2);
+         }
+         else return rozmiary_tabeli(5,1,1,1,2);
+
+
+         {std::cout<<"niezdefiniowany rozmiar w rozmiary::CraftingRecipes"; throw "D";}
+
+}
+
+Crafting_recipes::~Crafting_recipes()
+{
+         delete [] ile_w_kategorii;
+         for(short k=0; kategoria[k]!=NULL; ++k)
+         {
+                  for(short h=0; kategoria[k][h]!=NULL; ++h)
+                  {
+                           delete [] kategoria[k][h];
+                  }
+                  delete [] kategoria[k];
+         }
+         delete [] kategoria;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
