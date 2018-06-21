@@ -207,7 +207,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                              ((Zombie*)swiat->aktualna->otoczenie[dwa][jed])->jest_cel=false;
                               ((Zombie*)swiat->aktualna->otoczenie[dwa][jed])->celem_jest_plansza=false;
                    }*/
-                   swiat->aktualna->wybuch_o_mocy(3, 1, 11);
+                   swiat->aktualna->wybuch_o_mocy(3, 1, 1);
          }
          else if(al_key_down(&klawiatura, ALLEGRO_KEY_G))
          {
@@ -225,6 +225,8 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                    //((Plansza*)swiat->area[g->px][g->py][g->pz])->zaktualizuj_widoki();
                    //std::cout<<swiat->area[1][0][0]->x<<swiat->area[1][0][0]->y<<swiat->area[1][0][0]->z;
                    //std::cout<<std::endl<<swiat->aktualny->posiada_przedmiot(8020, 1, 1);
+                   //swiat->aktualna->dodaj_do_srodowiska(5, 5, Objekt::stworz_objekt_z_wykraftowania(24, 5, 5, 1, 0, 0));
+                   Srodowisko::dodaj_objekt((new Zwloki(8,0,10,10,1,0,0)),10,10,swiat->zwroc_taka_plansze_TYLKO(1,0,0));
          }
          else if(godmode && al_key_down(&klawiatura, ALLEGRO_KEY_E))
          {
@@ -1745,6 +1747,29 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            }
                            delete menu; menu=NULL;
                   }
+                  else if(myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==21)
+                  {///szafa gdy sie w niej ukrywamy
+                           poczekaj_na_myszke(2);
+                           specyfikacja_menu* menu=new specyfikacja_menu(new  specyfikacja_menu* [2],2, 55);
+                                    menu->item[0]=new specyfikacja_menu(NULL,0,1);
+                                    menu->item[1]=new specyfikacja_menu(NULL,0,2);
+
+                           int wybor=Menu(myszka.x, myszka.y, args, menu);
+                           switch(wybor)
+                           {
+                                    case 0:break;
+                                    case 1:if(pobierz_punkty_ruchu(7))
+                                    {
+                                             dodaj_wody(50); dodaj_jedzenia(-losuj(10, 80));
+                                    }break;
+                                    case 2:if(g->p_rece!=NULL && (g->p_rece->czym_jest == 2005 ||  g->p_rece->czym_jest == 2010 ||  g->p_rece->czym_jest == 2004)  && pobierz_punkty_ruchu(7))
+                                    {
+                                             Item *a = g->p_rece; g->p_rece=NULL; Item *b = Item::stworz_obiekt(2009); g->p_rece = b; delete a;
+                                    }break;
+                                    default:break;
+                           }
+                           delete menu; menu=NULL;
+                  }
                   else if(!g->ukryty && myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==30 && !(p->otoczenie[my][mx]->jest_naprzeciw_nas(g->x, g->y)) && Objekt::zaraz_obok(g->x,g->y,mx,my))
                   {///szafa gdy jestesmy nie od frontu
                            poczekaj_na_myszke(2); Szafa *s = (Szafa*)p->otoczenie[my][mx];
@@ -2320,35 +2345,52 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            }
                            delete menu; menu=NULL;
                   }
-                  else if(!g->ukryty && myszka.buttons&2  &&mx>=gracz->x-1 && mx<=gracz->x+1 && my>=gracz->y-1 && my<=gracz->y+1 && swiat->aktualna->srodowisko[my][mx]!=NULL&&
-                          swiat->aktualna->srodowisko[my][mx]->wierzch()->czym_jest==100)
+                  else if(!g->ukryty && myszka.buttons&2  &&mx>=gracz->x-1 && mx<=gracz->x+1 && my>=gracz->y-1 && my<=gracz->y+1 && swiat->aktualna->srodowisko[my][mx]!=NULL
+                           && swiat->aktualna->srodowisko[my][mx]->wierzch()!=NULL && swiat->aktualna->srodowisko[my][mx]->wierzch()->czym_jest==100)
                   {
                            poczekaj_na_myszke(2); Gracz*g=swiat->aktualny;
-                           Plansza*pl=swiat->aktualna;
+                           Plansza *pl=swiat->aktualna;
                            Zwloki*o=(Zwloki*)swiat->aktualna->srodowisko[my][mx]->wierzch();
                            bool prost = Objekt::jest_prostopadle(g->x,g->y,mx,my);
-                           bool zombie = (o->czyje_zwloki==2);
-                           specyfikacja_menu* menu=new specyfikacja_menu(new specyfikacja_menu*[2+prost+zombie], 2+prost+zombie
-                                                                         , 256+512+prost*1024+zombie*2048);
+                           bool zombie = (o->czyje_zwloki==2);specyfikacja_menu* menu;
 
-                           menu->item[0]=new specyfikacja_menu(NULL,0,1);
-                           menu->item[1]=new specyfikacja_menu(NULL,0,2);
-                           if(prost)
-                           {
-                                    menu->item[2]=new specyfikacja_menu(new specyfikacja_menu*[2],2,45);
-                                    menu->item[2]->item[0] = new specyfikacja_menu(NULL,0,5);
-                                    menu->item[2]->item[1] = new specyfikacja_menu(NULL,0,6);
-                           }
                            if(zombie)
                            {
-                                    menu->item[prost+2]=new specyfikacja_menu(NULL,0,3);
+                                    menu=new specyfikacja_menu(new specyfikacja_menu*[2+prost+zombie], 2+prost+zombie
+                                                                         , 256+512+prost*1024+zombie*2048);
+
+                                    menu->item[0]=new specyfikacja_menu(NULL,0,1);
+                                    menu->item[1]=new specyfikacja_menu(NULL,0,2);
+                                    if(prost)
+                                    {
+                                             menu->item[2]=new specyfikacja_menu(new specyfikacja_menu*[2],2,45);
+                                             menu->item[2]->item[0] = new specyfikacja_menu(NULL,0,5);
+                                             menu->item[2]->item[1] = new specyfikacja_menu(NULL,0,6);
+                                    }
+                                    if(zombie)
+                                    {
+                                             menu->item[prost+2]=new specyfikacja_menu(NULL,0,3);
+                                    }
                            }
+                           else
+                           {
+                                    menu=new specyfikacja_menu(new specyfikacja_menu*[2+prost], 2+prost
+                                                                         , 256+prost*1024+1048576);
+
+                                    menu->item[0]=new specyfikacja_menu(NULL,0,1);
+                                    if(prost)
+                                    {
+                                             menu->item[1]=new specyfikacja_menu(new specyfikacja_menu*[2],2,45);
+                                             menu->item[1]->item[0] = new specyfikacja_menu(NULL,0,5);
+                                             menu->item[1]->item[1] = new specyfikacja_menu(NULL,0,6);
+                                             menu->item[2]=new specyfikacja_menu(NULL,0,7);
+                                    }
+                                    else menu->item[1]=new specyfikacja_menu(NULL,0,7);
+                           }
+
                            int wybor=Menu(myszka.x, myszka.y, args, menu);
                            switch(wybor)
                            {
-
-
-
                                     case 1:if((g->p_rece==NULL || g->p_rece->jest_bronia_biala()) &&pobierz_punkty_ruchu_i_kondycje(3,1)){///zniszcz
                                              g->animacja_ataku(w_ktora_to_strone(g->x,g->y,mx,my));
                                              int obr=losuj(1,6); if(g->p_rece!=NULL) {obr=((Bron*)g->p_rece)->get_obrazenia();
@@ -2373,12 +2415,27 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                              }
                                              else if(aaa==dead) break;
                                     }break;
+                                    case 7:if(g->p_rece!=NULL && g->p_rece->jest_ostrzem() && pobierz_punkty_ruchu(8)){///pozyskaj
+                                             if(g->p_rece!=NULL && g->p_rece->wykorzystaj()){Item*a=(Item*)g->p_rece;g->p_rece=NULL;delete a;}
+                                             if(g->p_rece!=NULL && g->p_rece->wykorzystaj()){Item*a=(Item*)g->p_rece;g->p_rece=NULL;delete a;}
+                                             if(g->p_rece!=NULL && g->p_rece->wykorzystaj()){Item*a=(Item*)g->p_rece;g->p_rece=NULL;delete a;}
+
+                                             switch(o->czyje_zwloki)
+                                             {
+                                                      case 8: {for(short h=losuj(1, 2); h>0; --h) pl->rzuc_na_ziemie(mx, my, Item::stworz_obiekt(2013));
+                                                               for(short h=losuj(3, 6); h>0; --h) pl->rzuc_na_ziemie(mx, my, Item::stworz_obiekt(2011));} break;
+                                                      case 9: {for(short h=losuj(2, 4); h>0; --h) pl->rzuc_na_ziemie(mx, my, Item::stworz_obiekt(2013));
+                                                               for(short h=losuj(4, 8); h>0; --h) pl->rzuc_na_ziemie(mx, my, Item::stworz_obiekt(2011));}break;
+                                                      default: break;
+                                             }
+                                             o->zostan_uderzony(300,0,0,g->wart_zajecia());
+                                    }break;
                                     default: case 0: break;
                            }
                            delete menu; menu=NULL;
                   }
                   else if(!g->ukryty && myszka.buttons&2  &&mx>=gracz->x-1 && mx<=gracz->x+1 && my>=gracz->y-1 && my<=gracz->y+1 && swiat->aktualna->srodowisko[my][mx]!=NULL&&
-                          swiat->aktualna->srodowisko[my][mx]->wierzch()->czym_jest==35)
+                          swiat->aktualna->srodowisko[my][mx]->wierzch()!=NULL && swiat->aktualna->srodowisko[my][mx]->wierzch()->czym_jest==35)
                   {
                            poczekaj_na_myszke(2); Gracz*g=swiat->aktualny;
                            Plansza*pl=swiat->aktualna;
@@ -2398,7 +2455,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            delete menu; menu=NULL;
                   }
                   else if(!g->ukryty && myszka.buttons&2  &&mx>=gracz->x-1 && mx<=gracz->x+1 && my>=gracz->y-1 && my<=gracz->y+1 && swiat->aktualna->srodowisko[my][mx]!=NULL&&
-                          swiat->aktualna->srodowisko[my][mx]->wierzch()->czym_jest==24)
+                          swiat->aktualna->srodowisko[my][mx]->wierzch()!=NULL && swiat->aktualna->srodowisko[my][mx]->wierzch()->czym_jest==24)
                   {
                            poczekaj_na_myszke(2); Gracz*g=swiat->aktualny;
                            Ognisko*o=(Ognisko*)swiat->aktualna->srodowisko[my][mx]->wierzch();
@@ -2407,14 +2464,20 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            int wybor=Menu(myszka.x, myszka.y, args, menu);
                            switch(wybor)
                            {
-                                    case 1:if(g->p_rece!=NULL && g->p_rece->czym_jest==2201 && pobierz_punkty_ruchu(3)){
-                                             if(losuj(1,10)<4) o->pali_sie=true;
+                                    case 1:if(g->p_rece!=NULL && g->p_rece->czym_jest==8017 && pobierz_punkty_ruchu(3)){
+                                             swiat->aktualna->animacja_iskry(o->x, o->y);
+                                             if(losuj(1,10)<4) o->podpal();
                                              if(g->p_rece && ((Konsumpcjum*)g->p_rece)->wykorzystaj()){Konsumpcjum*a=(Konsumpcjum*)g->p_rece;g->p_rece=NULL;delete a;}
                                              }break;
-                                    case 2:if(g->p_rece!=NULL && g->p_rece->czym_jest==8002 && pobierz_punkty_ruchu(2)){
-                                             o->paliwo+=5; Inne*a=(Inne*)g->p_rece; g->p_rece=NULL; delete a;
+                                    case 2:if(g->p_rece!=NULL && (g->p_rece->czym_jest==8002 || g->p_rece->czym_jest==4010) && pobierz_punkty_ruchu(2)){
+                                             switch(g->p_rece->czym_jest)
+                                             {
+                                                      case 4010:  o->dorzuc_paliwa(3);
+                                                      default: o->dorzuc_paliwa(5);
+                                             }
+                                             Inne*a=(Inne*)g->p_rece; g->p_rece=NULL; delete a;
                                              }break;
-                                    case 3:if(o->pali_sie && pobierz_punkty_ruchu(4)){
+                                    case 3:if(o->getPaliSie() && pobierz_punkty_ruchu(4)){
                                              int a=g->cieplo_a+losuj(20,40); if(a<g->cieplo_max) g->cieplo_a=a; else g->cieplo_a=g->cieplo_max;
                                              }break;
                                     default: case 0: break;

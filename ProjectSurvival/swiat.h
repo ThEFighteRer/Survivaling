@@ -198,6 +198,7 @@ class Plansza : public Area ///objekt
          void iskra(short x, short y);
          void rozejdz_swiatlo(short x, short y, short moc,short, short, bool poza_plansze);
          void rozejdz_swiatlo_reflektora(short xxx, short yyy, short moc, short zasieg, short spadki, short wysokosc_swiatla, char zwrot, bool tez_poza_plansze);
+         void animacja_iskry(short x, short y);
 
          void dzwiek(bool moze_wyjsc_poza_plansze,int moc, int dx, int dy,int rodzaj);
          void aktualizuj_swiatlo();
@@ -363,6 +364,7 @@ class Objekt
          const bool zywy;
 
          virtual ~Objekt();
+         static Objekt* stworz_objekt_z_wykraftowania(int co, int, int, int, int, int);
          bool nie_wykonal_ruchu=true;
          bool wykonuje_ruch=true;
          unsigned char stan = 0;///bity od lewej, 1 - plonie
@@ -548,6 +550,8 @@ class Objekt_pol_martwy : public Objekt
 
 class Gracz : public Objekt_zywy///10
 {
+         void ogrzej_sie_od_zrodel_ognia();
+
          Objekt_zywy * sprzymierzeni = nullptr;
          int ilosc_sprzymierzonych = 0;
 
@@ -610,7 +614,7 @@ class Gracz : public Objekt_zywy///10
          Objekt_martwy *gdzie_spi = NULL;
          int kondycja=18;
 
-         short woda_max=300, woda_a=300,jedzenie_max=300, jedzenie_a=300,cieplo_max=300, cieplo_a=300,energia_max=300, energia_a=200;
+         short woda_max=300, woda_a=300,jedzenie_max=300, jedzenie_a=300,cieplo_max=300, cieplo_a=300,energia_max=300, energia_a=300;
 
          Gracz();
          ~Gracz();
@@ -625,6 +629,8 @@ class Gracz : public Objekt_zywy///10
          void dodaj_unik(Objekt *a);
          void dodaj_skupienie(Objekt *a);
          short ile_bloku(Objekt *a);
+
+         void dodaj_cieplo(short ile) {if(cieplo_a+ile<cieplo_max) cieplo_a+=ile; else cieplo_a=cieplo_max;}
 
          bool wstan_ze_snu();
          short stan_nog();
@@ -1025,20 +1031,26 @@ class Schowek_przejsciowy:public Objekt_przejsciowy
 
 class Ognisko:public Objekt_pol_martwy///24
 {
-         public:
+         friend class Ognisko_przejsciowe;
+
          short HP=30;
          short paliwo=0;
          bool pali_sie=false;
+
+         public:
 
          Ognisko(int,int,int,int,int);
          ~Ognisko();
          Ognisko(Ognisko_przejsciowe* a,int,int,int,int,int);
          what_happened zostan_uderzony(int obrazenia, int kto, int ekstra,short wsp_zajecia) override;
          int get_co_to();
+         bool getPaliSie(){return pali_sie;}
+         void dorzuc_paliwa(short ile){paliwo+=ile;}
+         void podpal(){pali_sie=true;}
          void zapisz(std::ofstream *a);
          bool rusz_sie();
          int na_ile_hp_wyglada(){return HP;}
-         short latwopalnosc();
+         short latwopalnosc(){return 100;}
 };
 
 class Ognisko_przejsciowe:public Objekt_przejsciowy

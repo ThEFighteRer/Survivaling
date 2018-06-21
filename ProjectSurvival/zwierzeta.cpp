@@ -7,12 +7,39 @@ Gracz :: Gracz():Objekt_zywy(10)
          wysokosc=1; if(postawa=='r') wysokosc=3; else if(postawa=='s') wysokosc=2;
 }
 
+void Gracz::ogrzej_sie_od_zrodel_ognia()
+{
+         Plansza *p = swiat->zwroc_taka_plansze_TYLKO(px, py, pz);
+         for(short f=x-1; f<=x+1; ++f)
+         {
+                  for(short g=y-1; g<=y+1; ++g)
+                  {
+                           if(Strefa::w_planszy(f, g))
+                           {
+                                    if(p->srodowisko[g][f]!=NULL)
+                                    {
+                                             if((p->srodowisko[g][f]->stan&1)==1)
+                                                      dodaj_cieplo(10);
+                                             if(p->srodowisko[g][f]->wierzch() && p->srodowisko[g][f]->wierzch()->czym_jest==24 && ((Ognisko*)p->srodowisko[g][f]->wierzch())->getPaliSie())
+                                                      dodaj_cieplo(10);
+                                    }
+                                    if(p->otoczenie[g][f]!=NULL && (p->otoczenie[g][f]->stan&1)==1)
+                                             dodaj_cieplo(10);
+                           }
+                  }
+         }
+         if(p->srodowisko[y][x]!=NULL && (p->srodowisko[y][x]->stan&1)==1)
+                  dodaj_cieplo(40);
+}
+
 bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
 {
          if(*Objekt::args->godmode) return true;
 
          short pogoda = swiat->pogoda;
          if(pozostalo_snu>1) return true;
+
+         ogrzej_sie_od_zrodel_ognia();
 
          if(woda_a>0) --woda_a; else {if(!odejmij_hp_z_powodu_niedozywienia()){return false;}else if(!odejmij_hp_z_powodu_niedozywienia()){return false;};}
          if(jedzenie_a>0) --jedzenie_a; else {if(!odejmij_hp_z_powodu_niedozywienia()){return false;}else if(!odejmij_hp_z_powodu_niedozywienia()){return false;};}
@@ -50,10 +77,10 @@ bool Gracz::gracz_widzi_do_konca_w_strone(char strona)
          Gracz*g=swiat->aktualny;Plansza*p=swiat->aktualna;
          switch(strona)
          {
-                  case 'p':if(g->x+g->zasieg_wzroku()<21){return false;}break;
-                  case 'l':if(g->x-g->zasieg_wzroku()>-1)return false;break;
-                  case 'g':if(g->y-g->zasieg_wzroku()>-1)return false;break;
-                  case 'd':if(g->y+g->zasieg_wzroku()<13)return false;break;
+                  case 'p':if(g->x+g->zasieg_wzroku()<21 || swiat->zwroc_taka_plansze(px+1, py, pz)==NULL){return false;}break;
+                  case 'l':if(g->x-g->zasieg_wzroku()>-1 || swiat->zwroc_taka_plansze(px-1, py, pz)==NULL)return false;break;
+                  case 'g':if(g->y-g->zasieg_wzroku()>-1 || swiat->zwroc_taka_plansze(px, py-1, pz)==NULL)return false;break;
+                  case 'd':if(g->y+g->zasieg_wzroku()<13 || swiat->zwroc_taka_plansze(px, py+1, pz)==NULL)return false;break;
          }
          if(strona=='p' || strona=='l'){
                   int start=g->x;if(strona=='p') ++start; else --start;
@@ -440,8 +467,8 @@ void Gracz::dostan_item(Item*a)
 {
          if(a==NULL) return;
          if(p_rece==NULL) {p_rece=a; return;}
-         Przedmiot*b=new Przedmiot(a);
-         if(a->mozna_do_plecaka() && p_plecak!=NULL && ((Plecak*)p_plecak)->s->wloz_przedmiot(b)) return; else delete b;
+         Przedmiot *b=new Przedmiot(a);
+         if(a->mozna_do_plecaka() && p_plecak!=NULL && ((Plecak*)p_plecak)->s->wloz_przedmiot(b)) return; else {delete b;}
          swiat->zwroc_taka_plansze_TYLKO(px,py,pz)->rzuc_na_ziemie(x,y,a);
 }
 
@@ -551,14 +578,42 @@ bool Gracz::ma_umiejetnosc(short jaka)
 
 bool Gracz::jest_obok_objektu(short jakiego)
 {
+         short t = jakiego;
+         if(jakiego<0)
+         {
+                  switch(jakiego)
+                  {
+                           default: jakiego*=-1;
+                  }
+         }
          Plansza *p = swiat->zwroc_taka_plansze_TYLKO(px,py,pz);
          for(short i=x-1; i<=x+1; ++i)
          {
                   for(short j=y-1; j<=y+1; ++j)
                   {
                            if(Strefa::w_planszy(i, j))
+                           {
                                     if(p->otoczenie[j][i]!=NULL && p->otoczenie[j][i]->czym_jest==jakiego)
-                                             return true;
+                                    {
+                                             switch(t)
+                                             {
+                                                      default: return true;
+                                             }
+                                    }
+                                    else if(p->srodowisko[j][i]!=NULL && p->srodowisko[j][i]->wierzch()!=NULL && p->srodowisko[j][i]->wierzch()->czym_jest==jakiego)
+                                    {
+                                             switch(t)
+                                             {
+                                                      case -24:
+                                                      {
+                                                               if(((Ognisko*)p->srodowisko[j][i]->wierzch())->getPaliSie())
+                                                                        return true;
+                                                               else break;
+                                                      }
+                                                      default: return true;
+                                             }
+                                    }
+                           }
                   }
          }
          return false;

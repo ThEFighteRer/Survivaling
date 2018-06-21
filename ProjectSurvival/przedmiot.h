@@ -66,7 +66,7 @@ class Item
          bool jest_klodkom(),jest_kluczem(),jest_mala_bronia(),jest_bronia_biala(),jest_bronia_palna(),jest_ubraniem(),jest_plecakiem(), jest_kapeluszem(), jest_korpusem(), jest_spodniami(), jest_butami(), jest_rekawicami(), jest_bronia(),jest_bronia_na_ramie();
 
          int get_co_to();
-         int typ_wielkosci();///1 1x1, 2 1x2, 3 2x8, 4 9x6, 5 2x6, 6 9x3, 7 8x1, 8 2x2, 9 2x1, 10 2x11, 11 9x2, 12 1x8, 13 1x5, 14 1x4, 15 3x2
+         int typ_wielkosci();///1 1x1, 2 1x2, 3 2x8, 4 9x6, 5 2x6, 6 9x3, 7 8x1, 8 2x2, 9 2x1, 10 2x11, 11 9x2, 12 1x8, 13 1x5, 14 1x4, 15 3x2, 16 1x6
          int wartosc_ataku_rzucanego();
          void destruct(){delete this;}
          static Item* stworz_obiekt(int co);
@@ -77,6 +77,7 @@ class Item
          bool mozna_do_plecaka();
          bool mozna_do_kieszeni();
          virtual bool wykorzystaj(){if(this==NULL) return false;}; ///true jesli wykorzystany
+         bool jest_ostrzem();
 };
 
 class Ubranie:public Item
@@ -97,11 +98,12 @@ class Ubranie:public Item
 
 class Konsumpcjum:public Item
 {
-         public:
          short pozostalo_uzyc=1;
+         public:
 
          Konsumpcjum(int ktore, int pozostalo_uz);
          ~Konsumpcjum();
+         short get_uzycia() {return pozostalo_uzyc;}
          bool wykorzystaj(); ///true jesli wykorzystany
 };
 
@@ -202,12 +204,19 @@ struct Crafting_recipes
 
 ///2001 to puszka
 ///2002 jablko
-///2003 woda pelna
-///2004 woda polpelna
+///2003 woda pelna czysta
+///2004 woda polpelna czysta
+
 ///2005 butelka pusta
 ///2006 pepsi
 ///2007 bloodbag
 ///2008 alkohol
+///2009 woda pelna brudna
+///2010 woda polpelna brudna
+///2011 mieso male surowe
+///2012 mieso male upieczone
+///2013 mieso surowe
+///2014 mieso upieczone
 
 ///2101 magazynek AK
 ///2102 magazynek Glock
@@ -227,6 +236,8 @@ struct Crafting_recipes
 ///4007 to lom
 ///4008 to maczeta
 ///4009 to krzeslo
+///4010 to patyk
+///4011 to patelnia
 ///4251 to AK z magazynkiem //////////////////////////////////////////////////////////////////////////abstract
 ///4252 to AK bez magazynka WLASCIWY
 ///4253 m107 z magazynkiem z dwunogiem //////////////////////////////////////////////////////////////////////////abstract
@@ -276,7 +287,7 @@ struct Crafting_recipes
 ///8018 granat
 ///8019 molotov
 ///8020 cloth
-
+///8021 przyprawa
 
 
 

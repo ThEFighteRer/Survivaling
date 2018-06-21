@@ -24,7 +24,7 @@ void graficzny::rysuj_crafting(ALLEGRO_BITMAP *target)
          al_draw_bitmap_region(crafting_el,X*args->da_sie_strone_w_lewo_w_craftingu,0,X,Y,15*X,13*Y,0);///strzalki
          al_draw_bitmap_region(crafting_el,2*X+X*args->da_sie_strone_w_prawo_w_craftingu,0,X,Y,20*X,13*Y,0);
 
-         for(short h=0; h<1; ++h)///ktora kategoria i strona
+         for(short h=0; h<3; ++h)///ktora kategoria i strona
                   al_draw_bitmap_region(crafting_el,X*h,Y,X,Y,(h+1)*X,13*Y,0);
          al_draw_bitmap_region(crafting_el,4*X,0,X,Y,(args->ktora_kategoria+1)*X,13*Y,0);
          narysuj_duze_cyfry(17.7*X, 13*Y, args->ktora_strona);
@@ -129,7 +129,7 @@ void graficzny::rysuj_atrybut_tabeli_craftingu(short ktora, short jaki_wiersz, P
                   ilosc_sub = przepis.ilosc_substratow; kraw = x1; rozm = rozmiary.I; rysujaca = &narysuj_miniature_rzeczy; subs = przepis.substraty; co_ma = co_ma_g->substraty;
                   break;
          case 1:
-                  ilosc_sub = przepis.ilosc_objektow_w_poblizu; kraw = x2; rozm = rozmiary.II; rysujaca = &narysuj_miniature_rzeczy/*narysuj_warsztat*/; subs = przepis.objekty_w_poblizu; co_ma = co_ma_g->objekty_w_poblizu;
+                  ilosc_sub = przepis.ilosc_objektow_w_poblizu; kraw = x2; rozm = rozmiary.II; rysujaca = &narysuj_warsztat; subs = przepis.objekty_w_poblizu; co_ma = co_ma_g->objekty_w_poblizu;
                   break;
          case 2:
                   ilosc_sub = przepis.ilosc_katalizatorow; kraw =  x3; rozm = rozmiary.III; rysujaca = &narysuj_miniature_rzeczy; subs = przepis.katalizatory; co_ma = co_ma_g->katalizatory;
@@ -138,7 +138,7 @@ void graficzny::rysuj_atrybut_tabeli_craftingu(short ktora, short jaki_wiersz, P
                   ilosc_sub = przepis.ilosc_umiejetnosci; kraw = x4; rozm = rozmiary.IV; rysujaca = &narysuj_miniature_rzeczy/*narysuj_umiejetnosc*/; subs = przepis.skills; co_ma = co_ma_g->skills;
                   break;
          case 4:
-                  ilosc_sub = przepis.ilosc_rezultatow; kraw = x5; rozm = rozmiary.V; rysujaca = &narysuj_miniature_rzeczy; subs = przepis.rezultaty;
+                  ilosc_sub = przepis.ilosc_rezultatow; kraw = x5; rozm = rozmiary.V; subs = przepis.rezultaty;
                   break;
          }
 
@@ -154,6 +154,12 @@ void graficzny::rysuj_atrybut_tabeli_craftingu(short ktora, short jaki_wiersz, P
                                     int o_itemie = subs[licznik+f];
                                     short nr = ((short*)&o_itemie)[0];
                                     short ile = ((short*)&o_itemie)[1];
+                                    if(ktora==4)
+                                    {
+                                             rysujaca = (nr&najlewiejszy_bit)==0 ? &narysuj_miniature_rzeczy : &narysuj_warsztat;
+                                             if((nr&najlewiejszy_bit)!=0) nr-=najlewiejszy_bit;
+                                             if((nr&(najlewiejszy_bit>>1))!=0) nr-=najlewiejszy_bit>>1;
+                                    }
 
                                     short y_pop = (przepis.potrzebne_wiersze(rozmiary)-przepis.potrzebne_wiersze_na_atrybut(rozmiary, ktora))*Y/2;
                                     short wsp_x = (ktora==4)*X/4-2 + kraw+f*X*1.5 + 0.5* X + (ile>1)*0.5*X - 2*(f<rozm-1), wsp_y = jaki_wiersz+(licznik/rozm)*Y +2*(f>licznik>=rozm)+y_pop;
@@ -176,6 +182,13 @@ void graficzny::rysuj_atrybut_tabeli_craftingu(short ktora, short jaki_wiersz, P
                                     int o_itemie = subs[f];
                                     short nr = ((short*)&o_itemie)[0];
                                     short ile = ((short*)&o_itemie)[1];
+                                    if(ktora==4)
+                                    {
+                                             rysujaca = (nr&najlewiejszy_bit)==0 ? &narysuj_miniature_rzeczy : &narysuj_warsztat;
+                                             if((nr&najlewiejszy_bit)!=0) nr-=najlewiejszy_bit;
+                                             if((nr&(najlewiejszy_bit>>1))!=0) nr-=najlewiejszy_bit>>1;
+                                    }
+
                                     short y_pop = (przepis.potrzebne_wiersze(rozmiary)-przepis.potrzebne_wiersze_na_atrybut(rozmiary, ktora))*Y/2;
                                     short wsp_x = (ktora==4)*X/4 -2 + przes+kraw+(f%rozm)*X*1.5 + 0.5*X + (ile>1)*0.5*X- 2*(licznik<ilosc_sub-1), wsp_y = jaki_wiersz+(licznik/rozm)*Y +2+y_pop;
 
@@ -210,7 +223,12 @@ void graficzny::narysuj_cyfry_takie_czarne_z_x(int x, int y, short p) ///wsp kra
 
 void graficzny::narysuj_warsztat(int nr, int x, int y)
 {
-
+         switch(nr)
+         {
+                  case 24: al_draw_bitmap_region(el_stale, 0, Y, X, Y, x, y, 0); break;
+                  case -24: al_draw_bitmap_region(el_stale, 2*X, Y, X, Y, x, y, 0); break;
+                  default: std::cout<<"nie znam takiego warsztatu";
+         }
 }
 
 void graficzny::narysuj_umiejetnosc(int nr, int x, int y)
@@ -353,6 +371,7 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   pom = al_load_bitmap("img/interface/stol_sub_2.bmp"); stol_sub_2=wyskaluj_menu(pom,menu_x,menu_y);
                   pom = al_load_bitmap("img/interface/menu_strony.bmp"); menu_strony=wyskaluj_menu(pom,menu_x,menu_y);
                   pom = al_load_bitmap("img/interface/beczka_sub.bmp"); beczka_sub=wyskaluj_menu(pom,menu_x,menu_y);
+                  pom = al_load_bitmap("img/interface/woda_menu.bmp"); woda_menu=wyskaluj_menu(pom,menu_x,menu_y);
 
                   pom = al_load_bitmap("img/interface/menu_szalas.bmp"); menu_szalasu=wyskaluj_menu(pom,menu_x,menu_y);
 
@@ -364,50 +383,19 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
 
                   pom = al_load_bitmap("img/mapa/zjawiska.bmp");
                   zjawiska=wyskaluj(pom,X,Y); al_convert_mask_to_alpha( zjawiska, al_map_rgb(255,0,255)); al_destroy_bitmap(pom);
-                  avatar = new ALLEGRO_BITMAP*[5];
-                  drzewa = new ALLEGRO_BITMAP*[5];
-                  el_stale = new ALLEGRO_BITMAP*[5];
 
-                  for(int i=0; i<5; i++)
-                  {
+
+
                            ALLEGRO_BITMAP *avatar_ob, *drzewa_ob, *el_stale_ob;
-                           switch(i)
-                           {
-                                    case 0:
-                                             {
-                                                      avatar_ob=al_load_bitmap("img/avatar/avatar1.bmp");
-                                                      drzewa_ob=al_load_bitmap("img/mapa/naturalne/drzewa1.bmp");
-                                                      el_stale_ob=al_load_bitmap("img/rzeczy/wolnostojace/el_stale1.bmp");
-                                             break;}
-                                    case 1:
-                                             {
-                                                      avatar_ob=al_load_bitmap("img/avatar/avatar2.bmp");
-                                                      drzewa_ob=al_load_bitmap("img/mapa/naturalne/drzewa2.bmp");
-                                                      el_stale_ob=al_load_bitmap("img/rzeczy/wolnostojace/el_stale2.bmp");
-                                             break;}
-                                    case 2:
-                                              {
-                                                       avatar_ob=al_load_bitmap("img/avatar/avatar3.bmp");
-                                                       drzewa_ob=al_load_bitmap("img/mapa/naturalne/drzewa3.bmp");
-                                                       el_stale_ob=al_load_bitmap("img/rzeczy/wolnostojace/el_stale3.bmp");
-                                              break;}
-                                    case 3:
-                                              {
-                                                       avatar_ob=al_load_bitmap("img/avatar/avatar4.bmp");
-                                                       drzewa_ob=al_load_bitmap("img/mapa/naturalne/drzewa4.bmp");
-                                                       el_stale_ob=al_load_bitmap("img/rzeczy/wolnostojace/el_stale4.bmp");
-                                              break;}
-                                    case 4:
-                                             {
-                                                      avatar_ob=al_load_bitmap("img/avatar/avatar5.bmp");
-                                                      drzewa_ob=al_load_bitmap("img/mapa/naturalne/drzewa5.bmp");
-                                                      el_stale_ob=al_load_bitmap("img/rzeczy/wolnostojace/el_stale5.bmp");
-                                             break;}
-                           }
-                           avatar[i]=wyskaluj(avatar_ob,X,Y); al_convert_mask_to_alpha( avatar[i], al_map_rgb(255,0,255));al_destroy_bitmap(avatar_ob);
-                           drzewa[i]=wyskaluj(drzewa_ob,X,Y); al_convert_mask_to_alpha( drzewa[i], al_map_rgb(255,0,255)); al_destroy_bitmap(drzewa_ob);
-                           el_stale[i]=wyskaluj(el_stale_ob,X,Y); al_convert_mask_to_alpha( el_stale[i], al_map_rgb(255,0,255)); al_destroy_bitmap(el_stale_ob);
-                  }
+
+                           avatar_ob=al_load_bitmap("img/avatar/avatar1.bmp");
+                           drzewa_ob=al_load_bitmap("img/mapa/naturalne/drzewa1.bmp");
+                           el_stale_ob=al_load_bitmap("img/rzeczy/wolnostojace/el_stale1.bmp");
+
+                           avatar=wyskaluj(avatar_ob,X,Y); al_convert_mask_to_alpha( avatar, al_map_rgb(255,0,255));al_destroy_bitmap(avatar_ob);
+                           drzewa=wyskaluj(drzewa_ob,X,Y); al_convert_mask_to_alpha( drzewa, al_map_rgb(255,0,255)); al_destroy_bitmap(drzewa_ob);
+                           el_stale=wyskaluj(el_stale_ob,X,Y); al_convert_mask_to_alpha( el_stale, al_map_rgb(255,0,255)); al_destroy_bitmap(el_stale_ob);
+
                   //int ilosc_tekstur=1;
 
                   pom= al_load_bitmap("img/wrogowie/zombie.bmp");
@@ -467,6 +455,7 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   al_convert_mask_to_alpha(equ_akcesoria, al_map_rgb(255,0,255));
 
                   pom= al_load_bitmap("img/rzeczy/rzeczy.bmp");rzeczy = wyskaluj(pom, X,Y);al_destroy_bitmap(pom);al_convert_mask_to_alpha(rzeczy, al_map_rgb(255,0,255));
+                  pom= al_load_bitmap("img/rzeczy/rzeczy2.bmp");rzeczy2 = wyskaluj(pom, X,Y);al_destroy_bitmap(pom);al_convert_mask_to_alpha(rzeczy2, al_map_rgb(255,0,255));
                   pom= al_load_bitmap("img/mapa/zamkniecia.bmp");klodki = wyskaluj(pom, X,Y);al_destroy_bitmap(pom);al_convert_mask_to_alpha(klodki, al_map_rgb(255,0,255));
 
                   pom= al_load_bitmap("img/interface/HP.bmp");HP = wyskaluj(pom, X,Y);al_destroy_bitmap(pom);al_convert_mask_to_alpha(HP, al_map_rgb(255,0,255));
@@ -724,11 +713,10 @@ void graficzny::narysuj_roznego_rodzaju_mena()
 
 graficzny::~graficzny()///destruktor niekompletny ale jako ze zawsze wywolany bedzie na koncu dzialania programu, a jego tresc trzeba byloby ciagle aktualizowac, to nie przywiazuje do niego wagi
 {
-         for(int i=0; i<5; i++)
-         {
-                  al_destroy_bitmap(avatar[i]);
-                  al_destroy_bitmap(drzewa[i]);
-         }
+
+         al_destroy_bitmap(avatar);
+         al_destroy_bitmap(drzewa);
+
 
          //al_destroy_bitmap(tlo[0]);
 
@@ -842,6 +830,9 @@ case 51:
 case 52:{return menu_walka_lezacy;}
 case 53:{return menu_walka_lezacy_1;}
 case 54:{return menu_walka_lezacy_2;}
+case 55:{return woda_menu;}
+
+
     ///statyczne numery musza byc <256
 
 
@@ -860,6 +851,7 @@ case 54:{return menu_walka_lezacy_2;}
     ///spij 131072
     ///otworz 262144
     ///zamknij 524288
+    ///pozyskaj 1048576
 
 default:
     {
@@ -977,6 +969,12 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 2006:{co=g->rzeczy;x_zrodl*=2;y_zrodl*=6;break;}
                   case 2007:{co=g->rzeczy;x_zrodl*=3;y_zrodl*=6;break;}
                   case 2008:{co=g->rzeczy;x_zrodl*=5;y_zrodl*=15;break;}
+                  case 2009:{co=g->rzeczy;x_zrodl*=14;y_zrodl*=15;break;}
+                  case 2010:{co=g->rzeczy;x_zrodl*=15;y_zrodl*=15;break;}
+                  case 2011:{co=g->rzeczy;x_zrodl*=16;y_zrodl*=13;break;}
+                  case 2012:{co=g->rzeczy;x_zrodl*=17;y_zrodl*=13;break;}
+                  case 2013:{co=g->rzeczy;x_zrodl*=18;y_zrodl*=15;break;}
+                  case 2014:{co=g->rzeczy;x_zrodl*=18;y_zrodl*=14;break;}
                   case 3001: {co=g->rzeczy;x_zrodl*=0;y_zrodl*=2;break;}
                   case 4251: {co=g->rzeczy;x_zrodl*=1;y_zrodl*=3;break;}
                   case 4252: {co=g->rzeczy;x_zrodl*=1;y_zrodl*=4;break;}
@@ -996,6 +994,8 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 3006: {co=g->rzeczy;x_zrodl*=1;y_zrodl*=9;break;}
                   case 4006: {co=g->rzeczy;x_zrodl*=17;y_zrodl*=11;break;}
                   case 4009: {co=g->rzeczy;x_zrodl*=3;y_zrodl*=13;break;}
+                  case 4010: {co=g->rzeczy;x_zrodl*=14;y_zrodl*=6;break;}
+                  case 4011: {co=g->rzeczy2;x_zrodl*=3;y_zrodl*=0;break;}
                   case 4253: {co=g->equ_bron;x_zrodl*=9;y_zrodl*=0;break;}
                   case 4254: {co=g->equ_bron;x_zrodl*=9;y_zrodl*=2;break;}
                   case 4255: {co=g->equ_bron;x_zrodl*=9;y_zrodl*=1;break;}
@@ -1045,6 +1045,7 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 8018:{co=g->rzeczy;x_zrodl*=17;y_zrodl*=12;break;}
                   case 8019:{co=g->rzeczy;x_zrodl*=5;y_zrodl*=14;break;}
                   case 8020:{co=g->rzeczy;x_zrodl*=6;y_zrodl*=14;break;}
+                  case 8021:{co=g->rzeczy2;x_zrodl*=3;y_zrodl*=1;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot maly"<<" "<<nr;co=g->rzeczy;x_zrodl*=3;y_zrodl*=8;break; }
          }
          a.x=x_zrodl; a.y=y_zrodl; a.a=co;
@@ -1065,6 +1066,12 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 2006: {d=g->rzeczy;x_zrodl*=2;y_zrodl*=6;x_rozm*=1;y_rozm*=1;break;}
                   case 2007: {d=g->rzeczy;x_zrodl*=3;y_zrodl*=6;x_rozm*=1;y_rozm*=1;break;}
                   case 2008: {d=g->rzeczy;x_zrodl*=3;y_zrodl*=14;x_rozm*=1;y_rozm*=2;break;}
+                  case 2009: {d=g->rzeczy;x_zrodl*=14;y_zrodl*=13;x_rozm*=1;y_rozm*=2;break;}
+                  case 2010: {d=g->rzeczy;x_zrodl*=15;y_zrodl*=13;x_rozm*=1;y_rozm*=2;break;}
+                  case 2011: {d=g->rzeczy;x_zrodl*=16;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
+                  case 2012: {d=g->rzeczy;x_zrodl*=17;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
+                  case 2013: {d=g->rzeczy;x_zrodl*=16;y_zrodl*=15;x_rozm*=2;y_rozm*=1;break;}
+                  case 2014: {d=g->rzeczy;x_zrodl*=16;y_zrodl*=14;x_rozm*=2;y_rozm*=1;break;}
                   case 2101: {d=g->rzeczy;x_zrodl*=1;y_zrodl*=0;x_rozm*=1;y_rozm*=2;break;}
                   case 2104: {d=g->equ_bron;x_zrodl*=9;y_zrodl*=4;x_rozm*=1;y_rozm*=1;break;}
                   case 3001: {d=g->rzeczy;x_zrodl*=0;y_zrodl*=2;break;}
@@ -1075,6 +1082,8 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 3006: {d=g->rzeczy;x_zrodl*=1;y_zrodl*=9;x_rozm*=1;y_rozm*=1;break;}
                   case 4006: {d=g->rzeczy;x_zrodl*=17;y_zrodl*=0;x_rozm*=2;y_rozm*=11;break;}
                   case 4009: {d=g->rzeczy;x_zrodl*=3;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
+                  case 4010: {d=g->rzeczy;x_zrodl*=14;y_zrodl*=0;x_rozm*=1;y_rozm*=6;break;}
+                  case 4011: {d=g->rzeczy2;x_zrodl*=0;y_zrodl*=0;x_rozm*=3;y_rozm*=2;break;}
                   case 4251: {d=g->rzeczy;x_zrodl*=2;y_zrodl*=0;x_rozm*=9;y_rozm*=3;break;}
                   case 4252: {d=g->rzeczy;x_zrodl*=2;y_zrodl*=3;x_rozm*=9;y_rozm*=3;break;}
                   case 4260: {d=g->rzeczy;x_zrodl*=0;y_zrodl*=10;x_rozm*=9;y_rozm*=2;break;}
@@ -1133,6 +1142,7 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 8018:{d=g->rzeczy;x_zrodl*=17;y_zrodl*=12;x_rozm*=1;y_rozm*=1;break;}
                   case 8019:{d=g->rzeczy;x_zrodl*=4;y_zrodl*=14;x_rozm*=1;y_rozm*=2;break;}
                   case 8020:{d=g->rzeczy;x_zrodl*=6;y_zrodl*=14;x_rozm*=1;y_rozm*=1;break;}
+                  case 8021:{d=g->rzeczy2;x_zrodl*=3;y_zrodl*=1;x_rozm*=1;y_rozm*=1;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot duzy"<<" "<<nr; d=g->rzeczy;x_zrodl*=3;y_zrodl*=8;x_rozm*=1;y_rozm*=1;break;}
          }
          al_set_target_bitmap(a);

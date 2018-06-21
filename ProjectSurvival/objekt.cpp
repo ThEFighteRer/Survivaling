@@ -244,6 +244,7 @@ what_happened Objekt::reakcja_na_podloze()
 
 what_happened Objekt::przesun(char strona, bool czy_zmieniac_zwrot)
 {
+         if(czy_lezy()) return fail;
          if(this==NULL) {std::cout<<"NULL na Objekt::przesun"; return fail;}
          if(strona!='n' && strona!='p' && strona!='l' && strona!='d' && strona!='g')
          {std::cout<<" zly zwrot dla f przesun "; throw "ff";}
@@ -476,6 +477,7 @@ Objekt* Objekt::z_objektu_tymczasowego(Objekt_przejsciowy*a, int xx, int yy,int 
          Objekt *cos;
          switch(a->czym_jest)
          {
+
                   case 2:(cos=new Zombie((Zombie_przejsciowe*)a,xx,yy,ppx, ppy,ppz));break;
                   case 8:(cos=new Sarna((Sarna_przejsciowa*)a,xx,yy,ppx, ppy,ppz));break;
                   case 9:(cos=new Niedzwiedz((Niedzwiedz_przejsciowy*)a,xx,yy,ppx, ppy,ppz));break;
@@ -681,7 +683,7 @@ bool Objekt_zywy::czy_widzi_wzgl_zwezania(int dx, int dy, int odciecia, int xw, 
 bool Objekt::widzi_obiekt(const Plansza *p,const int xc, const int yc, const int xz, const int yz, int kamuflaz, int poprawka)
 {
          if(Objekt::args->melduj_co_robi_AI)std::cout<<" wt "<<xc<<" "<<yc<<'\n';
-         if(p->srodowisko[yc][xc]!=NULL && p->otoczenie[yc][xc]!=NULL && p->otoczenie[yc][xc]->wysokosc<=p->srodowisko[yc][xc]->wysokosc())
+         if(p->srodowisko[yc][xc]!=NULL && p->otoczenie[yc][xc]!=NULL && p->otoczenie[yc][xc]->wysokosc<=p->srodowisko[yc][xc]->wysokosc() && odleglosc_w_kratkach(p->otoczenie[yc][xc])>0)
          {
                   if(Objekt::args->melduj_co_robi_AI)std::cout<<" we "<<'\n';
                   return false;
@@ -1911,6 +1913,7 @@ bool Objekt_martwy::przesun_po_srodowisku(char strona)
          Srodowisko *sss = nasza->srodowisko[y][x];
 
          int do_czego=swiat->X;if(strona=='g' || strona=='d') do_czego=swiat->Y;
+
          if(nasza->ma_gracza)
          {
                   sss->przesuniecie_x=0; sss->przesuniecie_y=0;
@@ -2176,19 +2179,27 @@ bool Objekt::sproboj_podpalic()
          if(!this) return false;
          if(czym_jest==24)
          {
-                  ((Ognisko*)this)->pali_sie=1;
-                  return true;
+                  ((Ognisko*)this)->podpal();
          }
          else if(czym_jest==34)
          {
                   if(((Beczka*)this)->jest_Ropa()) ((Beczka*)this)->zostan_uderzony(30, obrazenia_od_ognia,0,0);
+                  return false;
          }
-         else if(losuj(1,100)<=latwopalnosc())
+
+         if(losuj(1,100)<=latwopalnosc())
                   {stan|=1; return true;}
          return false;
 }
 
-
+Objekt* Objekt::stworz_objekt_z_wykraftowania(int co, int a, int b, int c, int d , int e)
+{
+         switch(co)
+         {
+                  case 24: return new Ognisko(a, b, c, d, e);
+                  default: std::cout<<"stworz_objekt_wykraftowany_nie_ma_takiego"<<co; throw "D";
+         }
+}
 
 
 

@@ -63,6 +63,7 @@ bool Skrzynka::wyjmij_przedmiot(Przedmiot*a)
                   case 13:for(int i=a->x;i<a->x+1;++i){for(int j=a->y;j<a->y+5;++j){zawartosc[j][i]=NULL;}}break;
                   case 14:for(int i=a->x;i<a->x+1;++i){for(int j=a->y;j<a->y+4;++j){zawartosc[j][i]=NULL;}}break;
                   case 15:for(int i=a->x;i<a->x+3;++i){for(int j=a->y;j<a->y+2;++j){zawartosc[j][i]=NULL;}}break;
+                  case 16:for(int i=a->x;i<a->x+6;++i){for(int j=a->y;j<a->y+1;++j){zawartosc[j][i]=NULL;}}break;
                   default: {std::cout<<"ja nie wiem jak wyjac ten przedmiot"<<'\n'; throw "ja nie wiem jak wyjac ten przedmiot";}
          }
          ++wersja;return true;
@@ -123,6 +124,8 @@ bool Skrzynka::wloz_przedmiot(int xx, int yy, Przedmiot*a)
                   {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;goto tu;;}break;
                   case 15: aa=3,bb=2;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
                   {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;goto tu;;}break;
+                  case 16: aa=1,bb=6;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
+                  {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;goto tu;;}break;
                   default: {std::cout<<"ja nie wiem jak wlozyc ten przedmiot"<<'\n'; throw "ja nie wiem jak wlozyc ten przedmiot";}
          }
          items.usun_objekt(a);
@@ -156,6 +159,7 @@ bool Skrzynka::wloz_przedmiot(Przedmiot*a)
                   case 13: for(int i=0;i<=y-5;++i){for(int j=0;j<=x-1;++j){if(wloz_przedmiot(j, i, a)) goto tuu;}} break;
                   case 14: for(int i=0;i<=y-4;++i){for(int j=0;j<=x-1;++j){if(wloz_przedmiot(j, i, a)) goto tuu;}} break;
                   case 15: for(int i=0;i<=y-2;++i){for(int j=0;j<=x-3;++j){if(wloz_przedmiot(j, i, a)) goto tuu;}} break;
+                  case 16: for(int i=0;i<=y-6;++i){for(int j=0;j<=x-1;++j){if(wloz_przedmiot(j, i, a)) goto tuu;}} break;
                   default: {std::cout<<"ja nie wiem jak wlozyc ten przedmiot"<<'\n'; throw "ja nie wiem jak wlozyc ten przedmiot";}
          }
          if(mutex) al_unlock_mutex(mutex);
@@ -286,16 +290,17 @@ int Item::typ_wielkosci()
                   case 4251: case 4252: case 4255: case 4253: return 6;
                   case 4004: return 3;
                   case 4005: return 5;
-                  case 2101: case 2003:case 2004:case 2005:case 8003:case 8019: case 2008: return 2;
+                  case 2101: case 2003:case 2004:case 2005:case 8003:case 8019: case 2008: case 2009: case 2010: return 2;
                   case 4006: return 10;
                   case 6505: case 4752: case 4751:case 8002:return 8;
                   case 6504:case 6503:case 6502:case 6501:case 6004: case 6002:case 6001:case 5503:case 5502:case 5501:
-                           case 4753: return 9;
+                           case 4753: case 2013: case 2014: return 9;
                   case 4256: case 4254: case 4260: return 11;
                   case 4003: return 12;
                   case 4007: return 14;
                   case 4008: return 13;
-                  case 8006: return 15;
+                  case 8006: case 4011: return 15;
+                  case 4010: return 16;
                   default:return 1;///std::cout<<"Nie wiem jak duze to jest"; throw "n";///UWAGA OPCJA WYKORZYSTANA
          }
 }
@@ -316,6 +321,8 @@ Item* Item::stworz_obiekt(int co)
          if(co==8010 || co==8011 || co==8012) return new Klucz(co);
          if(co==8007 || co==8008 || co==8009) return new Klodka(co);
          if(co>=3000 && co<4000) {a=new Plecak(co);return a;}
+         if(co==2012) return new Konsumpcjum(co, 50);
+         if(co==2014) return new Konsumpcjum(co, 130);
          else if(co>=5000 && co<7500)  {a=new Ubranie(co);return a;}
          else if(co>=4000 && co<5000) {a=new Bron(co);return a;}
          else if(co>=2000 && co<3000)
@@ -362,6 +369,7 @@ int Item::wartosc_ataku_rzucanego()
                            case 12: return losuj(10,13);
                            case 13: return losuj(10,13);
                            case 14: return losuj(10,13);
+                           case 16: return losuj(10,13);
                            default:return losuj(0,3);
                   }
          }
@@ -374,7 +382,7 @@ bool Item::mozna_do_kieszeni()
          switch(typ_wielkosci())
          {
                   case 1:case 2:case 9:case 8:return true;
-                  case 3: case 4: case 5: case 6: case 7:  case 10:case 11: case 12:case 13:case 14: case 15: return false;
+                  case 3: case 4: case 5: case 6: case 7:  case 10:case 11: case 12:case 13:case 14: case 15: case 16: return false;
                   default:return true;
          }
 }
@@ -399,10 +407,10 @@ Item* Item::wylosuj_item(int szansa_na_ubranie, int szansa_na_plecak, int szansa
          }
          else if(los<=szansa_na_bron+szansa_na_plecak+szansa_na_ubranie)
          {
-                  int los=losuj(1,11);
+                  int los=losuj(1,12);
                   if(los<=6)///biala
                   {
-                           switch(losuj(1,7))
+                           switch(losuj(1,9))
                            {
                                     case 1: return stworz_obiekt(4003);
                                     case 2: return stworz_obiekt(4005);
@@ -411,9 +419,10 @@ Item* Item::wylosuj_item(int szansa_na_ubranie, int szansa_na_plecak, int szansa
                                     case 5: return stworz_obiekt(4008);
                                     case 6: return stworz_obiekt(4502);
                                     case 7: return stworz_obiekt(4503);
+                                    case 8: case 9: return stworz_obiekt(4011);
                            }
                   }
-                  else if(los<9)///amunicja
+                  else if(los<=9)///amunicja
                   {
                            if(!losuj(0, 10))return stworz_obiekt(2100+losuj(1,4));
                            else return stworz_obiekt(8018);
@@ -432,11 +441,12 @@ Item* Item::wylosuj_item(int szansa_na_ubranie, int szansa_na_plecak, int szansa
          }
          else if(los<=szansa_na_inne+szansa_na_bron+szansa_na_plecak+szansa_na_ubranie)
          {
-                  switch(losuj(1,3))
+                  switch(losuj(1,4))
                   {
                            case 1: return stworz_obiekt(8001);
                            case 2: return stworz_obiekt(8003);
                            case 3: return stworz_obiekt(8017);
+                           case 4: return stworz_obiekt(8021);
                   }
          }
          else if(los<=szansa_na_jedzenie+szansa_na_bron+szansa_na_inne+szansa_na_plecak+szansa_na_ubranie)
@@ -470,11 +480,12 @@ Item** Item::wylosuj_liste_itemow(int szansa_na_ubranie,int szansa_na_plecak,int
          }
          if(losuj(1,100) <= szansa_na_plecak) a[ile++] = stworz_obiekt(3000+losuj(1,6));
          if(losuj(1,100) <= szansa_na_inne)
-                  switch(losuj(1,2))
+                  switch(losuj(1,4))
                   {
                            case 1: a[ile++] = stworz_obiekt(8001); break;
                            case 2: a[ile++] = stworz_obiekt(8003); break;
                            case 3: a[ile++] = stworz_obiekt(8017); break;
+                           case 4: a[ile++] = stworz_obiekt(8021); break;
                   }
          if(losuj(1,100) <= szansa_na_jedzenie)
                   switch(losuj(1,2))
@@ -688,6 +699,8 @@ Bron::Bron(int ktore)
                   case 4006: wytrzymalosc=35;break;
                   case 4003: wytrzymalosc=30;break;
                   case 4004: wytrzymalosc=45;break;
+                  case 4010: wytrzymalosc=5;break;
+                  case 4011: wytrzymalosc=30;break;
                   case 4501: wytrzymalosc=20;break;
                   case 4005: wytrzymalosc=30;break;
                   case 4007: wytrzymalosc=50;break;
@@ -720,6 +733,8 @@ struct punkt Bron::obrazenia()
                   case 4006: a.x=46;a.y=60;break;
                   case 4003: a.x=25;a.y=30;break;
                   case 4004: a.x=30;a.y=37;break;
+                  case 4010: a.x=15;a.y=30;break;
+                  case 4011: a.x=25;a.y=35;break;
                   case 4501: a.x=10;a.y=15;break;
                   case 4005: a.x=45;a.y=50;break;
                   case 4007: a.x=25;a.y=30;break;
@@ -758,6 +773,8 @@ int Bron::get_szansa()
                   case 4006: return 90;
                   case 4003: return 80;
                   case 4004: return 80;
+                  case 4010: return 85;
+                  case 4011: return 55;
                   case 4501: return 95;
                   case 4500: return 70;
                   case 4007: return 80;
@@ -785,6 +802,8 @@ int Bron::get_krytyk()
                   case 4006: return 20;
                   case 4003: return 15;
                   case 4004: return 20;
+                  case 4010: return 5;
+                  case 4011: return 5;
                   case 4501: return 40;
                   case 4500: return 10;
                   case 4007: return 10;
@@ -813,6 +832,8 @@ struct punkt Bron::blok()
                   case 4006: a.x=60;a.y=80;break;
                   case 4003: a.x=35;a.y=45;break;
                   case 4004: a.x=40;a.y=45;break;
+                  case 4010: a.x=10;a.y=15;break;
+                  case 4011: a.x=10;a.y=25;break;
                   case 4501: a.x=10;a.y=15;break;
                   case 4005: a.x=30;a.y=35;break;
                   case 4007: a.x=30;a.y=35;break;
@@ -839,6 +860,8 @@ int Bron::UB()
                   case 4006: return -30+a;
                   case 4003: return 0+a;
                   case 4004: return 0+a;
+                  case 4010: return 10+a;
+                  case 4011: return a;
                   case 4501: return 30+a;
                   case 4500: return -10+a;
                   case 4007: return 0+a;
@@ -865,6 +888,8 @@ int Bron::KB()
                   case 4006: return -20;
                   case 4003: return 0;
                   case 4004: return 0;
+                  case 4010: return 10;
+                  case 4011: return 20;
                   case 4501: return 30;
                   case 4500: return -10;
                   case 4007: return 10+a;
@@ -989,7 +1014,7 @@ int Klodka::max_hp()
 
 Crafting_recipes::Crafting_recipes()
 {
-         ile_kategorii = 1;short *wiersze = new short[200];
+         ile_kategorii = 2;short *wiersze = new short[200];
          kategoria = new Przepis**[ile_kategorii+1]; kategoria[ile_kategorii] = NULL;
 
          for(short y=0; y<ile_kategorii; ++y)
@@ -1002,7 +1027,7 @@ Crafting_recipes::Crafting_recipes()
                   {
                            wiersze[h] = a[h]->potrzebne_wiersze(rozmiary(0, y));
                            short j = 1*((double)wiersze[h]) + 0.5;
-                           if(aktualny_wiersz+j<=11)
+                           if(aktualny_wiersz+j<=8)
                            {
                                     suma_wierszy += j;
                                     aktualny_wiersz +=j;
@@ -1065,7 +1090,12 @@ Crafting_recipes::Crafting_recipes()
 
 Przepis* Crafting_recipes::daj_strone_z_kategorii(short strona, short kat)
 {
-         return kategoria[kat][strona];
+         if(kat<ile_kategorii && kat>=0 && jest_taka_strona_z_tej_kategorii(strona, kat))
+                  return kategoria[kat][strona];
+         else
+         {
+                  std::cout<<"NIE MA TAKIEJ DAJ STRONE Z KATEGORII"<<strona<<" "<<kat; throw "D";
+         }
 }
 
 bool Crafting_recipes::jest_taka_strona_z_tej_kategorii(short strona, short kat)
@@ -1088,6 +1118,10 @@ int* stworz_inty(short a, short ile) {int *g = new int[1]; ((short*)g)[0]=a;((sh
 int* stworz_inty(short a, short ile, short b, short ilee) {int *g = new int[2];  ((short*)g)[0]=a;((short*)g)[1]=ile;  ((short*)g)[2]=b;((short*)g)[3]=ilee; return g;}
 int* stworz_inty(short a, short ile, short b, short ilee, short c, short ileee) {int *g = new int[3]; ((short*)g)[0]=a;((short*)g)[1]=ile;  ((short*)g)[2]=b;((short*)g)[3]=ilee;  ((short*)g)[4]=c;((short*)g)[5]=ileee;  return g;}
 
+short obj_craft(short nr, bool otoczenie)
+{
+         return (nr|=(otoczenie ? (1<<14) : 0))|(1<<15);
+}
 
 Przepis** Crafting_recipes::daj_liste_przepisow(short kategoria)///ostatni null
 {///Przepis(int *subs, int *obj, int *kat, int *rez, int*umj, short sub, short ob, short ka, short re, short um);
@@ -1102,8 +1136,17 @@ Przepis** Crafting_recipes::daj_liste_przepisow(short kategoria)///ostatni null
          }
          else if(kategoria == 1)
          {
-                  Przepis **t = new Przepis*[1];
-                  t[0] = NULL;
+                  Przepis **t = new Przepis*[10];
+                  t[0] = new Przepis(stworz_inty(8002, 3),0,0,0,stworz_inty(obj_craft(24, false), 1),1,0,0,0,1);
+                  t[1] = new Przepis(stworz_inty(2010, 1),stworz_inty(-24, 1), 0,0,stworz_inty(2004, 1),1,1,0,0,1);
+                  t[2] = new Przepis(stworz_inty(2009, 1),stworz_inty(-24, 1), 0,0,stworz_inty(2003, 1),1,1,0,0,1);
+                  t[3] = new Przepis(stworz_inty(2011, 1),stworz_inty(-24, 1), stworz_inty(4010, 1),0,stworz_inty(2012, 1),1,1,1,0,1);
+                  t[4] = new Przepis(stworz_inty(2011, 1),stworz_inty(-24, 1), stworz_inty(4011, 1),0,stworz_inty(2012, 1),1,1,1,0,1);
+                  t[5] = new Przepis(stworz_inty(2013, 1),stworz_inty(-24, 1), stworz_inty(4011, 1),0,stworz_inty(2014, 1),1,1,1,0,1);
+                  t[6] = new Przepis(stworz_inty(2011, 1, 8021, 1),stworz_inty(-24, 1), stworz_inty(4010, 1),0,stworz_inty(2012, 1),2,1,1,0,1);
+                  t[7] = new Przepis(stworz_inty(2011, 1, 8021, 1),stworz_inty(-24, 1), stworz_inty(4011, 1),0,stworz_inty(2012, 1),2,1,1,0,1);
+                  t[8] = new Przepis(stworz_inty(2013, 1, 8021, 2),stworz_inty(-24, 1), stworz_inty(4011, 1),0,stworz_inty(2014, 1),2,1,1,0,1);
+                  t[9] = NULL;
                   return t;
          }
          else if(kategoria == 2)
@@ -1156,7 +1199,11 @@ Crafting_recipes::~Crafting_recipes()
 
 
 
-
+bool Item::jest_ostrzem()
+{
+         if(this==NULL) return false;
+         return czym_jest==4005 || czym_jest==4008 || czym_jest==4501 || czym_jest==4502;
+}
 
 
 

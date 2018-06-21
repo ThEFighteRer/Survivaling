@@ -229,29 +229,29 @@ void Plansza::dzwiek(bool moze_wyjsc_poza_plansze,int moc, int dx, int dy,int ro
                                                       if(c[n].b>20)
                                                       {
                                                                if(c[n].a<0)
-                                                               {if(!ay) continue;if(ay->otoczenie[c[n].a+13][c[n].b-21]!=NULL) ay->otoczenie[c[n].a+13][c[n].b-21]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(ay==NULL) continue;if(ay->otoczenie[c[n].a+13][c[n].b-21]!=NULL) ay->otoczenie[c[n].a+13][c[n].b-21]->uslysz_dzwiek(this,rodzaj);}
                                                                else if(c[n].a<13)
-                                                               {if(!ap) continue;if(ap->otoczenie[c[n].a][c[n].b-21]!=NULL) ap->otoczenie[c[n].a][c[n].b-21]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(ap==NULL) continue;if(ap->otoczenie[c[n].a][c[n].b-21]!=NULL) ap->otoczenie[c[n].a][c[n].b-21]->uslysz_dzwiek(this,rodzaj);}
                                                                else
-                                                               {if(!ax) continue;if(ax->otoczenie[c[n].a-13][c[n].b-21]!=NULL) ax->otoczenie[c[n].a-13][c[n].b-21]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(ax==NULL) continue;if(ax->otoczenie[c[n].a-13][c[n].b-21]!=NULL) ax->otoczenie[c[n].a-13][c[n].b-21]->uslysz_dzwiek(this,rodzaj);}
                                                       }
                                                       else if(c[n].b<0)
                                                       {
                                                                if(c[n].a<0)
-                                                               {if(!az) continue;if(az->otoczenie[c[n].a+13][c[n].b+21]!=NULL) az->otoczenie[c[n].a+13][c[n].b+21]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(az==NULL) continue;if(az->otoczenie[c[n].a+13][c[n].b+21]!=NULL) az->otoczenie[c[n].a+13][c[n].b+21]->uslysz_dzwiek(this,rodzaj);}
                                                                else if(c[n].a<13)
-                                                               {if(!al) continue;if(al->otoczenie[c[n].a][c[n].b+21]!=NULL) al->otoczenie[c[n].a][c[n].b+21]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(al==NULL) continue;if(al->otoczenie[c[n].a][c[n].b+21]!=NULL) al->otoczenie[c[n].a][c[n].b+21]->uslysz_dzwiek(this,rodzaj);}
                                                                else
-                                                               {if(!aw) continue;if(aw->otoczenie[c[n].a-13][c[n].b+21]!=NULL) aw->otoczenie[c[n].a-13][c[n].b+21]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(aw==NULL) continue;if(aw->otoczenie[c[n].a-13][c[n].b+21]!=NULL) aw->otoczenie[c[n].a-13][c[n].b+21]->uslysz_dzwiek(this,rodzaj);}
                                                       }
                                                       else
                                                       {
                                                                if(c[n].a<0)
-                                                               {if(!ag) continue; if(ag->otoczenie[c[n].a+13][c[n].b]!=NULL) ag->otoczenie[c[n].a+13][c[n].b]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(ag==NULL) continue; if(ag->otoczenie[c[n].a+13][c[n].b]!=NULL) ag->otoczenie[c[n].a+13][c[n].b]->uslysz_dzwiek(this,rodzaj);}
                                                                else if(c[n].a<13)
                                                                {if(otoczenie[c[n].a][c[n].b]!=NULL) otoczenie[c[n].a][c[n].b]->uslysz_dzwiek(this,rodzaj);}
                                                                else
-                                                               {if(!ad) continue;if(ad->otoczenie[c[n].a-13][c[n].b]!=NULL) ad->otoczenie[c[n].a-13][c[n].b]->uslysz_dzwiek(this,rodzaj);}
+                                                               {if(ad==NULL) continue;if(ad->otoczenie[c[n].a-13][c[n].b]!=NULL) ad->otoczenie[c[n].a-13][c[n].b]->uslysz_dzwiek(this,rodzaj);}
                                                       }
                                              }
                                     }
@@ -1063,8 +1063,6 @@ void Strefa::generuj_las()
          postaw_pare_obiektow_na_srodowisku<Trawa_przejsciowa>(losuj(4,14), false);
          postaw_pare_obiektow_na_srodowisku<Zlamana_galaz_przejsciowa>(losuj(0,3), false);
 
-         //postaw_pare_obiektow(new Lozko_przejsciowe, 20);
-
          //postaw_pare_obiektow(new Zombie_przejsciowe,3);//////////////////////////
                   //postaw_pare_obiektow(new Sarna_przejsciowa,11);
                   //postaw_pare_obiektow(new Niedzwiedz_przejsciowy,4);
@@ -1557,38 +1555,7 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
          gracz ->obiekt[0]-> x = 10;aktualny=gracz->obiekt[0];//aktualny->klatka_a=4;
          gracz->obiekt[0]-> y = 5;
          if(godmode) gracz->obiekt[0]->p_ruchu = 99;
-         Plecak*pl=new Plecak(3001);gracz->obiekt[0]->p_plecak=pl;
-         //Bron*pll=new Bron(4252);pll->mag=30;
-         //gracz->obiekt[0]->p_rece=pll;
-         //gracz->obiekt[0]->p_glowa=new Ubranie(5001);
-         //gracz->obiekt[0]->p_glowa=new Ubranie(5001);
-         //gracz->obiekt[0]->p_rece=Item::stworz_obiekt(8017);
 
-
-         //gracz->obiekt[0]->p_rece=Item::stworz_obiekt(4252);
-         //gracz->obiekt[0]->p_kieszenl=Item::stworz_obiekt(8018);
-         //gracz->obiekt[0]->p_kieszenp=Item::stworz_obiekt(2101);
-        gracz->obiekt[0]->p_rece=Item::stworz_obiekt(8019);
-          /*//gracz->obiekt[0]->p_kieszenl=Item::stworz_obiekt(8019);
-         gracz->obiekt[0]->p_kieszenp=Item::stworz_obiekt(8020);
-         gracz->obiekt[0]->p_korpus=Item::stworz_obiekt(5503);
-         gracz->obiekt[0]->p_ramie=Item::stworz_obiekt(4256);
-         //std::cout<<((Konsumpcjum*)gracz->obiekt[0]->p_kieszenl)->pozostalo_uzyc<<std::endl;*/
-
-         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8007));
-         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8008));
-         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4260));
-         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2103));
-         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4252));
-         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2101));
-
-         /*gracz->obiekt[1]->px=1;gracz->obiekt[1]->py=0;gracz->obiekt[1]->pz=0;
-         gracz ->obiekt[1]-> x = 10;//aktualny=gracz->obiekt[1];
-         gracz->obiekt[1]-> y = 6; gracz->obiekt[1]->woda_a = 300;gracz->obiekt[1]->jedzenie_a =0;*/
-         /*gracz->dodaj_obiekt(new Gracz());
-         gracz->obiekt[1]->px=1;gracz->obiekt[1]->py=0;gracz->obiekt[1]->pz=0;
-         gracz ->obiekt[1]-> x = 5;
-         gracz->obiekt[1]-> y = 5;*/
 
          Objekt::swiat=this;
          Objekt::args=arg;
@@ -1651,6 +1618,47 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
          //stada_zombie->dodaj_obiekt(new Stado_zombie(0,0,0));
 
          Ustaw_aktualna(gracz->obiekt[0]->px,gracz->obiekt[0]->py,gracz->obiekt[0]->pz);
+
+
+         Plecak*pl=new Plecak(3001);gracz->obiekt[0]->p_plecak=pl;
+         //Bron*pll=new Bron(4252);pll->mag=30;
+         //gracz->obiekt[0]->p_rece=pll;
+         //gracz->obiekt[0]->p_glowa=new Ubranie(5001);
+         //gracz->obiekt[0]->p_glowa=new Ubranie(5001);
+         //gracz->obiekt[0]->p_rece=Item::stworz_obiekt(8017);
+
+
+        ///gracz->obiekt[0]->p_rece=Item::stworz_obiekt(2003);
+        ////gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2007));
+        /*gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4252));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2101));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2010));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8002));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8002));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8002));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8002));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8017));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4010));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2011));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2011));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8021));
+
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4011));
+        gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4501));
+
+
+         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4010));*/
+
+
+
+         /*gracz->obiekt[1]->px=1;gracz->obiekt[1]->py=0;gracz->obiekt[1]->pz=0;
+         gracz ->obiekt[1]-> x = 10;//aktualny=gracz->obiekt[1];
+         gracz->obiekt[1]-> y = 6; gracz->obiekt[1]->woda_a = 300;gracz->obiekt[1]->jedzenie_a =0;*/
+         /*gracz->dodaj_obiekt(new Gracz());
+         gracz->obiekt[1]->px=1;gracz->obiekt[1]->py=0;gracz->obiekt[1]->pz=0;
+         gracz ->obiekt[1]-> x = 5;
+         gracz->obiekt[1]-> y = 5;*/
+
 }
 
 Swiat::~Swiat()
@@ -1867,7 +1875,7 @@ short Srodowisko::wysokosc()
          {
                   if((*it)->wysokosc>a) a = (*it)->wysokosc;
          }
-         if(a<2 && stan&1) a=2;
+         if(a<2 && (stan&1)) a=2;
          return a;
 }
 
@@ -2261,7 +2269,7 @@ void Srodowisko::palenie(short x, short y, Plansza *pl)
          }
 }
 
-void Plansza::iskra(short x, short y)
+void Plansza::animacja_iskry(short x, short y)
 {
          if(!Strefa::w_planszy(x, y)) return;
          dla_grafiki *args = Objekt::args;
@@ -2279,17 +2287,25 @@ void Plansza::iskra(short x, short y)
          }
          args->iskra = 0;
          zaktualizuj_widoki();
+}
+
+void Plansza::iskra(short x, short y)
+{
+         if(!Strefa::w_planszy(x, y)) return;
+         animacja_iskry(x, y);
          //std::cout<<y<<" "<<x<<std::endl;
 
-         if(srodowisko[y][x])
+         if(srodowisko[y][x] && (srodowisko[y][x]->wierzch()==NULL || srodowisko[y][x]->wierzch()->czym_jest!=24))
          {
                   srodowisko[y][x]->sproboj_podpalic();
          }
+         else if(losuj(1,10)<4) ((Ognisko*)srodowisko[y][x]->wierzch())->podpal();
          zaktualizuj_widoki();
 }
 
 bool Srodowisko::sproboj_podpalic()
 {
+         if(wierzch()!=NULL && wierzch()->czym_jest==24) ((Ognisko*)wierzch())->podpal();
          if(!this || (stan&1)) return false;
          if(stos->empty()==false && stos->front()->sproboj_podpalic())
                                     {podpal(); return true;}
@@ -2335,7 +2351,7 @@ void Plansza::wybuch(punkt **p)///ostatni to NULL
          {
                   for(short i=0; p[i]; ++i)
                   {
-                           if(Strefa::w_planszy(p[i]->x, p[i]->y))
+                           if(Strefa::w_planszy(p[i]->x, p[i]->y) && this == Objekt::swiat->aktualna)
                                     Objekt::args->wybuch[p[i]->y][p[i]->x] = k;
                   }
                   if(k==1) {zaktualizuj_widoki();}

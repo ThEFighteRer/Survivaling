@@ -18,6 +18,8 @@ class dane_rysownicze
 
 class graficzny
 {
+         const short najlewiejszy_bit = 1<<15;
+
          public:
 
          void rysuj();
@@ -58,10 +60,10 @@ class graficzny
          ALLEGRO_BITMAP* bufor;
          ALLEGRO_BITMAP* plansza1;
          ALLEGRO_BITMAP* plansza2;
-         ALLEGRO_BITMAP** avatar;
-         ALLEGRO_BITMAP** el_stale;
-         ALLEGRO_BITMAP** drzewa;
-         ALLEGRO_BITMAP*cyfry1,*rzeczy,*menu_okno1,*menu_okno2,*menu_okno3,*menu_okno4,*menu_okno5,*zniszcz,*zniszcz_;
+         ALLEGRO_BITMAP* avatar;
+         ALLEGRO_BITMAP* el_stale;
+         ALLEGRO_BITMAP* drzewa;
+         ALLEGRO_BITMAP*cyfry1,*rzeczy,*rzeczy2, *menu_okno1,*menu_okno2,*menu_okno3,*menu_okno4,*menu_okno5,*zniszcz,*zniszcz_;
          ALLEGRO_BITMAP*equ, *zegarek, *zegarek_, *r_liczby, *rr_liczby, *_liczby, *kondycja_paski,*klodki;
          ALLEGRO_BITMAP*menu_plecak, *menu_ramie, *menu_ubranie, *menu_rece, *menu_kieszen,*menu_schowek, *wys;
          ALLEGRO_BITMAP*equip;ALLEGRO_BITMAP*equ_akcesoria,*menu_ognisko,*ubranie_info,*bron_info;
@@ -73,7 +75,7 @@ class graficzny
          *menu_walka2,*menu_walka2_1,*menu_walka2_2,*menu_walka21,*menu_walka22, *menu_walka3, *menu_walka4, *block,*menu_pust_plecak,*beczka_sub,
          *strzelanie_menu1,*strzelanie_menu1_1,*strzelanie_menu1_2,*strzelanie_menu1_3,*strzelanie_menu1_4,*strzelanie_menu2,*strzelanie_menu2_1,*strzelanie_menu2_2,
          *strzelanie_menu3,*strzelanie_menu3_1,*strzelanie_menu11,*strzelanie_menu12, *menu_szalasu, *menu_spania, *cyfry_duze,
-         *menu_drzwi1,*menu_drzwi2,*menu_drzwi3, *submenu_przemieszcz, *uniwersalne_menu,*stol_sub_2,*stol_sub_1,*menu_strony,*zjawiska, *crafting_tlo,
+         *menu_drzwi1,*menu_drzwi2,*menu_drzwi3, *submenu_przemieszcz, *uniwersalne_menu,*stol_sub_2,*stol_sub_1,*menu_strony,*zjawiska, *crafting_tlo, *woda_menu,
          *crafting_el,*crafting_napisy, *menu_walka_lezacy, *menu_walka_lezacy_1, *menu_walka_lezacy_2;
          ALLEGRO_BITMAP **message = new ALLEGRO_BITMAP*[1], *kursor_aim;
 

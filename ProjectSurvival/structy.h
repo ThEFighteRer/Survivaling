@@ -67,7 +67,7 @@ class od_srodowiska
          int rys;
          od_srodowiska(unsigned char a, short b, short c, int d)
          {
-                  stan = a; przesuniecie_x = a; przesuniecie_y = c; rys = d;
+                  stan = a; przesuniecie_x = b; przesuniecie_y = c; rys = d;
          }
 };
 
@@ -408,7 +408,7 @@ class dla_grafiki
          int ile_nad;
          int ilosc_zadan;
 
-         bool pp,ll,gg,dd;
+
 
 
          bool myszka_zajeta;
@@ -470,6 +470,8 @@ class dla_grafiki
          double rzucana_bron_kat=0;
 
          bool way[4]; ///od prawej zgodnie z zegarem
+         bool pp,ll,gg,dd;
+
          bool zostala_przesunieta;
 
          int pogoda;
@@ -509,8 +511,15 @@ struct Przepis
          short koszt = 0;
          int *substraty = NULL;///przedmiot
          int *objekty_w_poblizu = NULL;///objekt
-         int *katalizatory = NULL;///przedmiot
-         int *rezultaty = NULL;///przedmiot
+         ///jesli numer jest ujemny, to jest to stan szczegolny konkretnego przedmiotu, ktory bedzie rozpatrzany osobno
+         ///trzeba uzupelnic narysuj_warszstat oraz jest_obok_obiektu
+         ///-24 to ognisko, ktore sie pali
+
+         int *katalizatory = NULL;///przedmiot ///ilosc to ilosc uzyc jaka bedzie wykonana na przedmiocie
+         int *rezultaty = NULL;///przedmiot jesli bit stanowiacy o ujemnosci jest 0 lub objekt w p p; bit w id przedmiotu/obiektu
+         ///drugi od lewej bit mowi, czy wstawiamy objekt do otoczenia
+         ///zakladam, ze do srodowiska zawsze mozna cos wlozyc
+
          int *skills = NULL; ///wymagane umiejetnosci itd
          int ilosc_substratow = 0, ilosc_objektow_w_poblizu = 0, ilosc_katalizatorow = 0, ilosc_rezultatow = 0, ilosc_umiejetnosci = 0;
 

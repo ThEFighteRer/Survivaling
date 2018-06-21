@@ -221,7 +221,7 @@ void graficzny::rysuj()
                                             else if(g->acc->srodowisko[w][v][0]>=590 && g->acc->srodowisko[w][v][0]<594)///ognisko
                                              {
                                                       a=g->acc->srodowisko[w][v][0];a-=590;
-                                                      al_draw_tinted_bitmap_region(g->el_stale[0], al_map_rgba_f (C1,C2,C3,C4),g->X*a,g->Y,g->X,g->Y, j*g->X-(g->args->X_kratka/2), i*g->Y-(g->args->Y_kratka/2),0);
+                                                      al_draw_tinted_bitmap_region(g->el_stale, al_map_rgba_f (C1,C2,C3,C4),g->X*a,g->Y,g->X,g->Y, j*g->X-(g->args->X_kratka/2), i*g->Y-(g->args->Y_kratka/2),0);
                                             }
                                              else if(g->acc->srodowisko[w][v][0]>=769 && g->acc->srodowisko[w][v][0]<812)///okno
                                              {
@@ -321,14 +321,14 @@ void graficzny::rysuj()
                                                       }
 
 
-                                                      al_draw_tinted_bitmap_region(g->avatar[n], al_map_rgba_f (C1,C2,C3,C4),x*g->X,y*g->Y,g->X,g->Y,j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2), 0);
+                                                      al_draw_tinted_bitmap_region(g->avatar, al_map_rgba_f (C1,C2,C3,C4),x*g->X,y*g->Y,g->X,g->Y,j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2), 0);
                                              }
                                              else if(g->acc->otoczenie[w][v][0]<=210) //drzewo
                                              {
                                                       a = g->acc->otoczenie[w][v][0];
                                                       a-=51; b = 0;
                                                       if(g->animacja<16) b=0; else if(g->animacja<49) b=1; else if(g->animacja<82) b=2;
-                                                       al_draw_tinted_bitmap_region(g->drzewa[0], al_map_rgba_f (C1,C2,C3,C4),b*g->X,a*g->Y,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
+                                                       al_draw_tinted_bitmap_region(g->drzewa, al_map_rgba_f (C1,C2,C3,C4),b*g->X,a*g->Y,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
                                              }
                                              else if(g->acc->otoczenie[w][v][0]<=245)//sarna
                                              {
@@ -370,11 +370,11 @@ void graficzny::rysuj()
                                              else if(g->acc->otoczenie[w][v][0]<767)
                                              {
                                                       a=0; if(g->acc->otoczenie[w][v][0]==766) a=1;
-                                                      al_draw_tinted_bitmap_region(g->el_stale[0], al_map_rgba_f (C1,C2,C3,C4),a*g->X,0,g->X,g->Y,j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2), 0);
+                                                      al_draw_tinted_bitmap_region(g->el_stale, al_map_rgba_f (C1,C2,C3,C4),a*g->X,0,g->X,g->Y,j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2), 0);
                                              }
                                              else if(g->acc->otoczenie[w][v][0]<768)
                                              {
-                                                      al_draw_tinted_bitmap_region(g->el_stale[0], al_map_rgba_f (C1,C2,C3,C4),0,g->Y*2,g->X,g->Y,j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2), 0);
+                                                      al_draw_tinted_bitmap_region(g->el_stale, al_map_rgba_f (C1,C2,C3,C4),0,g->Y*2,g->X,g->Y,j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2), 0);
                                              }
                                              else if(g->acc->otoczenie[w][v][0]>=769 && g->acc->otoczenie[w][v][0]<812)///okno
                                              {
@@ -606,10 +606,10 @@ void graficzny::rysuj()
                                     bool a=g->args->kroki,b=g->args->lewy_krok,c=g->args->prawy_krok,d=g->args->gora_krok,e=g->args->dol_krok;
                                     if(a)
                                     {
-                                             if(b){al_draw_bitmap_region(g->avatar[0], 3*g->X, 3*g->Y, g->X,g->Y ,g->args->x1*g->X+(g->args->X_kratka/2), g->args->y1*g->Y+(g->args->Y_kratka/2),0);}
-                                             if(c){al_draw_bitmap_region(g->avatar[0], 3*g->X, 3*g->Y, g->X,g->Y ,g->args->x2*g->X+(g->args->X_kratka/2), g->args->y2*g->Y+(g->args->Y_kratka/2),0);}
-                                             if(d){al_draw_bitmap_region(g->avatar[0], 3*g->X, 3*g->Y, g->X,g->Y ,g->args->x3*g->X+(g->args->X_kratka/2), g->args->y3*g->Y+(g->args->Y_kratka/2),0);}
-                                             if(e){al_draw_bitmap_region(g->avatar[0], 3*g->X, 3*g->Y,g-> X,g->Y ,g->args->x4*g->X+(g->args->X_kratka/2),g-> args->y4*g->Y+(g->args->Y_kratka/2),0);}
+                                             if(b){al_draw_bitmap_region(g->avatar, 3*g->X, 3*g->Y, g->X,g->Y ,g->args->x1*g->X+(g->args->X_kratka/2), g->args->y1*g->Y+(g->args->Y_kratka/2),0);}
+                                             if(c){al_draw_bitmap_region(g->avatar, 3*g->X, 3*g->Y, g->X,g->Y ,g->args->x2*g->X+(g->args->X_kratka/2), g->args->y2*g->Y+(g->args->Y_kratka/2),0);}
+                                             if(d){al_draw_bitmap_region(g->avatar, 3*g->X, 3*g->Y, g->X,g->Y ,g->args->x3*g->X+(g->args->X_kratka/2), g->args->y3*g->Y+(g->args->Y_kratka/2),0);}
+                                             if(e){al_draw_bitmap_region(g->avatar, 3*g->X, 3*g->Y,g-> X,g->Y ,g->args->x4*g->X+(g->args->X_kratka/2),g-> args->y4*g->Y+(g->args->Y_kratka/2),0);}
                                     }
                   }
 

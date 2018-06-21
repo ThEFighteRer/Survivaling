@@ -21,7 +21,12 @@ what_happened Drzewo::zostan_uderzony(int obrazenia, int kto, int ekstra, short 
          {
                   Plansza*p=((Plansza*)swiat->zwroc_taka_plansze_TYLKO(px, py, pz));
                   int h=losuj(1,3);
-                  if(kto!=obrazenia_od_ognia) for(int i=0;i<h;++i)p->rzuc_na_ziemie(x, y, Item::stworz_obiekt(8002));
+                  if(kto!=obrazenia_od_ognia)
+                  {
+                           for(int i=0;i<h;++i)p->rzuc_na_ziemie(x, y, Item::stworz_obiekt(8002));
+                           h=losuj(0,2);
+                           for(int i=0;i<h;++i)p->rzuc_na_ziemie(x, y, Item::stworz_obiekt(4010));
+                  }
                   smierc(); return dead;
          }else HP=a;
          return success;
@@ -307,12 +312,10 @@ void Schowek_przejsciowy::zapisz(std::ofstream *a)
 
 }
 
-short Ognisko::latwopalnosc(){return 50;}
-
 Ognisko::Ognisko(int xx,int yy ,int xxx,int yyy, int zzz):Objekt_pol_martwy(24)
 {
         x=xx;y=yy;nie_wykonal_ruchu=true;wykonuje_ruch=true;wysokosc=1;
-        co_to=765; px=xxx;py=yyy;pz=zzz; HP=30; paliwo=0; pali_sie=false;
+        co_to=765; px=xxx;py=yyy;pz=zzz; HP=30; paliwo=5; pali_sie=false;
 }
 
 Ognisko::~Ognisko()
@@ -328,6 +331,11 @@ bool Ognisko::rusz_sie()
                   else
                   {
                            paliwo=0; pali_sie=false;
+                           Plansza *p = swiat->zwroc_taka_plansze_TYLKO(px, py, pz);
+                           p->srodowisko[y][x]->usun_objekt(this, x, y, p);
+                           p->zaktualizuj_widoki(x,y,x,y);
+                           smierc();
+                           return false;
                   }
          }
          return true;
@@ -346,8 +354,9 @@ int Ognisko::get_co_to()
 {
          if(pali_sie==false)
          {
-                  if(paliwo<=0) return 593;
-                  else return 590;
+                  //if(paliwo<=0) return 593;
+                  //else
+                           return 590;
          }
          else if(paliwo>10) return 592;
          else return 591;
@@ -1248,7 +1257,12 @@ what_happened Zlamana_galaz::zostan_uderzony(int obrazenia, int kto, int ekstra,
                   swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->srodowisko[y][x]->usun_objekt(this, x, y, swiat->zwroc_taka_plansze_TYLKO(px, py, pz));
                   swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->zaktualizuj_widoki(x,y,x,y);
                   int h=losuj(1,2);
-                  if(kto!=obrazenia_od_ognia) for(int i=0;i<h;++i) p->rzuc_na_ziemie(x, y, Item::stworz_obiekt(8002));
+                  if(kto!=obrazenia_od_ognia)
+                  {
+                           for(int i=0;i<h;++i) p->rzuc_na_ziemie(x, y, Item::stworz_obiekt(8002));
+                           h=losuj(1, 5);
+                           for(int i=0;i<h;++i) p->rzuc_na_ziemie(x, y, Item::stworz_obiekt(4010));
+                  }
                   smierc(); return dead;
          }
          return success;

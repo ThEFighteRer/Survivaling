@@ -38,7 +38,8 @@ bool Gra::pobierz_punkty_ruchu_i_kondycje(int ile_p_ruchu, int ile_kondycji)
 void Gra::dodaj_jedzenia(int ile)
 {
          int d=swiat->aktualny->jedzenie_a+ile; if(d>swiat->aktualny->jedzenie_max) d=swiat->aktualny->jedzenie_max;
-         if(d<0) d=0; swiat->aktualny->jedzenie_a=d;
+         if(d<0) d=0;
+         swiat->aktualny->jedzenie_a=d;
 }
 
 void Gra::dodaj_wody(int ile)
@@ -53,12 +54,13 @@ void Gra::przesun_mapy(char strona, dla_grafiki *args, Swiat*swiat)
          args->przesuniecie=0; args->strona=strona;
          int nx=swiat->aktualna->x,ny=swiat->aktualna->y;
          switch (strona) {case 'p':nx++;break;case 'l':nx--;break;case 'd':ny++;break;case 'g':ny--;break; }
-         args->plansza_docelowa=(void*)swiat->zwroc_taka_aree(nx, ny, swiat->aktualna->z);
+         args->plansza_docelowa=(void*)swiat->zwroc_taka_plansze(nx, ny, swiat->aktualna->z);
+         if(args->plansza_docelowa==NULL) {std::cout<<"przesun mapy dostala nullowa aree"; throw "F";}
          args->przesuwamy_plansze=true;
          if(strona=='p' || strona=='l') for(int i=0; i<22*args->X_kratka;++i) {++args->przesuniecie;if(i%2==0)Sleep(1000/(args->rozdz_X/2));}
                   else for(int i=0; i<14*args->Y_kratka;i++) {++args->przesuniecie;if(i%2==0)Sleep(660/(args->rozdz_Y/2));}
           //swiat->a_x=nx; swiat->a_y=ny;
-          swiat->Ustaw_aktualna((Plansza*)swiat->zwroc_taka_aree(nx,ny,swiat->aktualna->z));
+          swiat->Ustaw_aktualna((Plansza*)args->plansza_docelowa);
          //swiat->aktualna=(Plansza*)swiat->area[swiat->a_x][swiat->a_y][swiat->aktualna->z];
          swiat->aktualna->ma_gracza=true;////////////////////////////////////////////////////////////////////////////////////////////////////////
          al_rest(0.2);args->przesuwamy_plansze=false;
@@ -144,10 +146,10 @@ bool Gra::jest_nad_l_udo(ALLEGRO_MOUSE_STATE myszka)
 bool Gra::jest_nad_p_udo(ALLEGRO_MOUSE_STATE myszka)
 {return (myszka.x>7*args->X_kratka&&myszka.x<10*args->X_kratka&&myszka.y>7*args->Y_kratka&&myszka.y<8*args->Y_kratka)||
 (myszka.x>8*args->X_kratka&&myszka.x<10*args->X_kratka&&myszka.y>8*args->Y_kratka&&myszka.y<9*args->Y_kratka);}
-bool Gra::jest_nad_l_golen(ALLEGRO_MOUSE_STATE myszka)
+bool Gra::jest_nad_p_golen(ALLEGRO_MOUSE_STATE myszka)
 {return (myszka.x>6*args->X_kratka&&myszka.x<10*args->X_kratka&&myszka.y>9*args->Y_kratka&&myszka.y<10*args->Y_kratka)||
 (myszka.x>7*args->X_kratka&&myszka.x<9*args->X_kratka&&myszka.y>10*args->Y_kratka&&myszka.y<11*args->Y_kratka);}
-bool Gra::jest_nad_p_golen(ALLEGRO_MOUSE_STATE myszka)
+bool Gra::jest_nad_l_golen(ALLEGRO_MOUSE_STATE myszka)
 {return (myszka.x>12*args->X_kratka&&myszka.x<16*args->X_kratka&&myszka.y>9*args->Y_kratka&&myszka.y<10*args->Y_kratka)||
 (myszka.x>13*args->X_kratka&&myszka.x<15*args->X_kratka&&myszka.y>10*args->Y_kratka&&myszka.y<11*args->Y_kratka);}
 
@@ -519,7 +521,16 @@ Item* Gra::uzyj(Item*a)
          ALLEGRO_MOUSE_STATE myszka; ALLEGRO_KEYBOARD_STATE klawiatura; Gracz*g=swiat->aktualny;
          switch(a->czym_jest)
          {
+                  case 2003: {dodaj_wody(50);delete a; return Item::stworz_obiekt(2003);}break;
+                  case 2004: {dodaj_wody(50); delete a; return Item::stworz_obiekt(2005);}break;
+                  case 2009: {dodaj_wody(50); dodaj_jedzenia(-losuj(10, 80)); delete a; return Item::stworz_obiekt(2010);}break;
+                  case 2010: {dodaj_wody(50); dodaj_jedzenia(-losuj(10, 80)); delete a; return Item::stworz_obiekt(2005);}break;
+
                   case 2001: {dodaj_jedzenia(50);return NULL;}break;
+                  //case 2011: {dodaj_jedzenia();return NULL;}break;
+                  case 2012: {dodaj_jedzenia(((Konsumpcjum*)a)->get_uzycia());return NULL;}break;
+                  //case 2013: {dodaj_jedzenia();return NULL;}break;
+                  case 2014: {dodaj_jedzenia(((Konsumpcjum*)a)->get_uzycia());return NULL;}break;
                   case 2006: {dodaj_wody(50);return NULL;}break;
                   case 2007:
                   {
@@ -533,16 +544,16 @@ Item* Gra::uzyj(Item*a)
                                     args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;
                            }
                            args->p_nr_przedmiotu=0;
-                           if(jest_nad_klatka(myszka)){g->klatka_a+=20; if(g->klatka_a>g->klatka_max)g->klatka_a=g->klatka_max;delete a;a=NULL;}
-                           else if(jest_nad_brzuch(myszka)){g->brzuch_a+=20; if(g->brzuch_a>g->brzuch_max)g->brzuch_a=g->brzuch_max;delete a;a=NULL;}
-                           else if( jest_nad_l_ramie(myszka)){g->l_ramie_a+=20; if(g->l_ramie_a>g->l_ramie_max)g->l_ramie_a=g->l_ramie_max;delete a;a=NULL;}
-                           else if( jest_nad_p_ramie(myszka)){g->p_ramie_a+=20; if(g->p_ramie_a>g->p_ramie_max)g->p_ramie_a=g->p_ramie_max;delete a;a=NULL;}
-                           else if( jest_nad_l_dlon(myszka)){g->l_dlon_a+=20; if(g->l_dlon_a>g->l_dlon_max)g->l_dlon_a=g->l_dlon_max;delete a;a=NULL;}
-                           else if( jest_nad_p_dlon(myszka)){g->p_dlon_a+=20; if(g->p_dlon_a>g->p_dlon_max)g->p_dlon_a=g->p_dlon_max;delete a;a=NULL;}
-                           else if( jest_nad_l_udo(myszka)){g->l_udo_a+=20; if(g->l_udo_a>g->l_udo_max)g->l_udo_a=g->l_udo_max;delete a;a=NULL;}
-                           else if( jest_nad_p_udo(myszka)){g->p_udo_a+=20; if(g->p_udo_a>g->p_udo_max)g->p_udo_a=g->p_udo_max;delete a;a=NULL;}
-                           else if( jest_nad_l_golen(myszka)){g->l_golen_a+=20; if(g->l_golen_a>g->l_golen_max)g->l_golen_a=g->l_golen_max;delete a;a=NULL;}
-                           else if( jest_nad_p_golen(myszka)){g->p_golen_a+=20; if(g->p_golen_a>g->p_golen_max)g->p_golen_a=g->p_golen_max;delete a;a=NULL;}
+                           if(jest_nad_klatka(myszka) && g->klatka_a<g->klatka_max){g->klatka_a+=20; if(g->klatka_a>g->klatka_max)g->klatka_a=g->klatka_max;delete a;a=NULL;}
+                           else if(jest_nad_brzuch(myszka) && g->brzuch_a<g->brzuch_max){g->brzuch_a+=20; if(g->brzuch_a>g->brzuch_max)g->brzuch_a=g->brzuch_max;delete a;a=NULL;}
+                           else if( jest_nad_l_ramie(myszka) && g->l_ramie_a<g->l_ramie_max){g->l_ramie_a+=20; if(g->l_ramie_a>g->l_ramie_max)g->l_ramie_a=g->l_ramie_max;delete a;a=NULL;}
+                           else if( jest_nad_p_ramie(myszka) && g->p_ramie_a<g->p_ramie_max){g->p_ramie_a+=20; if(g->p_ramie_a>g->p_ramie_max)g->p_ramie_a=g->p_ramie_max;delete a;a=NULL;}
+                           else if( jest_nad_l_dlon(myszka) && g->l_dlon_a<g->l_dlon_max){g->l_dlon_a+=20; if(g->l_dlon_a>g->l_dlon_max)g->l_dlon_a=g->l_dlon_max;delete a;a=NULL;}
+                           else if( jest_nad_p_dlon(myszka) && g->p_dlon_a<g->p_dlon_max){g->p_dlon_a+=20; if(g->p_dlon_a>g->p_dlon_max)g->p_dlon_a=g->p_dlon_max;delete a;a=NULL;}
+                           else if( jest_nad_l_udo(myszka) && g->l_udo_a<g->l_udo_max){g->l_udo_a+=20; if(g->l_udo_a>g->l_udo_max)g->l_udo_a=g->l_udo_max;delete a;a=NULL;}
+                           else if( jest_nad_p_udo(myszka) && g->p_udo_a<g->p_udo_max){g->p_udo_a+=20; if(g->p_udo_a>g->p_udo_max)g->p_udo_a=g->p_udo_max;delete a;a=NULL;}
+                           else if( jest_nad_l_golen(myszka) && g->l_golen_a<g->l_golen_max){g->l_golen_a+=20; if(g->l_golen_a>g->l_golen_max)g->l_golen_a=g->l_golen_max;delete a;a=NULL;}
+                           else if( jest_nad_p_golen(myszka) && g->p_golen_a<g->p_golen_max){g->p_golen_a+=20; if(g->p_golen_a>g->p_golen_max)g->p_golen_a=g->p_golen_max;delete a;a=NULL;}
                            Sleep(750);
                            args->otwarte_menu_anatomii=false;
                            return a;
@@ -665,14 +676,14 @@ Item* Gra::zaladuj_bron(int jej_nr, Konsumpcjum*a,int zapas)
                   args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) {poczekaj_na_myszke(1);break;}
          }
          args->p_nr_przedmiotu=0;
-         if(jest_nad_ramieniem(myszka) && g->p_ramie!=NULL && (g->p_ramie->czym_jest==jej_nr||g->p_ramie->czym_jest==zapas)&&((Bron*)g->p_ramie)->mag<=0){ ((Bron*)g->p_ramie)->mag=a->pozostalo_uzyc;delete a;return NULL;}
-         else if(jest_nad_rekami(myszka) && g->p_rece!=NULL && (g->p_rece->czym_jest==jej_nr||g->p_rece->czym_jest==zapas)&&((Bron*)g->p_rece)->mag<=0){ ((Bron*)g->p_rece)->mag=a->pozostalo_uzyc;delete a;return NULL;}
+         if(jest_nad_ramieniem(myszka) && g->p_ramie!=NULL && (g->p_ramie->czym_jest==jej_nr||g->p_ramie->czym_jest==zapas)&&((Bron*)g->p_ramie)->mag<=0){ ((Bron*)g->p_ramie)->mag=a->get_uzycia();delete a;return NULL;}
+         else if(jest_nad_rekami(myszka) && g->p_rece!=NULL && (g->p_rece->czym_jest==jej_nr||g->p_rece->czym_jest==zapas)&&((Bron*)g->p_rece)->mag<=0){ ((Bron*)g->p_rece)->mag=a->get_uzycia();delete a;return NULL;}
          else if(jest_nad_lewa(myszka) && lewa->przedmiot((myszka.x-15*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_z)!=NULL &&
          (lewa->przedmiot((myszka.x-15*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_z)->item->czym_jest==jej_nr||
           lewa->przedmiot((myszka.x-15*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_z)->item->czym_jest==zapas)
                  &&((Bron*)lewa->przedmiot((myszka.x-15*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_z)->item)->mag<=0)
          {
-                  ((Bron*)lewa->przedmiot((myszka.x-15*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_z)->item)->mag=a->pozostalo_uzyc;
+                  ((Bron*)lewa->przedmiot((myszka.x-15*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_z)->item)->mag=a->get_uzycia();
                   delete a;  return NULL;
          }
          else if(jest_nad_prawa(myszka) && prawa->przedmiot((myszka.x-125*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_p)!=NULL &&
@@ -680,7 +691,7 @@ Item* Gra::zaladuj_bron(int jej_nr, Konsumpcjum*a,int zapas)
           prawa->przedmiot((myszka.x-125*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_p)->item->czym_jest==zapas)&&
                  ((Bron*)prawa->przedmiot((myszka.x-125*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_p)->item)->mag<=0)
          {
-                  ((Bron*)prawa->przedmiot((myszka.x-125*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_p)->item)->mag=a->pozostalo_uzyc;
+                  ((Bron*)prawa->przedmiot((myszka.x-125*args->X_kratka/10)/args->X_kratka, (myszka.y-15*args->Y_kratka/10)/args->Y_kratka+args->eq_przesuiniecie_p)->item)->mag=a->get_uzycia();
                   delete a; return NULL;
          }
          else
@@ -1518,7 +1529,9 @@ void Gra::informacje(Item*a)
 
 void Gra::przesuwanie(char strona,ALLEGRO_MOUSE_STATE myszka, ALLEGRO_KEYBOARD_STATE klawiatura)
 {
+        // std::cout<<"^1";
          przesun_mapy(strona,args,swiat);
+         //std::cout<<"^2";
          for(int i=0;i<4;++i) args->way[i]=false; char powrotna;
          args->zostala_przesunieta=true;
          switch(strona)
@@ -1528,6 +1541,7 @@ void Gra::przesuwanie(char strona,ALLEGRO_MOUSE_STATE myszka, ALLEGRO_KEYBOARD_S
                   case 'l':args->way[0]=true;powrotna='p';break;
                   case 'g':args->way[1]=true;powrotna='d';break;
          }
+         //std::cout<<"^3";
          while(true)
          {
                   al_get_mouse_state(&myszka); al_get_keyboard_state(&klawiatura);
@@ -1536,10 +1550,13 @@ void Gra::przesuwanie(char strona,ALLEGRO_MOUSE_STATE myszka, ALLEGRO_KEYBOARD_S
                   if(myszka.buttons&1 && ((powrotna=='p' && jest_nad_strzalka_prawo(myszka))||(powrotna=='l' && jest_nad_strzalka_lewo(myszka))||
                                           (powrotna=='d' && jest_nad_strzalka_dol(myszka))||(powrotna=='g' && jest_nad_strzalka_gora(myszka))))
                   {
-                           poczekaj_na_myszke(1);args->zostala_przesunieta=false; przesun_mapy(powrotna,args,swiat);return;
+                           //std::cout<<"^4";
+                           poczekaj_na_myszke(1);args->zostala_przesunieta=false; przesun_mapy(powrotna,args,swiat);//std::cout<<"^5";
+                           return;
                   }
                   al_rest(0.01);
          }
+        // std::cout<<"^8";
 }
 
 void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
@@ -1703,10 +1720,32 @@ void Gra::crafting(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                            args->da_sie_strone_w_lewo_w_craftingu=args->ktora_strona>0;
 
                   }
+                  else if(myszka.buttons&1 && myszka.x>args->X_kratka*1 && myszka.x<args->X_kratka*11 && myszka.y>13*args->Y_kratka && myszka.y<14*args->Y_kratka)
+                  {
+                           poczekaj_na_myszke(1);
+                           short ktora = (myszka.x-args->X_kratka)/args->X_kratka;
+                           if(ktora<Krafting->ile_kategorii && ktora!=args->ktora_kategoria)
+                           {
+                                    delete [] b;
+                                    b = args->wsp_r;
 
+                                    args->przepis = NULL; ///ostatni null
+                                    args->co_ma.reset();
+                                    args->wsp_r = NULL;
 
+                                    args->ktora_strona = 0;
+                                    args->ktora_kategoria = ktora;
 
+                                    args->przepis = Krafting->daj_strone_z_kategorii(args->ktora_strona, args->ktora_kategoria);
 
+                                    args->wsp_r = wsp_rzedow(Krafting->daj_strone_z_kategorii(args->ktora_strona, args->ktora_kategoria), Krafting->rozmiary(args->ktora_strona, args->ktora_kategoria));
+                                    args->co_ma = co_ma(swiat->aktualny, args->przepis);
+                                    args->rozmiary.zmien(Krafting->rozmiary(args->ktora_strona, args->ktora_kategoria));
+
+                                    args->da_sie_strone_w_prawo_w_craftingu=Krafting->jest_taka_strona_z_tej_kategorii(args->ktora_strona+1, args->ktora_kategoria);
+                                    args->da_sie_strone_w_lewo_w_craftingu=args->ktora_strona>0;
+                           }
+                  }
          }
          args->otwarte_menu_craftingu=false;
          delete [] args->wsp_r; ////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1731,6 +1770,42 @@ void Gra::wykonaj_crafting(Przepis *prz, Gracz *g, co_ma_gracz *co_mamy)
                   for(short y=0; y<i; ++y) if(!g[y]) {t=0; break;}
                   if(!t) break;
          }
+         if(!t) return;
+
+
+         std::list<std::pair<punkt, bool>> lista_punktow; ///punkt zajety oraz czy obiekt bedzie w otoczeniu
+         Gracz* g = swiat->aktualny;
+
+         for(short u=0; u<prz->ilosc_rezultatow; ++u)
+         {
+                  short nr = ((short*)prz->rezultaty)[0];
+                  short ile = ((short*)prz->rezultaty)[1];
+                  if((nr&(1<<15))==0) continue;
+
+                  bool otoczenie = (nr&(1<<14))!=0;
+
+                  for(short y=0; y<ile; ++y)
+                  {
+                           ukryj_ekw();
+                           punkt aaa = wybierz_kratke_na_planszy();
+                           przywroc_ekw();
+
+                           if(swiat->aktualna==swiat->zwroc_taka_aree(g->px, g->py, g->pz) && Strefa::w_planszy(aaa.x, aaa.y) &&g!=NULL && g->zaraz_obok(g->x, g->y, aaa.x, aaa.y)
+                              && (!otoczenie || swiat->aktualna->otoczenie[aaa.y][aaa.x]==NULL))
+                           {
+                                    if(otoczenie)
+                                    {
+                                             for(auto it = lista_punktow.begin(); it!=lista_punktow.end(); ++it)
+                                             {
+                                                      if((*it).second && (*it).first.x==aaa.x && (*it).first.y==aaa.y)
+                                                               return;
+                                             }
+                                             ///mozliwosc returna
+                                    }
+                                    lista_punktow.push_front(std::pair<punkt, bool>(aaa, otoczenie));
+                           }
+                  }
+         }
 
          if(t)
          {
@@ -1753,7 +1828,42 @@ void Gra::wykonaj_crafting(Przepis *prz, Gracz *g, co_ma_gracz *co_mamy)
                                     co = ((short*)(&a))[0];
                                     if(h==2)
                                     {
-                                             for(short k=0; k<ile; ++k) g->dostan_item(Item::stworz_obiekt(co));
+                                             for(short k=0; k<ile; ++k)
+                                             {
+                                                      if((co&(1<<15))==0)
+                                                      {
+                                                               if(co==2012 || co==2014)///miesny wyjatek
+                                                               {
+                                                                        short bonus = co==2012 ? 50 : 130;
+                                                                        if(prz->ilosc_katalizatorow==1 && ((short*)prz->katalizatory)[0]==4011)
+                                                                                 bonus += co==2012 ? 20 : 60;
+                                                                        if(prz->ilosc_substratow==2 &&  ((short*)prz->substraty)[2]==8021)
+                                                                                 bonus += co==2012 ? 20 : 60;
+                                                                        g->dostan_item(new Konsumpcjum(co, bonus));
+                                                               }
+                                                               else g->dostan_item(Item::stworz_obiekt(co));
+                                                      }
+                                                      else
+                                                      {
+                                                               co -= short(1<<15);
+                                                               if((co&(1<<14))!=0) co -= short(1<<14);
+                                                               Plansza *p = swiat->aktualna;
+                                                               std::pair<punkt, bool> para = lista_punktow.back();
+                                                               lista_punktow.pop_back();
+                                                               if(para.second==false)
+                                                               {
+                                                                        swiat->aktualna->dodaj_do_srodowiska(para.first.x, para.first.y, Objekt::stworz_objekt_z_wykraftowania(co, para.first.x, para.first.y, p->x, p->y, p->z));
+                                                               }
+                                                               else
+                                                               {
+                                                                        if(swiat->aktualna->otoczenie[para.first.y][para.first.x]!=NULL)
+                                                                        {
+                                                                                 std::cout<<"wykonaj_crafting_tu_mialo_nic_nie_byc"; throw "D";
+                                                                        }
+                                                                        swiat->aktualna->otoczenie[para.first.y][para.first.x] = Objekt::stworz_objekt_z_wykraftowania(co, para.first.x, para.first.y, p->x, p->y, p->z);
+                                                               }
+                                                      }
+                                             }
                                     }
                                     else for(short  k=0; k<ile; ++k) delete Item_wez_lub_wykorzystaj(g, h==0, co);
                            }
@@ -1876,7 +1986,8 @@ void Gra::Rozpocznij_gre(struct dla_grafiki* arg)
                            {
                                     switch(g->gdzie_spi->czym_jest)
                                     {
-                                             case 25:{if(g->energia_a<g->energia_max)++g->energia_a;if(swiat->czas%2==0 && g->jedzenie_a>0)--g->jedzenie_a;if(swiat->czas%2==0 && g->woda_a>0)--g->woda_a;}break;
+                                             case 25:{if(g->energia_a<g->energia_max) g->energia_a+=2;if(swiat->czas%1==0 && g->jedzenie_a>0)--g->jedzenie_a;if(swiat->czas%1==0 && g->woda_a>0)--g->woda_a;if(g->kondycja<18)g->kondycja++;}break;
+                                             case 32:{if(g->energia_a<g->energia_max) g->energia_a+=2;if(swiat->czas%1==0 && g->jedzenie_a>0)--g->jedzenie_a;if(swiat->czas%1==0 && g->woda_a>0)--g->woda_a;if(g->kondycja<18)g->kondycja++;}break;
                                              default:{if(swiat->czas%2==0 && g->energia_a<g->energia_max)++g->energia_a;if(g->jedzenie_a>0)--g->jedzenie_a;if(g->woda_a>0)--g->woda_a;}break;
                                     }
                                     swiat->Nastepna_runda();goto czy_moze_gracze_sie_skonczyli;
