@@ -16,7 +16,7 @@ class Gra
          Swiat* swiat;
          bool przerwa=false;
          public:
-         bool godmode=0;
+         bool godmode=1;
          ALLEGRO_MUTEX *dla_lewej = al_create_mutex(), *dla_prawej = al_create_mutex();
 
 
@@ -107,6 +107,8 @@ bool jest_nad_lewa(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_prawa(ALLEGRO_MOUSE_STATE myszka);
 
 void daj_aktualnemu_item(Item*a);
+Item* zaladuj_konsumpcjum(int jej_nr,  Konsumpcjum*mag, int = 0); ///cale magazynki
+
 Item* zaladuj_bron(int jej_nr,  Konsumpcjum*mag,int=0); ///cale magazynki
 Item* rozladuj_bron(Bron*a,int); ///cale magazynki
 Item* zamien_jeden_na_drugi_za_pomoca_tego(int,int,Item*a);

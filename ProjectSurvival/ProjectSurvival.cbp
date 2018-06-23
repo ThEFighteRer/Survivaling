@@ -41,6 +41,8 @@
 		<Unit filename="gra.cpp" />
 		<Unit filename="gra.h" />
 		<Unit filename="gra_ruch_gracza.cpp" />
+		<Unit filename="gracz.cpp" />
+		<Unit filename="gracz.h" />
 		<Unit filename="graficzny.cpp" />
 		<Unit filename="grafika.cpp" />
 		<Unit filename="grafika.h" />

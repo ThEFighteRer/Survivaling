@@ -55,6 +55,7 @@ int main(int argc, char **argv)
     al_init();
     al_install_keyboard();
     ALLEGRO_KEYBOARD_STATE klawiatura;
+
     ALLEGRO_THREAD* Grafika;
 
     al_install_mouse();

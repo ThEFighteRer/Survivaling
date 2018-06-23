@@ -174,8 +174,8 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
          {swiat->aktualna->ma_gracza=false;
                    while(true) {al_rest(0.01);al_get_keyboard_state(&klawiatura);if(!al_key_down(&klawiatura,ALLEGRO_KEY_ALT))break;}
                    //args->myszka_zajeta=true;for(int i=0; i<60;++i)swiat->Nastepna_runda();args->myszka_zajeta=false;swiat->aktualna->ma_gracza=true;
-                   static bool lewo = true;
-                   while(1) {if(lewo) swiat->aktualny->przesun('l'); else swiat->aktualny->przesun('p'); lewo=!lewo;}
+
+                   args->myszka_zajeta=true;for(int i=0; i<60;++i)swiat->Nastepna_runda();args->myszka_zajeta=false;swiat->aktualna->ma_gracza=true;
          }
          else if(al_key_down(&klawiatura, ALLEGRO_KEY_O))
          {swiat->aktualna->ma_gracza=false;
@@ -207,7 +207,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                              ((Zombie*)swiat->aktualna->otoczenie[dwa][jed])->jest_cel=false;
                               ((Zombie*)swiat->aktualna->otoczenie[dwa][jed])->celem_jest_plansza=false;
                    }*/
-                   swiat->aktualna->wybuch_o_mocy(3, 1, 1);
+                   swiat->aktualna->zaktualizuj_widoki();
          }
          else if(al_key_down(&klawiatura, ALLEGRO_KEY_G))
          {
@@ -331,6 +331,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                     case 1:{
                                              Item*nasz=g->p_rece;g->p_rece=NULL;
                                              Item* aa=uzyj(nasz); if(aa!=NULL) g->p_rece=aa;
+                                             swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki();
                                     }break;
                                     case 2:{Przedmiot*a=new Przedmiot(g->p_rece);if(g->p_plecak!=NULL && ((Plecak*)g->p_plecak)->s->wloz_przedmiot(a))g->p_rece=NULL;
                                                       else delete a;}break;
@@ -369,7 +370,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            {
                                     case 1:{
                                              Item*nasz=*kieszen;*kieszen=NULL;
-                                             Item* aa=uzyj(nasz); if(aa!=NULL) *kieszen=aa;
+                                             Item* aa=uzyj(nasz); if(aa!=NULL) *kieszen=aa;swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki();
                                     }break;
                                     case 2:{if(g->p_rece==NULL){g->p_rece=*kieszen;*kieszen=NULL;}
                                     else {Item*a=*kieszen;*kieszen=g->p_rece;g->p_rece=a;}}break;
@@ -569,7 +570,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       case 4:if(!g->jest_wsrod_blokow(z) && pobierz_punkty_ruchu(3)){///blok
                                                       int blok=int(((Bron*)g->p_rece)->get_blok());
                                                       if(z->oszolomiony()){blok=blok*120/100;}if(g->jest_wsrod_skupien(z)){blok=blok*150/100;}
-                                                      blok=blok*(70+g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/100;
+                                                      blok=blok*(70+g->suma_hp_rak())/100;
                                                       g->dodaj_blok((Zombie*)swiat->aktualna->otoczenie[my][mx], blok);
                                                       }break;
                                                       case 5:if(g->kratka_z_tylu_jest_wolna(mx,my) && pobierz_punkty_ruchu_i_kondycje(2,1)){
@@ -830,8 +831,8 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       int obr=g->obrazenia((Bron*)g->p_rece);
                                                       if(z->oszolomiony()){szansa=szansa*110/100;obr=obr*120/100;}
                                                       if(g->jest_wsrod_skupien(z)){szansa=szansa*130/100;obr=obr*130/100;}
-                                                      obr=obr*(100-g->l_ramie_a-g->p_ramie_a-g->p_dlon_a-g->l_dlon_a)/100;
-                                                      szansa=szansa*(100-g->l_ramie_a-g->p_ramie_a-g->p_dlon_a-g->l_dlon_a)/100;
+                                                      obr=obr*(100-g->suma_hp_rak())/100;
+                                                      szansa=szansa*(100-g->suma_hp_rak())/100;
                                                       switch(pozycja_w_zwarciu(g->x, g->y, my,mx,p->otoczenie[my][mx]->zwrot))
                                                       {case 'p':break; case 'b':szansa=szansa*120/100;obr=obr*115/100;break;case 't':szansa=szansa*150/100;obr=obr*130/100;break;}
                                                       if(z->ofiara!=g) szansa=100;
@@ -888,7 +889,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                              case 4:if(!g->jest_wsrod_blokow(z) && pobierz_punkty_ruchu(3)){///blok
                                                       int blok=int(((Bron*)g->p_rece)->get_blok());
                                                       if(z->oszolomiony()){blok=blok*120/100;}if(g->jest_wsrod_skupien(z)){blok=blok*150/100;}
-                                                      blok=blok*(70+g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/100;
+                                                      blok=blok*(70+g->suma_hp_rak())/100;
                                                       g->dodaj_blok((Zombie*)swiat->aktualna->otoczenie[my][mx], blok);
                                                       }break;
                                              case 5:if(pobierz_punkty_ruchu_i_kondycje(4,1)){
@@ -994,7 +995,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       int szansa=g->szansa((Bron*)g->p_rece);
                                                       if(z->oszolomiony()){szansa=szansa*110/100;obr=obr*120/100;}
                                                       if(g->jest_wsrod_skupien(z)){szansa=szansa*130/100;obr=obr*130/100;}
-                                                      szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                      szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                       if(wybor==1) szansa=szansa*80/100;
                                                       int gdzie=-1; if(wybor!=1) gdzie=-wybor-2;
                                                       if(losuj(1,100)<=szansa)swiat->aktualna->otoczenie[my][mx]->zostan_uderzony(obr,gdzie,bron->get_krytyk(),g->wart_zajecia());
@@ -1285,8 +1286,8 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       int obr=g->obrazenia((Bron*)g->p_rece);
                                                       if(z->oszolomiony()){szansa=szansa*110/100;obr=obr*120/100;}
                                                       if(g->jest_wsrod_skupien(z)){szansa=szansa*130/100;obr=obr*130/100;}
-                                                      obr=obr*(100-g->l_ramie_a-g->p_ramie_a-g->p_dlon_a-g->l_dlon_a)/100;
-                                                      szansa=szansa*(100-g->l_ramie_a-g->p_ramie_a-g->p_dlon_a-g->l_dlon_a)/100;
+                                                      obr=obr*(100-g->suma_hp_rak())/100;
+                                                      szansa=szansa*(100-g->suma_hp_rak())/100;
                                                       switch(pozycja_w_zwarciu(g->x, g->y, my,mx,p->otoczenie[my][mx]->zwrot))
                                                       {case 'p':break; case 'b':szansa=szansa*120/100;obr=obr*115/100;break;case 't':szansa=szansa*150/100;obr=obr*130/100;break;}
                                                       if((z->czym_jest==8 && z->jest_ofiara==false)||(z->czym_jest==9 && z->ofiara!=g)) szansa=100;
@@ -1506,7 +1507,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -1555,7 +1556,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -1600,7 +1601,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -1634,7 +1635,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -1910,6 +1911,65 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            delete menu; menu=NULL;
                   }
 
+                  else if(!g->ukryty && myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==39 && Objekt::zaraz_obok(g->x,g->y,mx,my))
+                  {
+                           poczekaj_na_myszke(2); WLampa *s = (WLampa*)p->otoczenie[my][mx];
+                           bool prost = Objekt::jest_prostopadle(g->x,g->y,mx,my);
+                           specyfikacja_menu* menu=new specyfikacja_menu(new  specyfikacja_menu* [3+prost],3+prost,256+32768+prost*1024+(s->swieci() ? 4194304 : 2097152));
+                                    menu->item[0]=new specyfikacja_menu(NULL,0,1);
+                                    if(prost)
+                                    {
+                                             menu->item[1]=new specyfikacja_menu(new specyfikacja_menu*[2],2,45);
+                                             menu->item[1]->item[0] = new specyfikacja_menu(NULL,0,5);
+                                             menu->item[1]->item[1] = new specyfikacja_menu(NULL,0,6);
+                                             menu->item[2]=new specyfikacja_menu(NULL,0,3);
+                                             menu->item[3]=new specyfikacja_menu(NULL, 0, s->swieci() ? 8 : 7);
+                                    }
+                                    else
+                                    {
+                                             menu->item[1]=new specyfikacja_menu(NULL,0,3);
+                                             menu->item[2]=new specyfikacja_menu(NULL, 0, s->swieci() ? 8 : 7);
+                                    }
+                           int wybor=Menu(myszka.x, myszka.y, args, menu);
+                           switch(wybor)
+                           {
+                                    case 0:break;
+                                    case 1:if((g->p_rece==NULL || g->p_rece->jest_bronia_biala()) &&pobierz_punkty_ruchu_i_kondycje(3,1)){///zniszcz
+                                             g->animacja_ataku(w_ktora_to_strone(g->x,g->y,mx,my));
+                                             int obr=losuj(1,6); if(g->p_rece!=NULL) {obr=((Bron*)g->p_rece)->get_obrazenia();
+                                             if(g->p_rece && ((Bron*)g->p_rece)->wykorzystaj()){Bron*a=(Bron*)g->p_rece;g->p_rece=NULL;delete a;}}
+                                             p->otoczenie[my][mx]->zostan_uderzony(obr,0,0,g->wart_zajecia());
+                                    }break;
+                                    case 3:if(pobierz_punkty_ruchu_i_kondycje(3,1)){///wez
+                                            swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->otoczenie[s->y][s->x] = NULL;
+                                             Bron *u = (Bron*)Item::stworz_obiekt(4012);u->mag = s->swieci();
+                                             delete s; s=NULL;
+                                             g->dostan_item(u);
+                                             swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki();
+                                    }break;
+                                    case 5:if(pobierz_punkty_ruchu_i_kondycje(3,1)){///pchnij
+                                             s->przesun(w_ktora_to_strone(g->x,g->y,mx,my));
+                                    }break;
+                                    case 6:if(pobierz_punkty_ruchu_i_kondycje(4,1)){///pociagnij
+                                             g->zwrot=g->daj_zwrot_do_punktu(mx,my);
+                                             what_happened aaa;
+                                             if((aaa = g->przesun(Objekt::przeciwna(w_ktora_to_strone(g->x,g->y,mx,my)), false))==success)
+                                             {
+                                                      if(p->otoczenie[my][mx]==s) s->przesun(Objekt::przeciwna(w_ktora_to_strone(g->x,g->y,mx,my)));
+                                             }
+                                             else if (aaa==dead) break;
+                                    }break;
+                                    case 7:if(pobierz_punkty_ruchu_i_kondycje(4,1)){///wlacz
+                                             s->wlacz();
+                                    }break;
+                                    case 8:if(pobierz_punkty_ruchu_i_kondycje(4,1)){///wylacz
+                                             s->wylacz();
+                                    }break;
+                                    default:break;
+                           }
+                           delete menu; menu=NULL;
+                  }
+
                   else if(myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==31 && ((Stol*)p->otoczenie[my][mx])->ukrywa_go(g))
                   {///stole gdy sie w nim my ukrywamy
                            poczekaj_na_myszke(2); Stol *s = (Stol*)p->otoczenie[my][mx];
@@ -2179,7 +2239,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=g->obrazenia((Bron*)g->p_rece);
                                                                int szansa=g->szansa((Bron*)g->p_rece);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa) swiat->aktualna->otoczenie[my][mx]->zostan_uderzony(obr,0,bron->get_krytyk(),-1);
                                                                else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
@@ -2297,7 +2357,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                     case 4:case 5: case 6:if(pobierz_punkty_ruchu_i_kondycje(3,1)){
                                                       g->animacja_ataku(w_ktora_to_strone(g->x,g->y,mx,my));int szansa=100;
                                                       int obr=((Ubranie*)g->p_buty)->obrazenia_butow();
-                                                      obr=obr*(75+(g->l_udo_a+g->l_golen_a>g->p_udo_a+g->p_golen_a?g->l_udo_a+g->l_golen_a:g->p_udo_a+g->p_golen_a))/100;;
+                                                      obr=obr*(75+(g->l_udo.ile_hp()+g->l_golen.ile_hp()>g->p_udo.ile_hp()+g->p_golen.ile_hp()?g->l_udo.ile_hp()+g->l_golen.ile_hp():g->p_udo.ile_hp()+g->p_golen.ile_hp()))/100;;
                                                       if(wybor-3==1)szansa=40;
                                                       if((((Objekt_zywy*)z)->oszolomiony())){szansa=szansa*110/100; obr=obr*120/100;}
                                                       if(g->jest_wsrod_skupien(z)){szansa=szansa*130/100; obr=obr*130/100;}
@@ -2320,7 +2380,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                   }
 
 
-                  else if(!g->ukryty && (myszka.buttons & 2) && mx>=gracz->x-1 && mx<=gracz->x+1 && my>=gracz->y-1 && my<=gracz->y+1 && swiat->aktualna->ziemia[my][mx]!=NULL && pobierz_punkty_ruchu(3))
+                  else if(!g->ukryty && (myszka.buttons & 2) && mx>=gracz->x-1 && mx<=gracz->x+1 && my>=gracz->y-1 && my<=gracz->y+1 && swiat->aktualna->ziemia[my][mx]!=NULL)
                   {
                            poczekaj_na_myszke(2);specyfikacja_menu** n=new specyfikacja_menu*(); n[0]=new specyfikacja_menu(NULL, 0, 1);
                            specyfikacja_menu* menu=new specyfikacja_menu(n, 1, 5);
@@ -2508,7 +2568,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -2557,7 +2617,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -2603,7 +2663,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -2646,7 +2706,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -2691,7 +2751,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;
@@ -2725,7 +2785,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                                                       {
                                                                gracz->animacja_strzalu((gracz->x+1)*args->X_kratka,(gracz->y+1)*args->Y_kratka,(p->otoczenie[my][mx]->x+1)*args->X_kratka,(p->otoczenie[my][mx]->y+1)*args->Y_kratka,bron->grubosc_strzalu());
                                                                int obr=bron->get_obrazenia();int szansa=bron->get_szansa()-2*g->odleglosc_w_kratkach(s);
-                                                               szansa=szansa*(100-(g->l_ramie_a+g->p_ramie_a+g->p_dlon_a+g->l_dlon_a)/3)/100;
+                                                               szansa=szansa*(100-(g->suma_hp_rak())/3)/100;
                                                                if(losuj(1,100)<=szansa)s->zostan_uderzony(obr,0,bron->get_krytyk(),g->wart_zajecia()); else Sleep(150);
                                                                g->wydaj_dzwiek(true,bron->glosnosc_broni(),g->x,g->y,0);
                                                                --bron->mag;

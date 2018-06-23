@@ -959,7 +959,13 @@ void Krzeslo::zapisz(std::ofstream *a) {}
 Krzeslo::Krzeslo(Krzeslo_przejsciowe* a,int xx, int yy,int ppx,int ppy,int ppz):Objekt_martwy(29)
 {
          x=xx;y=yy;nie_wykonal_ruchu=true;wykonuje_ruch=false;wysokosc=1;
-         co_to=3501; px=ppx;py=ppy;pz=ppz; HP=a->HP; ktore = ktore;
+         co_to=3501; px=ppx;py=ppy;pz=ppz; HP=a->HP; ktore = a->ktore;
+}
+
+Krzeslo::Krzeslo(int xx, int yy,int ppx,int ppy,int ppz, short ktore):Objekt_martwy(29)
+{
+         x=xx;y=yy;nie_wykonal_ruchu=true;wykonuje_ruch=false;wysokosc=1;
+         co_to=3501; px=ppx;py=ppy;pz=ppz; HP=25; this->ktore = ktore;
 }
 
 Krzeslo_przejsciowe::Krzeslo_przejsciowe(Krzeslo*a)
@@ -1770,5 +1776,57 @@ void Staly_przejsciowy::zapisz(std::ofstream *a)
 {
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+short WLampa::latwopalnosc(){return 60;}
+
+WLampa::~WLampa(){}
+
+what_happened WLampa::zostan_uderzony(int obrazenia, int kto, int ekstra, short wsp_zajecia)
+{
+         wydaj_dzwiek(false,3, x,y,czym_jest);
+         int a;if((a=bycie_uderzanym_jak_drzewo(HP,obrazenia,25))==0)
+         {smierc(); swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->zaktualizuj_widoki(); return dead;} else HP=a; return success;
+}
+
+int WLampa::get_co_to() {return 5000 + ktore - 1;}
+
+void WLampa::zapisz(std::ofstream *a) {}
+
+WLampa::WLampa(WLampa_przejsciowa* a,int xx, int yy,int ppx,int ppy,int ppz):Objekt_martwy(39)
+{
+         x=xx;y=yy;nie_wykonal_ruchu=true;wykonuje_ruch=false;wysokosc=1;
+         co_to=3501; px=ppx;py=ppy;pz=ppz; HP=a->HP; ktore = a->ktore;
+}
+
+WLampa::WLampa(int xx, int yy,int ppx,int ppy,int ppz, short ktore):Objekt_martwy(39)
+{
+         x=xx;y=yy;nie_wykonal_ruchu=true;wykonuje_ruch=false;wysokosc=1;
+         co_to=3501; px=ppx;py=ppy;pz=ppz; HP=25; this->ktore = ktore;
+}
+
+WLampa_przejsciowa::WLampa_przejsciowa(WLampa*a)
+{
+         czym_jest=39; HP=a->HP; ktore = a->ktore;
+}
+
+WLampa_przejsciowa::~WLampa_przejsciowa(){}
+
+WLampa_przejsciowa::WLampa_przejsciowa() {czym_jest=39;}
+
+void WLampa_przejsciowa::zapisz(std::ofstream *a) {}
+
+
 
 

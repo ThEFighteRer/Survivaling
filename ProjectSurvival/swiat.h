@@ -175,6 +175,7 @@ class Plansza : public Area ///objekt
          planszowa<short> oswietlenie_z_innych_plansz;
          static planszowa <short> pomocnicza;
          static planszowa<bool> pom[5];
+         static planszowa<short> oswietlenie_extra[5];
 
          static short wstaw_w_punkty(punkt **a, short index, short odl, short x, short y);
          static short ile(short odl, short x, short y);
@@ -196,18 +197,18 @@ class Plansza : public Area ///objekt
          void zaktualizuj_widoki(int x1,int y1, bool akt_poboczne=true){return zaktualizuj_widoki(x1, y1, x1, y1,akt_poboczne);}
          void zaktualizuj_widoki(bool akt_poboczne=true); ///bezwzglednie
          void iskra(short x, short y);
-         void rozejdz_swiatlo(short x, short y, short moc,short, short, bool poza_plansze);
-         void rozejdz_swiatlo_reflektora(short xxx, short yyy, short moc, short zasieg, short spadki, short wysokosc_swiatla, char zwrot, bool tez_poza_plansze);
+         void rozejdz_swiatlo(const short x, const short y, short moc,short, short, bool poza_plansze, short ktory_bufor, char jak);
+         void rozejdz_swiatlo_reflektora(const short xxx, const short yyy, short moc, short zasieg, short spadki, short wysokosc_swiatla, char zwrot, bool tez_poza_plansze, short ktory_bufor, char jak);
          void animacja_iskry(short x, short y);
 
          void dzwiek(bool moze_wyjsc_poza_plansze,int moc, int dx, int dy,int rodzaj);
-         void aktualizuj_swiatlo();
+         void aktualizuj_swiatlo(short ktory_bufor, char co); ///1 - wszystko, 2 - tylko obce plansze, 3 tylko nasza plansza
          void dziej_ogien();
          void wybuch(punkt **p);///ostatni to NULL
          void podpalenie_o_mocy(short moc, short x, short y, short paliwo);
          void wybuch_o_mocy(short moc, short x, short y);
          void res_osw_inn_pl();
-         void zamieszanie_ze_swiatlem(bool);
+         void zamieszanie_ze_swiatlem(bool, short ktory_bufor);
          void ta_plansza_juz_nie_celem(Plansza *a);
 };
 
@@ -228,6 +229,7 @@ class Strefa : public Area ///struct
 
          void generuj_las();
          void generuj_pseudo_miasto();
+         void generuj_probe();
 
          public:
 
@@ -275,7 +277,7 @@ class Swiat ///kostka do gry
          //Druzyna *druzyna;
          bool* pauza ;
          const int promien_obszaru_zywego=2;//3; ///to wartosc x, yto x+1
-         int czas=720;
+         int czas=1080;//720;
          short pogoda=0; ///0 1 2 3 4 5
          int od_ostatniej_zmiany_pogody=140;
          bool zaczynamy_rundy_od_poczatku=false;///zmienna porzadkowa
@@ -347,12 +349,13 @@ class Punkt_wagowy
 class Objekt
 {
          protected:
-         void smierc();
-         bool poza_tym_swiatem = false;
 
+         bool poza_tym_swiatem = false;
+         void smierc();
 
 
          public:
+
 
          static struct Punkt *c, *z;
          static Punkt_wagowy *d;
@@ -565,7 +568,11 @@ class Gracz : public Objekt_zywy///10
          ALLEGRO_MUTEX *mutex_itemow_zalozonych = al_create_mutex();
          int *graph = new int[10];///to tablica tylko dla grafiki
 
+
+
          public:
+
+         bool powinien_zerknac_w_medycyne = false;
 
          Item *p_glowa=NULL, *p_korpus=NULL, *p_spodnie=NULL, *p_buty=NULL, *p_rekawice=NULL, *p_rece=NULL,
                   *p_plecak=NULL, *p_ramie=NULL, *p_kieszenl=NULL, *p_kieszenp=NULL;
@@ -598,15 +605,15 @@ class Gracz : public Objekt_zywy///10
 
          bool ukryty = false;
 
-          short klatka_max=40, klatka_a=40, brzuch_max=30, brzuch_a=30, l_ramie_max=10, l_ramie_a=10, p_ramie_max=10, p_ramie_a=10, l_dlon_max=5, l_dlon_a=5, p_dlon_max=5, p_dlon_a=5
-          , l_udo_max=15, l_udo_a=15, p_udo_max=15, p_udo_a=15, l_golen_max=10, l_golen_a=10, p_golen_max=10, p_golen_a=10;
+         czesc_ciala klatka, brzuch, ramie_l, ramie_p, l_dlon, p_dlon, l_udo, p_udo, l_golen, p_golen;
 
-
+          ///short klatka_max=40, klatka_a=40, brzuch_max=30, brzuch_a=30, l_ramie_max=10, l_ramie_a=10, p_ramie_max=10, p_ramie_a=10, l_dlon_max=5, l_dlon_a=5, p_dlon_max=5, p_dlon_a=5
+           ///     , l_udo_max=15, l_udo_a=15, p_udo_max=15, p_udo_a=15, l_golen_max=10, l_golen_a=10, p_golen_max=10, p_golen_a=10;
 
          Skrzynka *otwarta = NULL; ///wykorzystywana wylacznie w craftingu
 
          bool otwiera=false, gwizdze=false, krzyczy=false;
-         short leczenie=0;
+         //////short leczenie=0;
          char ilosc_kieszeni='2';
          char postawa='r';
          int p_ruchu=10;
@@ -629,6 +636,7 @@ class Gracz : public Objekt_zywy///10
          void dodaj_unik(Objekt *a);
          void dodaj_skupienie(Objekt *a);
          short ile_bloku(Objekt *a);
+         short suma_hp_rak() {return ramie_l.ile_hp() + ramie_p.ile_hp() + p_dlon.ile_hp() + l_dlon.ile_hp();}
 
          void dodaj_cieplo(short ile) {if(cieplo_a+ile<cieplo_max) cieplo_a+=ile; else cieplo_a=cieplo_max;}
 

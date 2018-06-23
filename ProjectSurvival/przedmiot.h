@@ -105,6 +105,7 @@ class Konsumpcjum:public Item
          ~Konsumpcjum();
          short get_uzycia() {return pozostalo_uzyc;}
          bool wykorzystaj(); ///true jesli wykorzystany
+         void dodaj_uzyc(short ile){if(ile>0) pozostalo_uzyc+=ile;}
 };
 
 class Plecak:public Item
@@ -217,11 +218,16 @@ struct Crafting_recipes
 ///2012 mieso male upieczone
 ///2013 mieso surowe
 ///2014 mieso upieczone
+///2020 czipsy
 
 ///2101 magazynek AK
 ///2102 magazynek Glock
 ///2103 magazynek Magnum
 ///2104 magazynek M107
+
+///2201 lampa naftowa palaca sie
+///2202 lampa naftowa nie palaca sie
+///2203 nafta
 
 ///3001 to reklamowka
 ///3002 plecak wojskowy 1
@@ -238,6 +244,7 @@ struct Crafting_recipes
 ///4009 to krzeslo
 ///4010 to patyk
 ///4011 to patelnia
+///4012 to lampa
 ///4251 to AK z magazynkiem //////////////////////////////////////////////////////////////////////////abstract
 ///4252 to AK bez magazynka WLASCIWY
 ///4253 m107 z magazynkiem z dwunogiem //////////////////////////////////////////////////////////////////////////abstract
@@ -288,6 +295,8 @@ struct Crafting_recipes
 ///8019 molotov
 ///8020 cloth
 ///8021 przyprawa
+///8022 butelka z gwozdziami w srodku
+///8023 gwozdzie
 
 
 

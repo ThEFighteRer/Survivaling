@@ -281,7 +281,7 @@ double oblicz_prosta_w_punkcie_y(float x1, float y1, float x2, float y2, float y
          return (y-(y1-a*x1))/a;
 }
 
-void Plansza::rozejdz_swiatlo(short xxx, short yyy, short moc, short spadki, short wysokosc_swiatla, bool tez_poza_plansze)
+void Plansza::rozejdz_swiatlo(const short xxx, const short yyy, short moc, short spadki, short wysokosc_swiatla, bool tez_poza_plansze, short ktory_bufor, char jak)
 {
          if(moc<30) moc=30; if(moc<1) moc = 1;
          Plansza *ap = NULL,*ad = NULL,*al = NULL,*ag = NULL;
@@ -289,7 +289,7 @@ void Plansza::rozejdz_swiatlo(short xxx, short yyy, short moc, short spadki, sho
          short px=x, pz=z, py=y;
          if(tez_poza_plansze)
          {
-                  ap = swiat->zwroc_taka_plansze(px+1, py, pz);;
+                  ap = swiat->zwroc_taka_plansze(px+1, py, pz);
                   al = swiat->zwroc_taka_plansze(px-1, py, pz);
                   ad = swiat->zwroc_taka_plansze(px, py+1, pz);
                   ag = swiat->zwroc_taka_plansze(px, py-1, pz);
@@ -320,8 +320,9 @@ void Plansza::rozejdz_swiatlo(short xxx, short yyy, short moc, short spadki, sho
          ///    4
          for(short u=0;u<21;++u) for(short h=0;h<13;++h) pom[0][h][u] = otoczenie[h][u]!=NULL ? (srodowisko[h][u]!=NULL ? max(otoczenie[h][u]->wysokosc, srodowisko[h][u]->wysokosc()) : otoczenie[h][u]->wysokosc) :  (srodowisko[h][u]!=NULL ? srodowisko[h][u]->wysokosc() : 0);
 
+         //std::cout<<xxx<<" "<<yyy<<'\n';
          c[0].a=yyy; c[0].b=xxx; int n=1,s=0,k=1;
-         if(oswietlenie[yyy][xxx]>moc) {oswietlenie[yyy][xxx] = moc;}
+         if(oswietlenie_extra[ktory_bufor][yyy][xxx]>moc) {oswietlenie_extra[ktory_bufor][yyy][xxx] = moc;}
          for(int natezenie = moc; natezenie<253; natezenie+=spadki)
          {
                   for(int y=s;y<k;y++)
@@ -342,12 +343,14 @@ void Plansza::rozejdz_swiatlo(short xxx, short yyy, short moc, short spadki, sho
 
                                     if(Strefa::w_planszy(c[n].b, c[n].a))
                                     {
+                                             if(jak==2) continue;
                                              //if(tez_poza_plansze) continue;
                                              if(wolna_prosta(pom[0], xxx*100+50, yyy*100+50, c[n].b*100+50, c[n].a*100+50))
-                                                      if(oswietlenie[c[n].a][c[n].b]>natezenie) {oswietlenie[c[n].a][c[n].b] = natezenie;}
+                                                      if(oswietlenie_extra[ktory_bufor][c[n].a][c[n].b]>natezenie) {oswietlenie_extra[ktory_bufor][c[n].a][c[n].b] = natezenie;}
                                     }
                                     else
                                     {
+                                             if(jak==3) continue;
                                              if(!tez_poza_plansze) continue;
                                              ///dzwiek moze miec zasieg jednej planszy, wieksze nie beda dalej slyszane
                                              if(c[n].a<26 && c[n].a>-14 && c[n].b<42 && c[n].b>-21)
@@ -391,7 +394,7 @@ void Plansza::rozejdz_swiatlo(short xxx, short yyy, short moc, short spadki, sho
          }
 }
 
-void Plansza::rozejdz_swiatlo_reflektora(short xxx, short yyy, short moc, short zasieg, short spadki, short wysokosc_swiatla, char zwrot, bool tez_poza_plansze)
+void Plansza::rozejdz_swiatlo_reflektora(const short xxx, const short yyy, short moc, short zasieg, short spadki, short wysokosc_swiatla, char zwrot, bool tez_poza_plansze, short ktory_bufor, char jak)
 {
          if(moc<30) moc=30;
          Plansza *ap,*ad,*al,*ag;
@@ -447,12 +450,14 @@ void Plansza::rozejdz_swiatlo_reflektora(short xxx, short yyy, short moc, short 
 
                                     if(akt_y<13 && akt_y>-1 && akt_x<21 && akt_x>-1)
                                     {
+                                             if(jak==2) continue;
                                              //if(tez_poza_plansze) continue;
                                              if(wolna_prosta(pom[0], xxx*100+50, yyy*100+50, akt_x*100+50, akt_y*100+50))
-                                                      if(oswietlenie[akt_y][akt_x]>natezenie) {oswietlenie[akt_y][akt_x] = natezenie;}
+                                                      if(oswietlenie_extra[ktory_bufor][akt_y][akt_x]>natezenie) {oswietlenie_extra[ktory_bufor][akt_y][akt_x] = natezenie;}
                                     }
                                     else
                                     {
+                                             if(jak==3) continue;
                                              if(!tez_poza_plansze) continue;
                                              ///dzwiek moze miec zasieg jednej planszy, wieksze nie beda dalej slyszane
                                              if(akt_y<26 && akt_y>-14 && akt_x<42 && akt_x>-21)
@@ -500,9 +505,9 @@ void Plansza::wysrodkuj_swiatlo()
 
 int min(int a, int b) {return a>b ? b : a;}
 
-void Plansza::aktualizuj_swiatlo()
+void Plansza::aktualizuj_swiatlo(short ktory_bufor, char co)
 {
-         for(short yy=0; yy<21; ++yy) for(short u=0; u<13; ++u) {oswietlenie[u][yy] = min(oswietlenie_z_innych_plansz[u][yy],Objekt::swiat->getJasnosc());}
+         if(co==1 || co==3) for(short yy=0; yy<21; ++yy) for(short u=0; u<13; ++u) {oswietlenie_extra[ktory_bufor][u][yy] = min(oswietlenie_z_innych_plansz[u][yy],Objekt::swiat->getJasnosc());}
 
          for(short u=0; u<13; ++u)
                   for(short j=0; j<21; ++j)
@@ -510,26 +515,27 @@ void Plansza::aktualizuj_swiatlo()
                            if(otoczenie[u][j] && otoczenie[u][j]->swiatlo().get_rodzaj()!=0)///na razie odrozniamy tylko jeden rodzaj swiatla
                            {
                                     if(otoczenie[u][j]->swiatlo().get_rodzaj()==1)
-                                    rozejdz_swiatlo(j, u, otoczenie[u][j]->swiatlo().get_moc(), otoczenie[u][j]->swiatlo().get_spadki(), otoczenie[u][j]->wysokosc, 1);
+                                    rozejdz_swiatlo(j, u, otoczenie[u][j]->swiatlo().get_moc(), otoczenie[u][j]->swiatlo().get_spadki(), otoczenie[u][j]->wysokosc, 1, ktory_bufor, co);
                                     else if(otoczenie[u][j]->swiatlo().get_rodzaj()==2)
-                                    rozejdz_swiatlo_reflektora(j, u, otoczenie[u][j]->swiatlo().get_moc(), 5,otoczenie[u][j]->swiatlo().get_spadki(), otoczenie[u][j]->wysokosc, otoczenie[u][j]->zwrot, 1);
+                                    rozejdz_swiatlo_reflektora(j, u, otoczenie[u][j]->swiatlo().get_moc(), 5,otoczenie[u][j]->swiatlo().get_spadki(), otoczenie[u][j]->wysokosc, otoczenie[u][j]->zwrot, 1, ktory_bufor, co);
                            }
                            if(srodowisko[u][j] && srodowisko[u][j]->swiatlo().get_rodzaj()!=0)
                            {
                                     if(srodowisko[u][j]->swiatlo().get_rodzaj()==1)
-                                    rozejdz_swiatlo(j, u, srodowisko[u][j]->swiatlo().get_moc(), srodowisko[u][j]->swiatlo().get_spadki(), srodowisko[u][j]->wysokosc(), 1);
+                                    rozejdz_swiatlo(j, u, srodowisko[u][j]->swiatlo().get_moc(), srodowisko[u][j]->swiatlo().get_spadki(), srodowisko[u][j]->wysokosc(), 1, ktory_bufor, co);
                                     else if(srodowisko[u][j]->swiatlo().get_rodzaj()==2)
-                                    rozejdz_swiatlo_reflektora(j, u, srodowisko[u][j]->swiatlo().get_moc(), 5,srodowisko[u][j]->swiatlo().get_spadki(), srodowisko[u][j]->wysokosc(),'p', 1);
+                                    rozejdz_swiatlo_reflektora(j, u, srodowisko[u][j]->swiatlo().get_moc(), 5,srodowisko[u][j]->swiatlo().get_spadki(), srodowisko[u][j]->wysokosc(),'p', 1, ktory_bufor, co);
                            }
                            if(Objekt::args->wybuch[u][j] && Objekt::swiat->aktualna==this)
                            {
-                                    rozejdz_swiatlo(j, u, 50, 100, 3, 1);
+                                    rozejdz_swiatlo(j, u, 50, 100, 3, 1, ktory_bufor, co);
                            }
                   }
+         if(co==1 || co==3) for(short yy=0; yy<21; ++yy) for(short u=0; u<13; ++u) oswietlenie[u][yy] = oswietlenie_extra[ktory_bufor][u][yy];
 }
 
 void Swiat::zaktualizuj_oddzialywanie_swietlne_plansz_na_siebie()
-{return;
+{/*return;
          for(short u=0; u<w_x; ++u)
                   for(short j=0; j<w_y; ++j)
                   {
@@ -559,21 +565,21 @@ void Swiat::zaktualizuj_oddzialywanie_swietlne_plansz_na_siebie()
                                                                         if(a->otoczenie[u][j]->swiatlo().get_rodzaj()!=0)
                                                                         {
                                                                                  if(a->otoczenie[u][j]->swiatlo().get_rodzaj()==1)
-                                                                                 a->rozejdz_swiatlo(j, u, a->otoczenie[u][j]->swiatlo().get_moc(), a->otoczenie[u][j]->swiatlo().get_spadki(), a->otoczenie[u][j]->wysokosc, 1);
+                                                                                 a->rozejdz_swiatlo(j, u, a->otoczenie[u][j]->swiatlo().get_moc(), a->otoczenie[u][j]->swiatlo().get_spadki(), a->otoczenie[u][j]->wysokosc, 1, ktory_bufor);
                                                                                  else if(a->otoczenie[u][j]->swiatlo().get_rodzaj()==2)
-                                                                                 a->rozejdz_swiatlo_reflektora(j, u, a->otoczenie[u][j]->swiatlo().get_moc(), 5, a->otoczenie[u][j]->swiatlo().get_spadki(), a->otoczenie[u][j]->wysokosc,a->otoczenie[u][j]->zwrot, 1);
+                                                                                 a->rozejdz_swiatlo_reflektora(j, u, a->otoczenie[u][j]->swiatlo().get_moc(), 5, a->otoczenie[u][j]->swiatlo().get_spadki(), a->otoczenie[u][j]->wysokosc,a->otoczenie[u][j]->zwrot, 1, ktory_bufor);
                                                                         }
                                                                         if(a->srodowisko[u][j]->swiatlo().get_rodzaj()!=0)
                                                                         {
                                                                                  if(a->srodowisko[u][j]->swiatlo().get_rodzaj()==1)
-                                                                                 a->rozejdz_swiatlo(j, u, a->srodowisko[u][j]->swiatlo().get_moc(), a->srodowisko[u][j]->swiatlo().get_spadki(), a->srodowisko[u][j]->wysokosc(), 1);
+                                                                                 a->rozejdz_swiatlo(j, u, a->srodowisko[u][j]->swiatlo().get_moc(), a->srodowisko[u][j]->swiatlo().get_spadki(), a->srodowisko[u][j]->wysokosc(), 1, ktory_bufor);
                                                                                  else if(a->srodowisko[u][j]->swiatlo().get_rodzaj()==2)
-                                                                                 a->rozejdz_swiatlo_reflektora(j, u, a->srodowisko[u][j]->swiatlo().get_moc(), 5,a->srodowisko[u][j]->swiatlo().get_spadki(), a->srodowisko[u][j]->wysokosc(),'p', 1);
+                                                                                 a->rozejdz_swiatlo_reflektora(j, u, a->srodowisko[u][j]->swiatlo().get_moc(), 5,a->srodowisko[u][j]->swiatlo().get_spadki(), a->srodowisko[u][j]->wysokosc(),'p', 1, ktory_bufor);
                                                                         }
                                                                }
                                              }
                            }
-                  }
+                  }*/
 }
 
 
@@ -583,7 +589,7 @@ void Plansza::res_osw_inn_pl()
          for(short h=0;h<21;++h) for(short g=0;g<13;++g) oswietlenie_z_innych_plansz[g][h]=253;
 }
 
-void Plansza::zamieszanie_ze_swiatlem(bool inne_tez)
+void Plansza::zamieszanie_ze_swiatlem(bool inne_tez, short ktory_bufor)
 {
          Swiat*swiat=Objekt::swiat;
          if(inne_tez)
@@ -594,21 +600,63 @@ void Plansza::zamieszanie_ze_swiatlem(bool inne_tez)
                   if(swiat->zwroc_taka_plansze(x-1, y, z)) {swiat->zwroc_taka_plansze(x-1, y, z)->res_osw_inn_pl();}
                   if(swiat->zwroc_taka_plansze(x, y-1, z)){swiat->zwroc_taka_plansze(x, y-1, z)->res_osw_inn_pl();}
          }
-         aktualizuj_swiatlo();
+         aktualizuj_swiatlo(0, 1);
 
          if(inne_tez)
          {
                   //if(x==1 && y==0)std::cout<<oswietlenie_z_innych_plansz[5][0]<<std::endl;
                   //if(x==1 && y==0)((Plansza*)Objekt::swiat->area[x+1][y][z])->oswietlenie_z_innych_plansz[5][0] = 1;
                   //if(x==1 && y==0)std::cout<<oswietlenie_z_innych_plansz[5][0]<<std::endl;
-                  if(swiat->zwroc_taka_plansze(x+1, y, z)) {swiat->zwroc_taka_plansze(x+1, y, z)->zamieszanie_ze_swiatlem(false);}
-                  if(swiat->zwroc_taka_plansze(x, y+1, z)) {swiat->zwroc_taka_plansze(x, y+1, z)->zamieszanie_ze_swiatlem(false);}
-                  if(swiat->zwroc_taka_plansze(x-1, y, z)) {swiat->zwroc_taka_plansze(x-1, y, z)->zamieszanie_ze_swiatlem(false);}
-                  if(swiat->zwroc_taka_plansze(x, y-1, z)){swiat->zwroc_taka_plansze(x, y-1, z)->zamieszanie_ze_swiatlem(false);}
+                  if(swiat->zwroc_taka_plansze(x+1, y, z)) {swiat->zwroc_taka_plansze(x+1, y, z)->aktualizuj_swiatlo(1, 1);}
+                  if(swiat->zwroc_taka_plansze(x, y+1, z)) {swiat->zwroc_taka_plansze(x, y+1, z)->aktualizuj_swiatlo(1, 1);}
+                  if(swiat->zwroc_taka_plansze(x-1, y, z)) {swiat->zwroc_taka_plansze(x-1, y, z)->aktualizuj_swiatlo(1, 1);}
+                  if(swiat->zwroc_taka_plansze(x, y-1, z)){swiat->zwroc_taka_plansze(x, y-1, z)->aktualizuj_swiatlo(1, 1);}
                   //if(x==1 && y==0)std::cout<<oswietlenie_z_innych_plansz[5][0]<<std::endl;
-                  aktualizuj_swiatlo();
+                  aktualizuj_swiatlo(0, 1);
                   //if(x==1 && y==0)std::cout<<oswietlenie_z_innych_plansz[5][0]<<std::endl<<std::endl;
          }
+
+
+
+         ///1 - wszystko, 2 - tylko obce plansze, 3 tylko nasza plansza
+         /*Swiat*swiat=Objekt::swiat;
+         if(inne_tez)
+         {
+                  res_osw_inn_pl();
+                  if(swiat->zwroc_taka_plansze(x+1, y, z)) {swiat->zwroc_taka_plansze(x+1, y, z)->res_osw_inn_pl();}
+                  if(swiat->zwroc_taka_plansze(x, y+1, z)) {swiat->zwroc_taka_plansze(x, y+1, z)->res_osw_inn_pl();}
+                  if(swiat->zwroc_taka_plansze(x-1, y, z)) {swiat->zwroc_taka_plansze(x-1, y, z)->res_osw_inn_pl();}
+                  if(swiat->zwroc_taka_plansze(x, y-1, z)){swiat->zwroc_taka_plansze(x, y-1, z)->res_osw_inn_pl();}
+                  aktualizuj_swiatlo(ktory_bufor, 2);
+         }
+         if(!inne_tez) aktualizuj_swiatlo(ktory_bufor, 3);
+
+
+         if(inne_tez)
+         {
+
+
+                  if(swiat->zwroc_taka_plansze(x+2, y, z)) {swiat->zwroc_taka_plansze(x+2, y, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x-2, y, z)) {swiat->zwroc_taka_plansze(x-2, y, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x, y+2, z)) {swiat->zwroc_taka_plansze(x, y+2, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x, y-2, z)) {swiat->zwroc_taka_plansze(x, y-2, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x+1, y+1, z)) {swiat->zwroc_taka_plansze(x+1, y+1, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x+1, y-1, z)) {swiat->zwroc_taka_plansze(x+1, y-1, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x-1, y+1, z)) {swiat->zwroc_taka_plansze(x-1, y+1, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x-1, y-1, z)) {swiat->zwroc_taka_plansze(x-1, y-1, z)->aktualizuj_swiatlo(1, 2);}
+
+                  if(swiat->zwroc_taka_plansze(x+1, y, z)) {swiat->zwroc_taka_plansze(x+1, y, z)->aktualizuj_swiatlo(1, 2);}
+                  if(swiat->zwroc_taka_plansze(x, y+1, z)) {swiat->zwroc_taka_plansze(x, y+1, z)->aktualizuj_swiatlo(2, 2);}
+                  if(swiat->zwroc_taka_plansze(x-1, y, z)) {swiat->zwroc_taka_plansze(x-1, y, z)->aktualizuj_swiatlo(3, 2);}
+                  if(swiat->zwroc_taka_plansze(x, y-1, z)){swiat->zwroc_taka_plansze(x, y-1, z)->aktualizuj_swiatlo(4, 2);}
+
+                  aktualizuj_swiatlo(ktory_bufor, 3);
+
+                  if(swiat->zwroc_taka_plansze(x+1, y, z)) {swiat->zwroc_taka_plansze(x+1, y, z)->aktualizuj_swiatlo(1, 3);}
+                  if(swiat->zwroc_taka_plansze(x, y+1, z)) {swiat->zwroc_taka_plansze(x, y+1, z)->aktualizuj_swiatlo(2, 3);}
+                  if(swiat->zwroc_taka_plansze(x-1, y, z)) {swiat->zwroc_taka_plansze(x-1, y, z)->aktualizuj_swiatlo(3, 3);}
+                  if(swiat->zwroc_taka_plansze(x, y-1, z)){swiat->zwroc_taka_plansze(x, y-1, z)->aktualizuj_swiatlo(4, 3);}
+         }*/
 }
 
 void Plansza::ta_plansza_juz_nie_celem(Plansza *a)
@@ -696,7 +744,8 @@ void Swiat::jak_tam_wysypisko_plansz()
 
 
 void Plansza::zaktualizuj_widoki(int x1,int y1, int x2, int y2, bool akt_widoki)///pola na ktorych byl ruch
-{if(Objekt::args->melduj_co_robi_AI) std::cout<<"#";
+{
+         if(Objekt::args->melduj_co_robi_AI) std::cout<<"#";
 
          if(Objekt::swiat->aktualny && x==Objekt::swiat->aktualny->px && y==Objekt::swiat->aktualny->py && z==Objekt::swiat->aktualny->pz)
          {
@@ -707,17 +756,8 @@ void Plansza::zaktualizuj_widoki(int x1,int y1, int x2, int y2, bool akt_widoki)
          }
 
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"^";
-         zamieszanie_ze_swiatlem(true);
-         /*aktualizuj_swiatlo();
-         res_osw_inn_pl();
-         if(akt_widoki)
-         {
-                  if(x+1<Objekt::swiat->w_x && Objekt::swiat->area[x+1][y][z]->jest_plansza) {((Plansza*)Objekt::swiat->area[x+1][y][z])->zaktualizuj_widoki(false);}
-                  if(y+1<Objekt::swiat->w_y && Objekt::swiat->area[x][y+1][z]->jest_plansza) {((Plansza*)Objekt::swiat->area[x][y+1][z])->zaktualizuj_widoki(false);}
-                  if(x-1>=0 && Objekt::swiat->area[x-1][y][z]->jest_plansza) {((Plansza*)Objekt::swiat->area[x-1][y][z])->zaktualizuj_widoki(false);}
-                  if(y-1>=0 && Objekt::swiat->area[x][y-1][z]->jest_plansza){((Plansza*)Objekt::swiat->area[x][y-1][z])->zaktualizuj_widoki(false);}
-         }
-         aktualizuj_swiatlo();*/
+         zamieszanie_ze_swiatlem(true, 0);
+
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"@";
 
          Objekt *a;
@@ -734,10 +774,12 @@ void Plansza::zaktualizuj_widoki(int x1,int y1, int x2, int y2, bool akt_widoki)
 
                   }
          }
-if(Objekt::args->melduj_co_robi_AI) std::cout<<"!";}
+         if(Objekt::args->melduj_co_robi_AI) std::cout<<"!";
+}
 
 void Plansza::zaktualizuj_widoki(bool akt_widoki)
-{if(Objekt::args->melduj_co_robi_AI) std::cout<<"#";
+{
+         if(Objekt::args->melduj_co_robi_AI) std::cout<<"#";
 
          if(Objekt::swiat->aktualny && x==Objekt::swiat->aktualny->px && y==Objekt::swiat->aktualny->py && z==Objekt::swiat->aktualny->pz)
          {
@@ -748,17 +790,9 @@ void Plansza::zaktualizuj_widoki(bool akt_widoki)
          }
 
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"^";
-         zamieszanie_ze_swiatlem(true);
+         zamieszanie_ze_swiatlem(true, 0);
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"@";
-         /*if(akt_widoki)
-         {
-                  for(short h=0;h<21;++h) for(short g=0;g<13;++g) oswietlenie_z_innych_plansz[g][h]=253;
-                  if(x+1<Objekt::swiat->w_x && Objekt::swiat->area[x+1][y][z]->jest_plansza) ((Plansza*)Objekt::swiat->area[x+1][y][z])->zaktualizuj_widoki(false);
-                  if(y+1<Objekt::swiat->w_y && Objekt::swiat->area[x][y+1][z]->jest_plansza) ((Plansza*)Objekt::swiat->area[x][y+1][z])->zaktualizuj_widoki(false);
-                  if(x-1>=0 && Objekt::swiat->area[x-1][y][z]->jest_plansza)((Plansza*)Objekt::swiat->area[x-1][y][z])->zaktualizuj_widoki(false);
-                  if(y-1>=0 && Objekt::swiat->area[x][y-1][z]->jest_plansza) ((Plansza*)Objekt::swiat->area[x][y-1][z])->zaktualizuj_widoki(false);
-         }
-         aktualizuj_swiatlo();*/
+
          for(int i=0; i<21; i++)
          {
                   for(int j=0; j<13;j++)
@@ -766,7 +800,8 @@ void Plansza::zaktualizuj_widoki(bool akt_widoki)
                            if(otoczenie[j][i]!=NULL && otoczenie[j][i]->zywy) otoczenie[j][i]->patrz();
                   }
          }
-if(Objekt::args->melduj_co_robi_AI) std::cout<<"!";}
+         if(Objekt::args->melduj_co_robi_AI) std::cout<<"!";
+}
 
 Plansza :: Plansza (int x, int y, int z) : Area(x, y, z)
 {
@@ -791,7 +826,6 @@ void Plansza::Runda ()
          zaktualizuj_widoki();
          dziej_ogien();
          zaktualizuj_widoki();
-
 
 
          powstan_mozliwych();
@@ -892,7 +926,7 @@ bool Area::to_jest_na_podlodze(int x, int y)
          {
                   short wiekszy = p->obiekt[i]->a.y >= p->obiekt[i]->b.y ? p->obiekt[i]->a.y : p->obiekt[i]->b.y;
                   short mniejszy = p->obiekt[i]->a.y >= p->obiekt[i]->b.y ? p->obiekt[i]->b.y : p->obiekt[i]->a.y;
-                  if(x>=p->obiekt[i]->a.x && x<=p->obiekt[i]->b.x && y>=mniejszy && y<=wiekszy)
+                  if(x>=p->obiekt[i]->a.x && x<=p->obiekt[i]->b.x && y>=mniejszy && y<=wiekszy-1)
                            return true;
          }
          return false;
@@ -966,6 +1000,7 @@ Strefa::Strefa(int x, int y, int z):Area(x, y, z)
 
          if(losuj(1,3)==1) generuj_pseudo_miasto();
          else generuj_las();
+         //generuj_probe();
 }
 
 Strefa::~Strefa()
@@ -989,6 +1024,13 @@ void Strefa::usun_ziemie()
                   for(int j=0;j<13;j++)
                   {if(ziemia[j][i]!=NULL) {delete ziemia[j][i];ziemia[j][i]=NULL;}}
          }
+}
+
+void Strefa::generuj_probe()
+{
+         biom = 0;
+         stworz_budynek(0);
+         postaw_pare_obiektow(new WLampa_przejsciowa, 10, true);
 }
 
 void Strefa::generuj_las()
@@ -1066,7 +1108,6 @@ void Strefa::generuj_las()
          //postaw_pare_obiektow(new Zombie_przejsciowe,3);//////////////////////////
                   //postaw_pare_obiektow(new Sarna_przejsciowa,11);
                   //postaw_pare_obiektow(new Niedzwiedz_przejsciowy,4);
-
 
 }
 
@@ -1158,6 +1199,7 @@ void Strefa::stworz_budynek(short ktory)
                   rozstaw_losowo_obiekty<Krzeslo_przejsciowe>(losuj(0,pole/20),punkt_na_planszy(a.x+1,a.y+1), punkt_na_planszy(a.x+wymiar_x-1, a.y+wymiar_y-1));
                   rozstaw_losowo_obiekty<Szafa_przejsciowa>(losuj(0, pole/25),punkt_na_planszy(a.x+1,a.y+1), punkt_na_planszy(a.x+wymiar_x-1, a.y+wymiar_y-1));
                   rozstaw_losowo_obiekty<Lozko_przejsciowe>(losuj(0, 1),punkt_na_planszy(a.x+1,a.y+1), punkt_na_planszy(a.x+wymiar_x-1, a.y+wymiar_y-1));
+                  rozstaw_losowo_obiekty<WLampa_przejsciowa>(losuj(0, 2),punkt_na_planszy(a.x+1,a.y+1), punkt_na_planszy(a.x+wymiar_x-1, a.y+wymiar_y-1));
                   }
 
 
@@ -1649,6 +1691,17 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
 
          //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4010));*/
 
+         /*gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(4003));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8022));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8023));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2020));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2005));*/
+         //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2020));
+         /*gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2201));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2202));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2203));*/
+         //for(short t=0;t<16; ++t) gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2007));
+
 
 
          /*gracz->obiekt[1]->px=1;gracz->obiekt[1]->py=0;gracz->obiekt[1]->pz=0;
@@ -1686,6 +1739,7 @@ void Swiat::Ustaw_aktualna(int x, int y, int z)
                   {
                            aktualna=zwroc_taka_plansze(x,y,z);
                            a_x = x; a_y = y; a_z = z;
+                           aktualna->zaktualizuj_widoki();
                   }
                   else
                   {
@@ -1748,6 +1802,7 @@ void Swiat :: Nastepna_runda()///nie returnuje poki nie ma aktualnego lub gra ni
                   teraz_gracz=false;
                   Runda_swiata_bez_graczy();
                   Aktualizuj_pogode();
+                  aktualna->zaktualizuj_widoki();
                   Objekt::args->runda_swiata = false;
 
                   zaczynamy_rundy_od_poczatku=true;
@@ -1759,9 +1814,13 @@ void Swiat::Aktualizuj_pogode()
 {
          if(czas<1439)++czas;else czas=0;
 
-         if(czas>1020 || czas<300)
+         if(czas>1320 || czas<240)
          {
                   if(jasnosc_ogolna<240) jasnosc_ogolna++;
+         }
+         else if(czas>1200 && czas<1320)
+         {
+                  if(jasnosc_ogolna<120) jasnosc_ogolna++;
          }
          else
          {

@@ -5,7 +5,13 @@
 
 
 
-
+void graficzny::draw_cross()
+{
+         unsigned char ggg = args->nat_osw_alt != 0 ? args->nat_osw_alt : args->nat_osw;
+         unsigned char kkk = ggg>args->max_przyciemnienie_interfejsu-1 ? args->max_przyciemnienie_interfejsu : (ggg>0 ? ggg : 1);
+         unsigned char C1=kkk, C2=kkk, C3=kkk, C4=1.0;
+         al_draw_tinted_bitmap_region(cross, al_map_rgba_f (C1,C2,C3,C4), 0,args->cos_nowego_w_medycynie*cross_y, cross_x, cross_y, args->rozdz_X-cross_x, args->rozdz_Y-cross_y,0);
+}
 
 void graficzny::rysuj_crafting(ALLEGRO_BITMAP *target)
 {
@@ -428,6 +434,11 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   al_destroy_bitmap(pom);
                   al_convert_mask_to_alpha(krajobraz, al_map_rgb(255,0,255));
 
+                  pom= al_load_bitmap("img/interface/efekty_medyczne.bmp");
+                  efekty_medyczne = wyskaluj(pom, X,Y);
+                  al_destroy_bitmap(pom);
+                  al_convert_mask_to_alpha(efekty_medyczne, al_map_rgb(255,0,255));
+
                   pom= al_load_bitmap("img/interface/wys.bmp");
                   wys = wyskaluj(pom, X,Y);
                   al_destroy_bitmap(pom);
@@ -514,6 +525,19 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   al_destroy_bitmap(pom);
                   al_convert_mask_to_alpha(pasek_uzytkowy, al_map_rgb(255,0,255));
 
+
+
+                  /*pom= al_load_bitmap("img/interface/efekty_medyczne.bmp");
+                  short ile = al_get_bitmap_width(pom)/60;
+                  efekty_medyczne = al_create_bitmap(args->rozdz_X*60/1920*ile,args->rozdz_Y*60/1080);
+                  al_set_target_bitmap(efekty_medyczne);
+                  for(short i=0; i<ile; ++i)
+                  {
+                           al_draw_tinted_scaled_rotated_bitmap_region(pom, i*60, 0, 60, 60, al_map_rgb(255,255,255), 0, 0, i*(args->rozdz_X*60/1920), 0, 0, 0, 0, 0);
+                  }
+                  al_destroy_bitmap(pom);*/
+
+
                   g->szerokosc_cyfr_0=30*args->rozdz_X/1920, g->wysokosc_cyfr_0=60*args->rozdz_Y/1080
                   ,g->szerokosc_cyfr_0r=25*args->rozdz_X/1920, g->wysokosc_cyfr_0r=50*args->rozdz_Y/1080,
                   g->szerokosc_zegarka=260*args->rozdz_X/1920, g->wysokosc_zegarka=150*args->rozdz_Y/1080;
@@ -578,6 +602,13 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   g->eq1 = al_create_bitmap(args->X_kratka*9,args->Y_kratka*11);
                   g->eq2 = al_create_bitmap(args->X_kratka*9,args->Y_kratka*11);
 
+                  cross_x = args->rozdz_X*270/1920;
+                  cross_y = args->rozdz_Y*170/1080;
+                  pom= al_load_bitmap("img/interface/cross.bmp");
+                  cross = al_create_bitmap(cross_x, cross_y*2);
+                  al_set_target_bitmap(cross); al_draw_scaled_bitmap(pom,0,0,270,340,0,0,cross_x,2*cross_y,0);
+                  al_destroy_bitmap(pom);
+                  al_convert_mask_to_alpha(cross, al_map_rgb(255,0,255));
 }
 
 void graficzny::rysuj_ekwipunek()
@@ -641,16 +672,16 @@ void graficzny::rysuj_menu_anatomii()
 {
          graficzny*g = this;
          al_draw_bitmap(g->anatomia, 0,0,0);
-         g->namaluj_paskek_anatomii(g->args->brzuch_a, g->args->brzuch_max, 10*g->args->X_kratka, 5*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->klatka_a, g->args->klatka_max, 10*g->args->X_kratka, 3*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->l_ramie_a, g->args->l_ramie_max, 13*g->args->X_kratka, 4*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->p_ramie_a, g->args->p_ramie_max, 7*g->args->X_kratka, 4*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->l_dlon_a, g->args->l_dlon_max, 14*g->args->X_kratka, 6*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->p_dlon_a, g->args->p_dlon_max, 6*g->args->X_kratka, 6*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->l_udo_a, g->args->l_udo_max, 12*g->args->X_kratka, 8*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->p_udo_a, g->args->p_udo_max, 8*g->args->X_kratka, 8*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->l_golen_a, g->args->l_golen_max, 13*g->args->X_kratka, 10*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->p_golen_a, g->args->p_golen_max, 7*g->args->X_kratka, 10*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rbrzuch, g->args->brzuch_a, g->args->brzuch_max, 10*g->args->X_kratka, 5*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rklatka, g->args->klatka_a, g->args->klatka_max, 10*g->args->X_kratka, 2*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rramie_l, g->args->l_ramie_a, g->args->l_ramie_max, 13*g->args->X_kratka, 4*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rramie_p, g->args->p_ramie_a, g->args->p_ramie_max, 7*g->args->X_kratka, 4*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rl_dlon, g->args->l_dlon_a, g->args->l_dlon_max, 15*g->args->X_kratka, 7*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rp_dlon, g->args->p_dlon_a, g->args->p_dlon_max, 5*g->args->X_kratka, 7*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rl_udo, g->args->l_udo_a, g->args->l_udo_max, 12*g->args->X_kratka, 9*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rp_udo, g->args->p_udo_a, g->args->p_udo_max, 8*g->args->X_kratka, 9*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rl_golen, g->args->l_golen_a, g->args->l_golen_max, 13*g->args->X_kratka, 12*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rp_golen, g->args->p_golen_a, g->args->p_golen_max, 7*g->args->X_kratka, 12*g->args->Y_kratka);
 }
 
 void graficzny::narysuj_zegarek()
@@ -852,6 +883,8 @@ case 55:{return woda_menu;}
     ///otworz 262144
     ///zamknij 524288
     ///pozyskaj 1048576
+    ///wlacz 2097152
+    ///wylacz 4194304
 
 default:
     {
@@ -975,6 +1008,10 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 2012:{co=g->rzeczy;x_zrodl*=17;y_zrodl*=13;break;}
                   case 2013:{co=g->rzeczy;x_zrodl*=18;y_zrodl*=15;break;}
                   case 2014:{co=g->rzeczy;x_zrodl*=18;y_zrodl*=14;break;}
+                  case 2020:{co=g->rzeczy2;x_zrodl*=5;y_zrodl*=0;break;}
+                  case 2201:{co=g->rzeczy2;x_zrodl*=2;y_zrodl*=3;break;}
+                  case 2202:{co=g->rzeczy2;x_zrodl*=2;y_zrodl*=2;break;}
+                  case 2203:{co=g->rzeczy2;x_zrodl*=3;y_zrodl*=2;break;}
                   case 3001: {co=g->rzeczy;x_zrodl*=0;y_zrodl*=2;break;}
                   case 4251: {co=g->rzeczy;x_zrodl*=1;y_zrodl*=3;break;}
                   case 4252: {co=g->rzeczy;x_zrodl*=1;y_zrodl*=4;break;}
@@ -996,6 +1033,7 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 4009: {co=g->rzeczy;x_zrodl*=3;y_zrodl*=13;break;}
                   case 4010: {co=g->rzeczy;x_zrodl*=14;y_zrodl*=6;break;}
                   case 4011: {co=g->rzeczy2;x_zrodl*=3;y_zrodl*=0;break;}
+                  case 4012: {co=g->rzeczy2;x_zrodl*=7;y_zrodl*=1;break;}
                   case 4253: {co=g->equ_bron;x_zrodl*=9;y_zrodl*=0;break;}
                   case 4254: {co=g->equ_bron;x_zrodl*=9;y_zrodl*=2;break;}
                   case 4255: {co=g->equ_bron;x_zrodl*=9;y_zrodl*=1;break;}
@@ -1046,6 +1084,8 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 8019:{co=g->rzeczy;x_zrodl*=5;y_zrodl*=14;break;}
                   case 8020:{co=g->rzeczy;x_zrodl*=6;y_zrodl*=14;break;}
                   case 8021:{co=g->rzeczy2;x_zrodl*=3;y_zrodl*=1;break;}
+                  case 8022:{co=g->rzeczy2;x_zrodl*=5;y_zrodl*=1;break;}
+                  case 8023:{co=g->rzeczy2;x_zrodl*=7;y_zrodl*=0;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot maly"<<" "<<nr;co=g->rzeczy;x_zrodl*=3;y_zrodl*=8;break; }
          }
          a.x=x_zrodl; a.y=y_zrodl; a.a=co;
@@ -1072,8 +1112,12 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 2012: {d=g->rzeczy;x_zrodl*=17;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
                   case 2013: {d=g->rzeczy;x_zrodl*=16;y_zrodl*=15;x_rozm*=2;y_rozm*=1;break;}
                   case 2014: {d=g->rzeczy;x_zrodl*=16;y_zrodl*=14;x_rozm*=2;y_rozm*=1;break;}
+                  case 2020: {d=g->rzeczy2;x_zrodl*=4;y_zrodl*=0;x_rozm*=1;y_rozm*=2;break;}
                   case 2101: {d=g->rzeczy;x_zrodl*=1;y_zrodl*=0;x_rozm*=1;y_rozm*=2;break;}
                   case 2104: {d=g->equ_bron;x_zrodl*=9;y_zrodl*=4;x_rozm*=1;y_rozm*=1;break;}
+                  case 2201: {d=g->rzeczy2;x_zrodl*=1;y_zrodl*=2;x_rozm*=1;y_rozm*=2;break;}
+                  case 2202: {d=g->rzeczy2;x_zrodl*=0;y_zrodl*=2;x_rozm*=1;y_rozm*=2;break;}
+                  case 2203: {d=g->rzeczy2;x_zrodl*=3;y_zrodl*=2;x_rozm*=1;y_rozm*=1;break;}
                   case 3001: {d=g->rzeczy;x_zrodl*=0;y_zrodl*=2;break;}
                   case 3002: {d=g->rzeczy;x_zrodl*=0;y_zrodl*=4;x_rozm*=1;y_rozm*=1;break;}
                   case 3003: {d=g->rzeczy;x_zrodl*=0;y_zrodl*=8;x_rozm*=1;y_rozm*=1;break;}
@@ -1084,6 +1128,7 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 4009: {d=g->rzeczy;x_zrodl*=3;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
                   case 4010: {d=g->rzeczy;x_zrodl*=14;y_zrodl*=0;x_rozm*=1;y_rozm*=6;break;}
                   case 4011: {d=g->rzeczy2;x_zrodl*=0;y_zrodl*=0;x_rozm*=3;y_rozm*=2;break;}
+                  case 4012: {d=g->rzeczy2;x_zrodl*=7;y_zrodl*=1;x_rozm*=1;y_rozm*=1;break;}
                   case 4251: {d=g->rzeczy;x_zrodl*=2;y_zrodl*=0;x_rozm*=9;y_rozm*=3;break;}
                   case 4252: {d=g->rzeczy;x_zrodl*=2;y_zrodl*=3;x_rozm*=9;y_rozm*=3;break;}
                   case 4260: {d=g->rzeczy;x_zrodl*=0;y_zrodl*=10;x_rozm*=9;y_rozm*=2;break;}
@@ -1143,6 +1188,8 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 8019:{d=g->rzeczy;x_zrodl*=4;y_zrodl*=14;x_rozm*=1;y_rozm*=2;break;}
                   case 8020:{d=g->rzeczy;x_zrodl*=6;y_zrodl*=14;x_rozm*=1;y_rozm*=1;break;}
                   case 8021:{d=g->rzeczy2;x_zrodl*=3;y_zrodl*=1;x_rozm*=1;y_rozm*=1;break;}
+                  case 8022:{d=g->rzeczy2;x_zrodl*=6;y_zrodl*=0;x_rozm*=1;y_rozm*=2;break;}
+                  case 8023:{d=g->rzeczy2;x_zrodl*=7;y_zrodl*=0;x_rozm*=1;y_rozm*=1;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot duzy"<<" "<<nr; d=g->rzeczy;x_zrodl*=3;y_zrodl*=8;x_rozm*=1;y_rozm*=1;break;}
          }
          al_set_target_bitmap(a);
@@ -1155,7 +1202,7 @@ int graficzny::najmniej_zero(int a)
          if(a>0) return a; else return 0;
 }
 
-void graficzny::namaluj_paskek_anatomii(int a, int maxx, int x, int y)
+void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, int a, int maxx, int x, int y)
 {
          graficzny*g=this;
          al_draw_bitmap_region(g->pasek_anatomii, 0,0,a*2*g->args->X_kratka/maxx, 2*g->args->Y_kratka/3,x, y,0);
@@ -1178,6 +1225,30 @@ void graficzny::namaluj_paskek_anatomii(int a, int maxx, int x, int y)
          {al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(maxx/100),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+0.5*(20*g->args->rozdz_X/1920), y,0);
          al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero((maxx-maxx/100*100)/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+1.5*(20*g->args->rozdz_X/1920), y,0);
          al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(maxx-maxx/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+2.5*(20*g->args->rozdz_X/1920), y,0);}
+
+         namaluj_rane(x+g->X, y, stan.stan_rany);
+}
+
+void graficzny::namaluj_rane(int x, int y, char stan)
+{
+         ///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem, 8 i  16 to wytrzymalosc banadaza (0-3), 32 - brudna, 64 - istnieje
+         if((stan&64)!=0)
+         {
+                  if((stan&2)!=0) al_draw_bitmap_region(efekty_medyczne, X*4, 0, X, Y, x, y, 0);
+                  else if((stan&8)!=0) al_draw_bitmap_region(efekty_medyczne, X*5, 0, X, Y, x, y, 0);
+                  else if((stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*6, 0, X, Y, x, y, 0);
+                  else if((stan&1)!=0)
+                  {
+                           if((stan&32)!=0) al_draw_bitmap_region(efekty_medyczne, X*1, 0, X, Y, x, y, 0);
+                           else al_draw_bitmap_region(efekty_medyczne, 0, 0, X, Y, x, y, 0);
+                  }
+                  else
+                  {
+                           if((stan&32)!=0) al_draw_bitmap_region(efekty_medyczne, X*3, 0, X, Y, x, y, 0);
+                           else al_draw_bitmap_region(efekty_medyczne, 2*X, 0, X, Y, x, y, 0);
+                  }
+                  if((stan&4)!=0) al_draw_bitmap_region(efekty_medyczne, X*7, 0, X, Y, x, y, 0);
+         }
 }
 
 void graficzny::namaluj_paski()

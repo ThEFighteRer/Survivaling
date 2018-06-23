@@ -12,6 +12,7 @@ class Krzeslo:public Objekt_martwy///29
          public:
 
          ~Krzeslo();
+         Krzeslo(int,int,int,int,int, short);
          Krzeslo(Krzeslo_przejsciowe* a,int,int,int,int,int);
          what_happened zostan_uderzony(int obrazenia, int kto, int ekstra, short wsp_zajecia=0) override;
          int get_co_to();
@@ -19,6 +20,7 @@ class Krzeslo:public Objekt_martwy///29
          int get_HP();
          int na_ile_hp_wyglada(){return HP;}
          short latwopalnosc();
+         short ktore_to(){return ktore;}
 };
 
 class Krzeslo_przejsciowe:public Objekt_przejsciowy
@@ -352,6 +354,41 @@ class Staly_przejsciowy:public Objekt_przejsciowy
          void zapisz(std::ofstream *a);
 };
 
+class WLampa_przejsciowa;
+class WLampa:public Objekt_martwy///39
+{
+         friend class WLampa_przejsciowa;
+         int HP=25;
+         short ktore = 1;
+         bool wlaczona = true;
+         public:
 
+         ~WLampa();
+         WLampa(int,int,int,int,int, short);
+         WLampa(WLampa_przejsciowa* a,int,int,int,int,int);
+         what_happened zostan_uderzony(int obrazenia, int kto, int ekstra, short wsp_zajecia=0) override;
+         int get_co_to();
+         void zapisz(std::ofstream *a);
+         int get_HP();
+         int na_ile_hp_wyglada(){return HP;}
+         short latwopalnosc();
+         short ktore_to(){return ktore;}
+         zrodlo_swiatla jak_swieci(){return wlaczona && swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->to_jest_na_podlodze(x, y) ? zrodlo_swiatla(1, 38) : zrodlo_swiatla(0,0);}
+         void wlacz(){wlaczona=true; swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->zaktualizuj_widoki();}
+         void wylacz(){wlaczona=false; swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->zaktualizuj_widoki();}
+         bool swieci(){return wlaczona;}
+};
+
+class WLampa_przejsciowa:public Objekt_przejsciowy
+{
+         public:
+         int HP=25;
+         short ktore = 1;
+
+         WLampa_przejsciowa();
+         WLampa_przejsciowa(WLampa*a);
+         ~WLampa_przejsciowa();
+         void zapisz(std::ofstream *a);
+};
 
 #endif

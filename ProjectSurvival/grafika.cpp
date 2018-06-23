@@ -175,7 +175,7 @@ void graficzny::rysuj()
                                              {
                                                       for(short v = mniej; v<wiek; ++v)
                                                       {
-                                                               C1 = pl->oswietlenie[v][w];
+                                                               C1 = pl->oswietlenie[v+1][w+1];
                                                                al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C1,C1,C4), g->X*((short)pl->podlogi->obiekt[i]->jaka), g->Y*9, g->X,g->Y, w*g->X+(g->args->X_kratka/2), v*g->Y+(g->args->Y_kratka/2),0);
                                                       }
                                              }
@@ -478,6 +478,11 @@ void graficzny::rysuj()
 
                                                       al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*a, g->Y*19,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
                                              }
+                                             else if(g->acc->otoczenie[w][v][0]>=5000 && g->acc->otoczenie[w][v][0]<5100)///lampa
+                                             {
+                                                      a=g->acc->otoczenie[w][v][0]; a-=5000;
+                                                      al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*(4+a), g->Y*11,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
+                                             }
 
 
                                     }
@@ -619,6 +624,8 @@ void graficzny::rysuj()
                            g->narysuj_zegarek();
 
                            g->namaluj_paski();
+
+                           g->draw_cross();
 
                            unsigned char ggg = args->nat_osw_alt != 0 ? args->nat_osw_alt : args->nat_osw;
                            unsigned char kkk = ggg>args->max_przyciemnienie_interfejsu-1 ? args->max_przyciemnienie_interfejsu : (ggg>0 ? ggg : 1);

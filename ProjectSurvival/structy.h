@@ -12,6 +12,8 @@
 #ifndef GRANDFATHER_H
 #define GRANDFATHER_H
 
+#include "gracz.h"
+
 
 #define SITEM std::shared_ptr<Item>
 
@@ -363,6 +365,11 @@ public:
          }
 };
 
+struct stan_czesci_ciala
+{
+         char stan_rany;
+};
+
 class dla_grafiki
 {
          public:
@@ -373,6 +380,8 @@ class dla_grafiki
 
          bool wysokosci = false;
          short wys[13][21];
+
+         bool cos_nowego_w_medycynie = 0;
 
          bool *godmode;
          bool melduj_grafike = true;
@@ -459,6 +468,7 @@ class dla_grafiki
           bool otwarte_menu_anatomii;
           int klatka_max, klatka_a, brzuch_max, brzuch_a, l_ramie_max, l_ramie_a, p_ramie_max, p_ramie_a, l_dlon_max, l_dlon_a, p_dlon_max, p_dlon_a
           , l_udo_max, l_udo_a, p_udo_max, p_udo_a, l_golen_max, l_golen_a, p_golen_max, p_golen_a;
+          stan_czesci_ciala rklatka, rbrzuch, rramie_l, rramie_p, rl_dlon, rp_dlon, rl_udo, rp_udo, rl_golen, rp_golen; ///stany ran
 
          int jedzenie_max,jedzenie_a,woda_max,woda_a,cieplo_max,cieplo_a,energia_max,energia_a;
 

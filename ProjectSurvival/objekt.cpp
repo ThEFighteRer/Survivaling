@@ -500,6 +500,7 @@ Objekt* Objekt::z_objektu_tymczasowego(Objekt_przejsciowy*a, int xx, int yy,int 
                   case 36: (cos=new Lampa((Lampa_przejsciowa*)a,xx,yy,ppx, ppy,ppz));break;
                   case 37: (cos=new Reflektor((Reflektor_przejsciowy*)a,xx,yy,ppx, ppy,ppz));break;
                   case 38: (cos=new Staly((Staly_przejsciowy*)a,xx,yy,ppx, ppy,ppz));break;
+                  case 39: (cos=new WLampa((WLampa_przejsciowa*)a,xx,yy,ppx, ppy,ppz));break;
                   case 100: (cos=new Zwloki((Zwloki_przejsciowe*)a,xx,yy,ppx, ppy,ppz));break;
                   default:{std::cout<<a->czym_jest<<" "<<"nie ma takiego obiektu"<<std::endl;throw "nie ma takiego obiektu";}
          }
@@ -535,6 +536,7 @@ Objekt_przejsciowy* Objekt_przejsciowy::z_objektu(Objekt*a)
                   case 36:(cos=new Lampa_przejsciowa((Lampa*)a));break;
                   case 37:(cos=new Reflektor_przejsciowy((Reflektor*)a));break;
                   case 38:(cos=new Staly_przejsciowy((Staly*)a));break;
+                  case 39:(cos=new WLampa_przejsciowa((WLampa*)a));break;
                   case 100:(cos=new Zwloki_przejsciowe((Zwloki*)a));break;
                   default: {std::cout<<a->czym_jest<<" "<<"nie ma takiego obiektu"<<std::endl;throw "nie ma takiego obiektu";}
          }
@@ -547,6 +549,20 @@ zrodlo_swiatla Objekt::swiatlo()
          if(this==NULL) return zrodlo_swiatla(0,0);
          if(czym_jest==36 &&  ((Lampa*)this)->swieci()) return ((Lampa*)this)->jak_swieci();
          if(czym_jest==37 && ((Reflektor*)this)->swieci()) return ((Reflektor*)this)->jak_swieci();
+         if(czym_jest==39 && ((WLampa*)this)->swieci()) return ((WLampa*)this)->jak_swieci();
+         if(czym_jest==10)
+         {
+                  Gracz *g=(Gracz*)this;
+                  if(g->p_rece!=NULL && g->p_rece->czym_jest==4012 && ((Bron*)(g->p_rece))->mag==1
+                      && swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->to_jest_na_podlodze(x, y)) return zrodlo_swiatla(1, 38);
+                  else if(g->p_ramie!=NULL && g->p_ramie->czym_jest==4012 && ((Bron*)(g->p_ramie))->mag==1
+                      && swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->to_jest_na_podlodze(x, y)) return zrodlo_swiatla(1, 38);
+                  else if(g->p_rece!=NULL && g->p_rece->czym_jest==2201) return zrodlo_swiatla(1, 70);
+                  else if(g->p_kieszenl!=NULL && g->p_kieszenl->czym_jest==2201) return zrodlo_swiatla(1, 38);
+                  else if(g->p_kieszenp!=NULL && g->p_kieszenp->czym_jest==2201) return zrodlo_swiatla(1, 38);
+         }
+
+
 
 
          if(this->stan&1) return zrodlo_swiatla(1, 90, 33);
