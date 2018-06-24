@@ -1086,6 +1086,9 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 8021:{co=g->rzeczy2;x_zrodl*=3;y_zrodl*=1;break;}
                   case 8022:{co=g->rzeczy2;x_zrodl*=5;y_zrodl*=1;break;}
                   case 8023:{co=g->rzeczy2;x_zrodl*=7;y_zrodl*=0;break;}
+                  case 8024:{co=g->rzeczy;x_zrodl*=10;y_zrodl*=12;break;}
+                  case 8025:{co=g->rzeczy;x_zrodl*=6;y_zrodl*=15;break;}
+                  case 2021:{co=g->rzeczy;x_zrodl*=14;y_zrodl*=7;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot maly"<<" "<<nr;co=g->rzeczy;x_zrodl*=3;y_zrodl*=8;break; }
          }
          a.x=x_zrodl; a.y=y_zrodl; a.a=co;
@@ -1190,6 +1193,9 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 8021:{d=g->rzeczy2;x_zrodl*=3;y_zrodl*=1;x_rozm*=1;y_rozm*=1;break;}
                   case 8022:{d=g->rzeczy2;x_zrodl*=6;y_zrodl*=0;x_rozm*=1;y_rozm*=2;break;}
                   case 8023:{d=g->rzeczy2;x_zrodl*=7;y_zrodl*=0;x_rozm*=1;y_rozm*=1;break;}
+                  case 8024:{d=g->rzeczy;x_zrodl*=10;y_zrodl*=12;x_rozm*=1;y_rozm*=1;break;}
+                  case 8025:{d=g->rzeczy;x_zrodl*=6;y_zrodl*=15;x_rozm*=1;y_rozm*=1;break;}
+                  case 2021:{d=g->rzeczy;x_zrodl*=14;y_zrodl*=7;x_rozm*=1;y_rozm*=1;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot duzy"<<" "<<nr; d=g->rzeczy;x_zrodl*=3;y_zrodl*=8;x_rozm*=1;y_rozm*=1;break;}
          }
          al_set_target_bitmap(a);
@@ -1235,8 +1241,9 @@ void graficzny::namaluj_rane(int x, int y, char stan)
          if((stan&64)!=0)
          {
                   if((stan&2)!=0) al_draw_bitmap_region(efekty_medyczne, X*4, 0, X, Y, x, y, 0);
-                  else if((stan&8)!=0) al_draw_bitmap_region(efekty_medyczne, X*5, 0, X, Y, x, y, 0);
-                  else if((stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*6, 0, X, Y, x, y, 0);
+                  else if((stan&8)!=0 && (stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*5, 0, X, Y, x, y, 0);
+                  else if((stan&8)!=0) al_draw_bitmap_region(efekty_medyczne, X*6, 0, X, Y, x, y, 0);
+                  else if((stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*7, 0, X, Y, x, y, 0);
                   else if((stan&1)!=0)
                   {
                            if((stan&32)!=0) al_draw_bitmap_region(efekty_medyczne, X*1, 0, X, Y, x, y, 0);
@@ -1247,7 +1254,7 @@ void graficzny::namaluj_rane(int x, int y, char stan)
                            if((stan&32)!=0) al_draw_bitmap_region(efekty_medyczne, X*3, 0, X, Y, x, y, 0);
                            else al_draw_bitmap_region(efekty_medyczne, 2*X, 0, X, Y, x, y, 0);
                   }
-                  if((stan&4)!=0) al_draw_bitmap_region(efekty_medyczne, X*7, 0, X, Y, x, y, 0);
+                  if((stan&4)!=0) al_draw_bitmap_region(efekty_medyczne, X*8, 0, X, Y, x, y, 0);
          }
 }
 

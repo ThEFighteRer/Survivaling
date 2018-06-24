@@ -1697,9 +1697,12 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
          gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2020));
          gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2005));*/
          //gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2020));
-         /*gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2201));
-         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2202));
-         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2203));*/
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8024));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8025));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8020));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2008));
+         gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2021));
+
          //for(short t=0;t<16; ++t) gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2007));
 
 

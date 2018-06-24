@@ -125,35 +125,7 @@ int ktora_opcja(int x, int y, int ilosc_opcji, int mx, int my, struct dla_grafik
 void Gra::poczekaj_na_myszke(int przycisk){ALLEGRO_MOUSE_STATE myszka; while(true){al_rest(0.01);al_get_mouse_state(&myszka);if(!(myszka.buttons & przycisk))break;}}
 void Gra::koncz_z_menami(dla_grafiki*args) {args->menu=false; args->submenu=false;}
 
-bool Gra::jest_nad_klatka(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>9*args->X_kratka&&myszka.x<13*args->X_kratka&&myszka.y>1*args->Y_kratka&&myszka.y<2*args->Y_kratka)||
-(myszka.x>10*args->X_kratka&&myszka.x<12*args->X_kratka&&myszka.y>2*args->Y_kratka&&myszka.y<3*args->Y_kratka);}
-bool Gra::jest_nad_brzuch(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>10*args->X_kratka&&myszka.x<12*args->X_kratka&&myszka.y>4*args->Y_kratka&&myszka.y<6*args->Y_kratka);}
-bool Gra::jest_nad_l_ramie(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>13*args->X_kratka&&myszka.x<17*args->X_kratka&&myszka.y>3*args->Y_kratka&&myszka.y<4*args->Y_kratka)||
-(myszka.x>13*args->X_kratka&&myszka.x<16*args->X_kratka&&myszka.y>4*args->Y_kratka&&myszka.y<5*args->Y_kratka);}
-bool Gra::jest_nad_p_ramie(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>6*args->X_kratka&&myszka.x<9*args->X_kratka&&myszka.y>3*args->Y_kratka&&myszka.y<4*args->Y_kratka)||
-(myszka.x>7*args->X_kratka&&myszka.x<9*args->X_kratka&&myszka.y>4*args->Y_kratka&&myszka.y<5*args->Y_kratka);}
-bool Gra::jest_nad_l_dlon(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>14*args->X_kratka&&myszka.x<17*args->X_kratka&&myszka.y>6*args->Y_kratka&&myszka.y<7*args->Y_kratka)||
-(myszka.x>15*args->X_kratka&&myszka.x<17*args->X_kratka&&myszka.y>7*args->Y_kratka&&myszka.y<8*args->Y_kratka);}
-bool Gra::jest_nad_p_dlon(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>5*args->X_kratka&&myszka.x<8*args->X_kratka&&myszka.y>6*args->Y_kratka&&myszka.y<7*args->Y_kratka)||
-(myszka.x>5*args->X_kratka&&myszka.x<7*args->X_kratka&&myszka.y>7*args->Y_kratka&&myszka.y<8*args->Y_kratka);}
-bool Gra::jest_nad_l_udo(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>12*args->X_kratka&&myszka.x<15*args->X_kratka&&myszka.y>8*args->Y_kratka&&myszka.y<9*args->Y_kratka)||
-(myszka.x>12*args->X_kratka&&myszka.x<14*args->X_kratka&&myszka.y>9*args->Y_kratka&&myszka.y<10*args->Y_kratka);}
-bool Gra::jest_nad_p_udo(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>7*args->X_kratka&&myszka.x<10*args->X_kratka&&myszka.y>8*args->Y_kratka&&myszka.y<9*args->Y_kratka)||
-(myszka.x>8*args->X_kratka&&myszka.x<10*args->X_kratka&&myszka.y>9*args->Y_kratka&&myszka.y<10*args->Y_kratka);}
-bool Gra::jest_nad_p_golen(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>6*args->X_kratka&&myszka.x<10*args->X_kratka&&myszka.y>11*args->Y_kratka&&myszka.y<12*args->Y_kratka)||
-(myszka.x>7*args->X_kratka&&myszka.x<9*args->X_kratka&&myszka.y>12*args->Y_kratka&&myszka.y<13*args->Y_kratka);}
-bool Gra::jest_nad_l_golen(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>12*args->X_kratka&&myszka.x<16*args->X_kratka&&myszka.y>11*args->Y_kratka&&myszka.y<12*args->Y_kratka)||
-(myszka.x>13*args->X_kratka&&myszka.x<15*args->X_kratka&&myszka.y>12*args->Y_kratka&&myszka.y<13*args->Y_kratka);}
+
 
 bool Gra::jest_nad_strzalka_prawo(ALLEGRO_MOUSE_STATE myszka)
 {
@@ -340,11 +312,11 @@ void* Obliczanie_grafiki(ALLEGRO_THREAD *thr,void * arg)
                   args->woda_a=g->woda_a,args->jedzenie_max=g->jedzenie_max, args->jedzenie_a=g->jedzenie_a,args->cieplo_max=g->cieplo_max,
                   args->woda_max=g->woda_max,args->cieplo_a=g->cieplo_a,args->energia_max=g->energia_max, args->energia_a=g->energia_a;
 
-                   args->klatka_max=g->klatka.jaki_max(), args->klatka_a=g->klatka.ile_hp(), args->brzuch_max=g->brzuch.jaki_max(), args->brzuch_a=g->brzuch.ile_hp(),
-                   args->l_ramie_max=g->ramie_l.jaki_max(),args->l_ramie_a=g->ramie_l.ile_hp(), args->p_ramie_max=g->ramie_p.jaki_max(), args->p_ramie_a=g->ramie_p.ile_hp(),
-                   args->l_dlon_max=g->l_dlon.jaki_max(), args->l_dlon_a=g->l_dlon.ile_hp(), args->p_dlon_max=g->p_dlon.jaki_max(), args->p_dlon_a=g->p_dlon.ile_hp()
-                  , args->l_udo_max=g->l_udo.jaki_max(), args->l_udo_a=g->l_udo.ile_hp(), args->p_udo_max=g->p_udo.jaki_max(), args->p_udo_a=g->p_udo.ile_hp(),
-                   args->l_golen_max=g->l_golen.jaki_max(), args->l_golen_a=g->l_golen.ile_hp(), args->p_golen_max=g->p_golen.jaki_max(), args->p_golen_a=g->p_golen.ile_hp();
+                   args->klatka_max=g->klatka.jaki_max_bezwzgledny(), args->klatka_a=g->klatka.ile_hp(), args->brzuch_max=g->brzuch.jaki_max_bezwzgledny(), args->brzuch_a=g->brzuch.ile_hp(),
+                   args->l_ramie_max=g->ramie_l.jaki_max_bezwzgledny(),args->l_ramie_a=g->ramie_l.ile_hp(), args->p_ramie_max=g->ramie_p.jaki_max_bezwzgledny(), args->p_ramie_a=g->ramie_p.ile_hp(),
+                   args->l_dlon_max=g->l_dlon.jaki_max_bezwzgledny(), args->l_dlon_a=g->l_dlon.ile_hp(), args->p_dlon_max=g->p_dlon.jaki_max_bezwzgledny(), args->p_dlon_a=g->p_dlon.ile_hp()
+                  , args->l_udo_max=g->l_udo.jaki_max_bezwzgledny(), args->l_udo_a=g->l_udo.ile_hp(), args->p_udo_max=g->p_udo.jaki_max_bezwzgledny(), args->p_udo_a=g->p_udo.ile_hp(),
+                   args->l_golen_max=g->l_golen.jaki_max_bezwzgledny(), args->l_golen_a=g->l_golen.ile_hp(), args->p_golen_max=g->p_golen.jaki_max_bezwzgledny(), args->p_golen_a=g->p_golen.ile_hp();
 
                    args->rklatka.stan_rany=g->klatka.stan_rany(),args->rbrzuch.stan_rany=g->brzuch.stan_rany(), args->rramie_l.stan_rany=g->ramie_l.stan_rany(), args->rramie_p.stan_rany=g->ramie_p.stan_rany(),
                     args->rl_dlon.stan_rany=g->l_dlon.stan_rany(),args->rp_dlon.stan_rany=g->p_dlon.stan_rany(),args->rl_udo.stan_rany=g->l_udo.stan_rany(),
@@ -527,176 +499,7 @@ void* Obliczanie_grafiki(ALLEGRO_THREAD *thr,void * arg)
 
 
 
-Item* Gra::uzyj(Item*a)
-{
-         ALLEGRO_MOUSE_STATE myszka; ALLEGRO_KEYBOARD_STATE klawiatura; Gracz*g=swiat->aktualny;
-         switch(a->czym_jest)
-         {
-                  case 2003: {dodaj_wody(50);delete a; return Item::stworz_obiekt(2003);}break;
-                  case 2004: {dodaj_wody(50); delete a; return Item::stworz_obiekt(2005);}break;
-                  case 2009: {dodaj_wody(50); dodaj_jedzenia(-losuj(10, 80)); delete a; return Item::stworz_obiekt(2010);}break;
-                  case 2010: {dodaj_wody(50); dodaj_jedzenia(-losuj(10, 80)); delete a; return Item::stworz_obiekt(2005);}break;
-                  case 2020: {dodaj_jedzenia(50); dodaj_wody(-losuj(0, 20)); delete a; swiat->zwroc_taka_plansze_TYLKO(g->px, g->py,g->pz)->dzwiek(false, 3, g->x, g->y, 10); return NULL;}break;
 
-                  case 2201:{Item *k = new Konsumpcjum(2202, ((Konsumpcjum*)a)->get_uzycia()); delete a; swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki(); return k;}
-                  case 2202:if(((Konsumpcjum*)a)->get_uzycia()>0){Item *k = new Konsumpcjum(2201, ((Konsumpcjum*)a)->get_uzycia()); delete a; swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki(); return k;} return a;
-                  case 2203:{return zaladuj_konsumpcjum(2202,(Konsumpcjum*)a, 2203);}break;
-
-                  case 2001: {dodaj_jedzenia(50);return NULL;}break;
-                  //case 2011: {dodaj_jedzenia();return NULL;}break;
-                  case 2012: {dodaj_jedzenia(((Konsumpcjum*)a)->get_uzycia());return NULL;}break;
-                  //case 2013: {dodaj_jedzenia();return NULL;}break;
-                  case 2014: {dodaj_jedzenia(((Konsumpcjum*)a)->get_uzycia());return NULL;}break;
-                  case 2006: {dodaj_wody(50);return NULL;}break;
-                  case 2007:
-                  {
-                           poczekaj_na_myszke(1);
-                           args->otwarte_menu_anatomii=true;
-                           args->p_nr_przedmiotu=a->czym_jest;
-                           int roznica_x=args->X_kratka/2,
-                           roznica_y=args->Y_kratka/2;
-                           while(true)
-                           {
-                                    args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;
-                           }
-                           args->p_nr_przedmiotu=0;
-                           if(jest_nad_klatka(myszka) && g->klatka.da_sie_uleczyc()){g->klatka.ulecz(20); delete a;a=NULL;}
-                           else if(jest_nad_brzuch(myszka) && g->brzuch.da_sie_uleczyc()){g->brzuch.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_l_ramie(myszka) && g->ramie_l.da_sie_uleczyc()){g->ramie_l.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_p_ramie(myszka) && g->ramie_p.da_sie_uleczyc()){g->ramie_p.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_l_dlon(myszka) && g->l_dlon.da_sie_uleczyc()){g->l_dlon.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_p_dlon(myszka) && g->p_dlon.da_sie_uleczyc()){g->p_dlon.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_l_udo(myszka) && g->l_udo.da_sie_uleczyc()){g->l_udo.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_p_udo(myszka) && g->p_udo.da_sie_uleczyc()){g->p_udo.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_l_golen(myszka) && g->l_golen.da_sie_uleczyc()){g->l_golen.ulecz(20);delete a;a=NULL;}
-                           else if( jest_nad_p_golen(myszka) && g->p_golen.da_sie_uleczyc()){g->p_golen.ulecz(20);delete a;a=NULL;}
-                           Sleep(750);
-                           args->otwarte_menu_anatomii=false;
-                           return a;
-                  }break;
-                  case 2101: {return zaladuj_bron(4252,(Konsumpcjum*)a);}break;
-                  case 4252: {return rozladuj_bron((Bron*)a,2101);}break;
-                  case 2102: {return zaladuj_bron(4752,(Konsumpcjum*)a);}break;
-                  case 4752: {return rozladuj_bron((Bron*)a,2102);}break;
-                  case 2103: {return zaladuj_bron(4753,(Konsumpcjum*)a, 4260);}break;
-                  case 4753: {return rozladuj_bron((Bron*)a,2103);}break;
-                  case 4260: {return rozladuj_bron((Bron*)a,2103);}break;
-                  case 2104:{return zaladuj_bron(4255,(Konsumpcjum*)a,4256);}break;
-                  case 4255:
-                           {if(((Bron*)a)->mag>0)return rozladuj_bron((Bron*)a,2104);
-                           daj_aktualnemu_item(Item::stworz_obiekt(8003));Bron*b=new Bron(4256),*k=(Bron*)a; b->mag=k->mag; delete k; daj_aktualnemu_item(b); return NULL;
-                           }break;
-                  case 4256: {return rozladuj_bron((Bron*)a,2104);}break;
-                  case 8003: {return zamien_jeden_na_drugi_za_pomoca_tego(4255,4256,a);}break;
-                  case 8004:{
-                  bool ekw=args->otwarty_ekwipunek;
-
-
-
-                  args->otwarty_ekwipunek=ekw;
-                  }break;
-                  case 8017:
-                  {
-                           ukryj_ekw();
-                           punkt aaa = wybierz_kratke_na_planszy();
-                           if(swiat->aktualna==swiat->zwroc_taka_aree(g->px, g->py, g->pz) && Strefa::w_planszy(aaa.x, aaa.y) && Objekt::zaraz_obok(g->x, g->y, aaa.x, aaa.y) && pobierz_punkty_ruchu(3))
-                           {
-                                    swiat->aktualna->iskra(aaa.x, aaa.y);
-                                    if(((Konsumpcjum*)a)->wykorzystaj())
-                                             {delete a;przywroc_ekw();return NULL;}
-                                    else {przywroc_ekw();return a;}
-                           }
-                           przywroc_ekw();
-                           return a;
-                  }break;
-                  case 8018:
-                  {
-                           ukryj_ekw();
-                           punkt aaa = wybierz_kratke_na_planszy();
-                           if(swiat->aktualna==swiat->zwroc_taka_aree(g->px, g->py, g->pz) && Strefa::w_planszy(aaa.x, aaa.y) && g->mozna_rzucic(aaa.x, aaa.y) && pobierz_punkty_ruchu(3))
-                           {
-                                    g->animacja_rzutu_przedmiotu(args,aaa.x, aaa.y, a);
-                                    swiat->aktualna->wybuch_o_mocy(3, aaa.x, aaa.y);
-                                    delete a;
-                                    przywroc_ekw();
-                                    return NULL;
-                           }
-                           przywroc_ekw();
-                           return a;
-                  }break;
-                  case 8019:
-                  {
-                           ukryj_ekw();
-                           punkt aaa = wybierz_kratke_na_planszy();
-                           if(swiat->aktualna==swiat->zwroc_taka_aree(g->px, g->py, g->pz) && Strefa::w_planszy(aaa.x, aaa.y) && g->mozna_rzucic(aaa.x, aaa.y) && pobierz_punkty_ruchu(3))
-                           {
-                                    g->animacja_rzutu_przedmiotu(args,aaa.x, aaa.y, a);
-                                    swiat->aktualna->podpalenie_o_mocy(3, aaa.x, aaa.y, 5);
-                                    delete a;
-                                    przywroc_ekw();
-                                    return NULL;
-                           }
-                           przywroc_ekw();
-                           return a;
-                  }break;
-                  case 8022:
-                  {
-                           ukryj_ekw();
-                           punkt aaa = wybierz_kratke_na_planszy();
-                           Plansza *p = swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz);
-                           if(p!=NULL && Strefa::w_planszy(aaa.x, aaa.y) && g->mozna_rzucic(aaa.x, aaa.y) && pobierz_punkty_ruchu(3))
-                           {
-                                    g->animacja_rzutu_przedmiotu(args,aaa.x, aaa.y, a);
-                                    p->dzwiek(false, 4, aaa.x, aaa.y, 0);
-                                    if(losuj(0,2)==0)
-                                    {
-                                             p->rzuc_na_ziemie(aaa.x, aaa.y, Item::stworz_obiekt(8023));
-                                             delete a;
-                                    }
-                                    else
-                                    {
-                                             p->rzuc_na_ziemie(aaa.x, aaa.y, a);
-                                    }
-                                    Sleep(500);
-                                    przywroc_ekw();
-                                    return NULL;
-                           }
-                           przywroc_ekw();
-                           return a;
-                  }break;
-                  case 4009:
-                  {
-                           ukryj_ekw();
-                           punkt aaa = wybierz_kratke_na_planszy();
-                           Plansza *p = swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz);
-                           if(p!=NULL && Strefa::w_planszy(aaa.x, aaa.y) && g->zaraz_obok(g->x, g->y, aaa.x, aaa.y) && p->otoczenie[aaa.y][aaa.x]==NULL && pobierz_punkty_ruchu(3))
-                           {
-                                    p->otoczenie[aaa.y][aaa.x] = new Krzeslo(aaa.x, aaa.y, g->px, g->py, g->pz, 1); delete a;
-                                    przywroc_ekw(); return NULL;
-                           }
-                           przywroc_ekw();
-                           return a;
-                  }break;
-                  case 4012:
-                  {
-                           ukryj_ekw();
-                           punkt aaa = wybierz_kratke_na_planszy();
-                           Plansza *p = swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz);
-                           if(p!=NULL && Strefa::w_planszy(aaa.x, aaa.y) && g->zaraz_obok(g->x, g->y, aaa.x, aaa.y) && p->otoczenie[aaa.y][aaa.x]==NULL && pobierz_punkty_ruchu(3))
-                           {
-                                    WLampa *l= new WLampa(aaa.x, aaa.y, g->px, g->py, g->pz, 1); if(((Bron*)a)->mag==1) l->wlacz(); else l->wylacz();
-                                    p->otoczenie[aaa.y][aaa.x] = l;
-                                    p->zaktualizuj_widoki();
-                                    delete a;
-                                    przywroc_ekw(); return NULL;
-                           }
-                           przywroc_ekw();
-                           return a;
-                  }break;
-
-                  default: return a;
-         }
-}
 
 Item* Gra::zamien_jeden_na_drugi_za_pomoca_tego(int jaki,int z_jakiego,Item*a)
 {
@@ -1685,6 +1488,24 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                   else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y>args->p_pozycja_y+7*args->Y_kratka)
                   {
                            poczekaj_na_myszke(1); break;
+                  }
+                  else if(myszka.buttons&2)
+                  {
+                           poczekaj_na_myszke(2);
+                           czesc_ciala *r = wybierz_rane_czesci_ciala(myszka);
+                           if(r!=0 && (r->stan_rany()&64)!=0 && ((r->stan_rany()&8)!=0 || (r->stan_rany()&16)!=0))
+                           {
+                                    poczekaj_na_myszke(2);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(new  specyfikacja_menu* [1], 1, 256);
+                                    menu->item[0]=new specyfikacja_menu(NULL,0,1);
+                                    int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    switch (wybor)
+                                    {
+                                             case 1: r->zerwij_bandaze_rany(); break;
+                                             default: case 0: break;
+                                    }
+                                    delete menu; menu=NULL;
+                           }
                   }
          }
          args->otwarte_menu_anatomii=false;;

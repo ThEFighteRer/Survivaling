@@ -73,6 +73,7 @@ class Gra
          void przesun_mapy(char strona, dla_grafiki *args, Swiat*swiat);
          bool zalozylismy_nowy_plecak=false;
 
+         czesc_ciala* wybierz_rane_czesci_ciala(ALLEGRO_MOUSE_STATE myszka);
          void wykonaj_crafting(Przepis *p, Gracz *g, co_ma_gracz *co_mamy);
 
 
@@ -125,6 +126,17 @@ bool jest_nad_l_udo(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_p_udo(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_l_golen(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_p_golen(ALLEGRO_MOUSE_STATE myszka);
+
+bool jest_nad_klatka_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_brzuch_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_l_ramie_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_p_ramie_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_l_dlon_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_p_dlon_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_l_udo_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_p_udo_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_l_golen_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_p_golen_rana(ALLEGRO_MOUSE_STATE myszka);
 
 bool jest_nad_strzalka_gora(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_strzalka_prawo(ALLEGRO_MOUSE_STATE myszka);

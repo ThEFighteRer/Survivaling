@@ -318,6 +318,7 @@ int Item::get_co_to()
 Item* Item::stworz_obiekt(int co)
 {
          Item*a;
+         if(co==2021) return new Konsumpcjum(co, 5);
          if(co==2201 || co==2202) return new Konsumpcjum(co, 0);
          if(co==2203) return new Konsumpcjum(co, 60);
          if(co==8010 || co==8011 || co==8012) return new Klucz(co);

@@ -219,6 +219,7 @@ struct Crafting_recipes
 ///2013 mieso surowe
 ///2014 mieso upieczone
 ///2020 czipsy
+///2021 masc na rany
 
 ///2101 magazynek AK
 ///2102 magazynek Glock
@@ -297,6 +298,9 @@ struct Crafting_recipes
 ///8021 przyprawa
 ///8022 butelka z gwozdziami w srodku
 ///8023 gwozdzie
+///8024 bandaz
+///8025 opaska uciskowa
+
 
 
 

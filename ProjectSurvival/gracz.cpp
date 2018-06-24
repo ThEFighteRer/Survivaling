@@ -3,19 +3,108 @@
 #include "swiat.h"
 #include <windows.h>
 
+void Rana::minela_runda(short war)
+{
+         if(!istnieje()) return;
 
+         if(posmarowana_zelem()) pozostalo--;
+         if(!brudna()) pozostalo--;
+         pozostalo -= war/2;
+
+         if(pozostalo<=0)
+         {
+                  if(rana_prosta())
+                  {
+                           stan = 0;
+                  }
+                  else
+                  {
+                           stan--;
+                           pozostalo = 120;
+                  }
+         }
+
+         if(krwotoczna())
+         {
+                  short los = losuj(1, 30+pozostalo);
+                  if(rana_prosta() && los<=10) stan-=2;
+                  else if(!rana_prosta() && los<=5) stan-=2;
+         }
+}
+
+void Rana::kontakt()///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem, 8 i  16 to wytrzymalosc banadaza (0-3), 32 - brudna, 64 - istnieje
+{
+         short opoznienie=60;
+         if(istnieje() && bandaz())
+         {
+                  opoznienie = 50 - obandazowanie()*10;
+                  ustaw_bandaz_na(obandazowanie()-1);
+         }
+         else
+         {
+                  if(!istnieje())
+                  {
+                           stan = 64 + 1;
+                           if(losuj(1,10)<=3) zrob_krwotok();
+                           else if(losuj(1,10)<=8)
+                                    zabrudz();
+                  }
+                  else if(rana_prosta())
+                  {
+                           stan--;
+                           if(losuj(1, 10)<=3)
+                                    zrob_krwotok();
+                           else if(losuj(1,10)<=9)
+                                    zabrudz();
+                  }
+                  else
+                  {
+                           if(losuj(1, 10)<=8)
+                                    zrob_krwotok();
+                           else if(losuj(1,20)!=1)
+                                    zabrudz();
+                  }
+                  if(losuj(0,10) != 0) zabrudz();
+                  if(posmarowana_zelem() && losuj(1,3)==1)
+                           stan-=4;
+         }
+         if(pozostalo+opoznienie<120) pozostalo+=opoznienie; else pozostalo=120;
+}
 
 void czesc_ciala::zadaj_obrazenia(short ile)
 {
          if(hp-ile<0) hp=0;
          else hp-=ile;
+         leczenie -= 30;
 
-
+         if(losuj(0,1)) rana.kontakt();
 }
 
-void czesc_ciala::minela_runda(warunki war)
+void czesc_ciala::minela_runda(short war)
 {
+         if(leczenie<glikogen) leczenie+=war;
+         if(leczenie>=60 && hp<maxx)
+         {
+                  leczenie-=60; ++hp;
+         }
+         if(glikogen>60 && Objekt::swiat->czas%3==0) glikogen--;
 
+         rana.minela_runda(war);
+
+         if(rana.istnieje() && rana.krew_cieknie())
+         {
+                  if(hp>0 && (hp>maxx/4 || losuj(0, 1))) zadaj_obrazenia(1);
+                  else if(sasiednie != NULL)
+                  {
+                           short g=0;
+                           for(g=0; sasiednie[g]!=NULL; ++g);
+                           if(g!=0)
+                                    sasiednie[Objekt::swiat->czas%g]->zadaj_obrazenia(1);
+                  }
+         }
+
+
+         maxx = std::ceil(float(max_bezwzgledny)*(100 - (rana.istnieje() ? (rana.rana_prosta() ? 9 : 15) : 0))/100);
 }
 
 void czesc_ciala::ulecz(short ile)
@@ -27,6 +116,18 @@ void czesc_ciala::ulecz(short ile)
 Gracz :: Gracz():Objekt_zywy(10), klatka(40, 40), brzuch(30, 30), ramie_l(10, 10), ramie_p(10, 10), l_dlon(5, 5), p_dlon(5, 5)
                   , l_udo(15, 15), p_udo(15, 15), l_golen(10, 10), p_golen(10, 10)
 {
+         czesc_ciala **t = new czesc_ciala*[4]; t[0]=&brzuch; t[1]=&ramie_l; t[2]=&ramie_p;t[3]=NULL; klatka.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[4]; t[0]=&klatka; t[1]=&l_udo; t[2]=&p_udo;  t[3]=NULL;brzuch.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[3]; t[0]=&klatka; t[1]=&l_dlon;  t[2]=NULL;ramie_l.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[3]; t[0]=&klatka; t[1]=&p_dlon;t[2]=NULL; ramie_p.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[2]; t[0]=&ramie_l;  t[1]=NULL;l_dlon.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[2]; t[0]=&ramie_p; t[1]=NULL;p_dlon.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[3]; t[0]=&brzuch; t[1]=&l_golen;  t[2]=NULL;l_udo.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[3]; t[0]=&brzuch; t[1]=&p_golen;t[2]=NULL; p_udo.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[2]; t[0]=&l_udo;  t[1]=NULL;l_golen.set_czesci_sasiednie(t);
+         t = new czesc_ciala*[2]; t[0]=&p_udo; t[1]=NULL;p_golen.set_czesci_sasiednie(t);
+         t = NULL;
+
          wykonuje_ruch=false;
          wysokosc=1; if(postawa=='r') wysokosc=3; else if(postawa=='s') wysokosc=2;
 }
@@ -67,30 +168,37 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          short pogoda = swiat->pogoda;
          if(pozostalo_snu>1) return true;
 
-         ogrzej_sie_od_zrodel_ognia();
+         ogrzej_sie_od_zrodel_ognia();///ogrzewanie sie
 
-         if(woda_a>0) --woda_a; else {if(!odejmij_hp_z_powodu_niedozywienia()){return false;}else if(!odejmij_hp_z_powodu_niedozywienia()){return false;};}
-         if(jedzenie_a>0) --jedzenie_a; else {if(!odejmij_hp_z_powodu_niedozywienia()){return false;}else if(!odejmij_hp_z_powodu_niedozywienia()){return false;};}
+         if(woda_a>0) {if(woda_a>100 || (swiat->czas%2)==0) --woda_a;} else {if(!odejmij_hp_z_powodu_niedozywienia()){return false;}else if(!odejmij_hp_z_powodu_niedozywienia()){return false;};}///paski
+         if(jedzenie_a>0) {if((jedzenie_a>100 || (swiat->czas%2)==0)) --jedzenie_a;} else {if(!odejmij_hp_z_powodu_niedozywienia()){return false;}else if(!odejmij_hp_z_powodu_niedozywienia()){return false;};}
          if(energia_a>0) --energia_a;
-         if(ocieplenie()<pogoda*10) {if(cieplo_a>0){--cieplo_a;} else if(!odejmij_hp_z_powodu_niedozywienia()){return false;}}else if(cieplo_a<cieplo_max)++cieplo_a;
+         if(ocieplenie()<pogoda*10) {if(cieplo_a>0){--cieplo_a;} else if(!odejmij_hp_z_powodu_niedozywienia()){return false;}}else if(cieplo_a<cieplo_max/2)++cieplo_a;
 
          //oszolomieni.wywal_wszystkie_objekty();
-         int ile_zal_kond=(woda_a>0)+p_ruchu/5;
+         int ile_zal_kond=(woda_a>0)+p_ruchu/5+postawa=='c';///kondycja
          if(kondycja==0 && ile_zal_kond==0) ile_zal_kond+=1;
          if(kondycja+ile_zal_kond>18) kondycja=18;
          else kondycja+=ile_zal_kond;
-         p_ruchu=10;
 
-         warunki war = zle;
+         short punkty_do_otrzymania = 10;///p_ruchu
+         if(punkty_do_otrzymania<10)
+         {
+                  if(p_ruchu+punkty_do_otrzymania<10)
+                           p_ruchu+=punkty_do_otrzymania;
+                  else p_ruchu = 10;
+         }
+         p_ruchu=punkty_do_otrzymania;
+
+         short war = 1;
          if(pozostalo_snu==1) return true; ///zeby nie bylo oszukiwania podczas przetrzymywania
 
-         //if(jedzenie_a>150 && woda_a>150 && cieplo_a>150) {if(leczenie<40)++leczenie;} else if(leczenie>0) --leczenie;
-         if(jedzenie_a>150 && woda_a>150 && cieplo_a>150 && energia_a>100) war = bardzo_dobre;
-         else if(jedzenie_a>100 && woda_a>100 && cieplo_a>100 && energia_a>100) war = dobre;
+         if(jedzenie_a>150 && woda_a>150 && cieplo_a>150 && energia_a>100) war = 4;
+         else if(jedzenie_a>90 && woda_a>90 && cieplo_a>90 && energia_a>60) war = 3;
          else
          {
-                  short licznik = (jedzenie_a>70) + (woda_a>70) + (cieplo_a>80) + (energia_a>60);
-                  if(licznik >= 3) war = srednie;
+                  short licznik = (jedzenie_a>50) + (woda_a>50) + (cieplo_a>70) + (energia_a>40);
+                  if(licznik >= 3) war = 2;
          }
 
          klatka.minela_runda(war);
@@ -105,8 +213,6 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          p_golen.minela_runda(war);
 
          return czy_zyje();
-
-         return true;
 }
 
 bool Gracz::gracz_widzi_do_konca_w_strone(char strona)
