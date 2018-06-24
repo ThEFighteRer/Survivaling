@@ -8,6 +8,8 @@
 #include <stack>
 #include <list>
 #include "przedmiot.h"
+#include "gracz.h"
+
 
 
 
@@ -568,9 +570,9 @@ class Gracz : public Objekt_zywy///10
          ALLEGRO_MUTEX *mutex_itemow_zalozonych = al_create_mutex();
          int *graph = new int[10];///to tablica tylko dla grafiki
 
-
-
          public:
+
+         const Objaw objaw;
 
          bool powinien_zerknac_w_medycyne = false;
 

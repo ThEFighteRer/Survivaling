@@ -6,9 +6,12 @@
 
 
 
-Item* Gra::uzyj(Item*a)
+Item* Gra::uzyj(Item*a, bool wybralem_miejsce, punkt mysz)///wsparcie tylko dla medycznych rzeczy, jesli chodzi o wczesniejszy wybor pozycji
 {
-         ALLEGRO_MOUSE_STATE myszka; ALLEGRO_KEYBOARD_STATE klawiatura; Gracz*g=swiat->aktualny;
+         short spanie = 500;
+         ALLEGRO_MOUSE_STATE myszka;
+         if(wybralem_miejsce) {myszka.x = mysz.x; myszka.y = mysz.y;}
+         ALLEGRO_KEYBOARD_STATE klawiatura; Gracz*g=swiat->aktualny;
          switch(a->czym_jest)
          {
                   case 2003: {dodaj_wody(50);delete a; return Item::stworz_obiekt(2003);}break;
@@ -29,16 +32,12 @@ Item* Gra::uzyj(Item*a)
                   case 2006: {dodaj_wody(50);return NULL;}break;
                   case 2007:
                   {
-                           poczekaj_na_myszke(1);
-                           args->otwarte_menu_anatomii=true;
-                           args->p_nr_przedmiotu=a->czym_jest;
-                           int roznica_x=args->X_kratka/2,
-                           roznica_y=args->Y_kratka/2;
-                           while(true)
+                           bool bylo_otw = args->otwarte_menu_anatomii;
+                           if(!wybralem_miejsce)
                            {
-                                    args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;
+                                    myszka = wybierz_miejsce_uzycia_w_menu_anatomii(a->czym_jest);
                            }
-                           args->p_nr_przedmiotu=0;
+
                            if(jest_nad_klatka(myszka) && g->klatka.da_sie_uleczyc()){g->klatka.ulecz(20); delete a;a=NULL;}
                            else if(jest_nad_brzuch(myszka) && g->brzuch.da_sie_uleczyc()){g->brzuch.ulecz(20);delete a;a=NULL;}
                            else if( jest_nad_l_ramie(myszka) && g->ramie_l.da_sie_uleczyc()){g->ramie_l.ulecz(20);delete a;a=NULL;}
@@ -49,17 +48,18 @@ Item* Gra::uzyj(Item*a)
                            else if( jest_nad_p_udo(myszka) && g->p_udo.da_sie_uleczyc()){g->p_udo.ulecz(20);delete a;a=NULL;}
                            else if( jest_nad_l_golen(myszka) && g->l_golen.da_sie_uleczyc()){g->l_golen.ulecz(20);delete a;a=NULL;}
                            else if( jest_nad_p_golen(myszka) && g->p_golen.da_sie_uleczyc()){g->p_golen.ulecz(20);delete a;a=NULL;}
-                           Sleep(750);
-                           args->otwarte_menu_anatomii=false;
+                           Sleep(spanie);
+
+                           if(!wybralem_miejsce)  args->otwarte_menu_anatomii=false || bylo_otw;
                            return a;
                   }break;
                   case 8024: case 8025: case 8020:
                   {
-                           poczekaj_na_myszke(1);
-                           args->otwarte_menu_anatomii=true; args->p_nr_przedmiotu=a->czym_jest;
-                           int roznica_x=args->X_kratka/2, roznica_y=args->Y_kratka/2;
-                           while(true){args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;}
-                           args->p_nr_przedmiotu=0;
+                           bool bylo_otw = args->otwarte_menu_anatomii;
+                           if(!wybralem_miejsce)
+                           {
+                                    myszka = wybierz_miejsce_uzycia_w_menu_anatomii(a->czym_jest);
+                           }
                            czesc_ciala * r = wybierz_rane_czesci_ciala(myszka);
                            if(r!=NULL && (r->stan_rany()&64)!=0)
                            {
@@ -68,52 +68,62 @@ Item* Gra::uzyj(Item*a)
                                     {
                                              case 8024: ile=2;break; case 8025: ile=3;break; case 8020: ile=1;break;
                                     }
-                                    r->bandazuj_rane(ile);
-                                    delete a;
-                                    a = NULL;
+                                    if((r->bandaze_rany()==0 && a->czym_jest==8020) || (r->bandaze_rany()<=1 && a->czym_jest==8024) || a->czym_jest==8025)
+                                    {
+                                             r->bandazuj_rane(ile);
+                                             delete a;
+                                             a = NULL;
+                                    }
                            }
-                           Sleep(750);
-                           args->otwarte_menu_anatomii=false;
+
+                           if(!wybralem_miejsce)
+                           {
+                                    Sleep(spanie); args->otwarte_menu_anatomii=false || bylo_otw;
+                           }
                            return a;
                   }break;
                   case 2008:
                   {
-                           poczekaj_na_myszke(1);
-                           args->otwarte_menu_anatomii=true; args->p_nr_przedmiotu=a->czym_jest;
-                           int roznica_x=args->X_kratka/2, roznica_y=args->Y_kratka/2;
-                           while(true){args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;}
-                           args->p_nr_przedmiotu=0;
+                           bool bylo_otw = args->otwarte_menu_anatomii;
+                           if(!wybralem_miejsce)
+                           {
+                                    myszka = wybierz_miejsce_uzycia_w_menu_anatomii(a->czym_jest);
+                           }
+
                            czesc_ciala * r = wybierz_rane_czesci_ciala(myszka);
                            if(r!=NULL && (r->stan_rany()&64)!=0 && (r->stan_rany()&32)!=0)
                            {
-                                    r->oczysc_rane();
-                                    if(a->wykorzystaj())
+                                    if(r->oczysc_rane() && a->wykorzystaj())
                                     {
                                              delete a; a = NULL;
                                     }
                            }
-                           Sleep(750);
-                           args->otwarte_menu_anatomii=false;
+                           if(!wybralem_miejsce)
+                           {
+                                    Sleep(spanie); args->otwarte_menu_anatomii=false || bylo_otw;
+                           }
                            return a;
                   }break;
                   case 2021:
                   {
-                           poczekaj_na_myszke(1);
-                           args->otwarte_menu_anatomii=true; args->p_nr_przedmiotu=a->czym_jest;
-                           int roznica_x=args->X_kratka/2, roznica_y=args->Y_kratka/2;
-                           while(true){args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;}
-                           args->p_nr_przedmiotu=0;
+                           bool bylo_otw = args->otwarte_menu_anatomii;
+                           if(!wybralem_miejsce)
+                           {
+                                    myszka = wybierz_miejsce_uzycia_w_menu_anatomii(a->czym_jest);
+                           }
+
                            czesc_ciala * r = wybierz_rane_czesci_ciala(myszka);
                            if(r!=NULL && (r->stan_rany()&64)!=0 && (r->stan_rany()&32)!=0 && (r->stan_rany()&4)==0)
                            {
-                                    r->posmaruj_rane();
-                                    if(a->wykorzystaj())
+                                    if(r->posmaruj_rane() && a->wykorzystaj())
                                     {
                                              delete a; a = NULL;
                                     }
                            }
-                           Sleep(750);
-                           args->otwarte_menu_anatomii=false;
+                           if(!wybralem_miejsce)
+                           {
+                                    Sleep(spanie); args->otwarte_menu_anatomii=false || bylo_otw;
+                           }
                            return a;
                   }break;
 
@@ -241,9 +251,20 @@ Item* Gra::uzyj(Item*a)
          }
 }
 
-
-
-
+ALLEGRO_MOUSE_STATE Gra::wybierz_miejsce_uzycia_w_menu_anatomii(int nr)
+{
+         ALLEGRO_MOUSE_STATE myszka;
+         args->otwarte_menu_anatomii=true;
+         args->p_nr_przedmiotu=nr;
+         int roznica_x=args->X_kratka/2,
+         roznica_y=args->Y_kratka/2;
+         while(true)
+         {
+                  args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if((myszka.buttons&1)) break;
+         }
+         args->p_nr_przedmiotu=0;
+         return myszka;
+}
 
 void Gra::uzycie_przedmiotu(Przedmiot*a, Skrzynka*s)
 {
@@ -328,7 +349,20 @@ bool Gra::jest_nad_l_golen(ALLEGRO_MOUSE_STATE myszka)
 {return (myszka.x>12*args->X_kratka&&myszka.x<16*args->X_kratka&&myszka.y>11*args->Y_kratka&&myszka.y<12*args->Y_kratka)||
 (myszka.x>13*args->X_kratka&&myszka.x<15*args->X_kratka&&myszka.y>12*args->Y_kratka&&myszka.y<13*args->Y_kratka);}
 
-
+czesc_ciala* Gra::wybierz_czesc_ciala(ALLEGRO_MOUSE_STATE myszka)
+{
+         if(jest_nad_klatka(myszka)) return &swiat->aktualny->klatka;
+         if(jest_nad_brzuch(myszka)) return &swiat->aktualny->brzuch;
+         if(jest_nad_l_ramie(myszka)) return &swiat->aktualny->ramie_l;
+         if(jest_nad_p_ramie(myszka)) return &swiat->aktualny->ramie_p;
+         if(jest_nad_l_dlon(myszka)) return &swiat->aktualny->l_dlon;
+         if(jest_nad_p_dlon(myszka)) return &swiat->aktualny->p_dlon;
+         if(jest_nad_l_udo(myszka)) return &swiat->aktualny->l_udo;
+         if(jest_nad_p_udo(myszka)) return &swiat->aktualny->p_udo;
+         if(jest_nad_p_golen(myszka)) return &swiat->aktualny->p_golen;
+         if(jest_nad_l_golen(myszka)) return &swiat->aktualny->l_golen;
+         return NULL;
+}
 
 czesc_ciala* Gra::wybierz_rane_czesci_ciala(ALLEGRO_MOUSE_STATE myszka)
 {

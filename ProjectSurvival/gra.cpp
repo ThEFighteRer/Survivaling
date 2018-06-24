@@ -1470,6 +1470,8 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
 {///moze byc otwarta podczas otwierania ekwipunku
          swiat->aktualny->powinien_zerknac_w_medycyne = false;
          args->otwarte_menu_anatomii=true;
+         short dla_funkcji=0;
+         Gracz *g = swiat->aktualny;
          args->klatka_max=40, args->klatka_a=30, args->brzuch_max=30, args->brzuch_a=30, args->l_ramie_max=10, args->l_ramie_a=10, args->p_ramie_max=10, args->p_ramie_a=10, args->l_dlon_max=5, args->l_dlon_a=5, args->p_dlon_max=5, args->p_dlon_a=5
           , args->l_udo_max=15, args->l_udo_a=15, args->p_udo_max=15, args->p_udo_a=15, args->l_golen_max=10, args->l_golen_a=10, args->p_golen_max=10, args->p_golen_a=10;
          while(true)
@@ -1506,7 +1508,227 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                                     }
                                     delete menu; menu=NULL;
                            }
+                           else if(myszka.buttons&2 && jest_nad_ramieniem(myszka) && g->p_ramie!=NULL)
+                           {
+                                     poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[4]; for(int i=0;i<4;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(n, 4, 6);int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    switch (wybor)
+                                    {
+                                             case 1:{if(g->p_rece==NULL){g->p_rece=g->p_ramie; g->p_ramie=NULL;}
+                                                      else if(g->p_rece->jest_bronia_na_ramie()){Item *a=g->p_rece; g->p_rece=g->p_ramie; g->p_ramie=a;}
+                                                      }break;
+                                             case 2:
+                                                      {if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
+                                             swiat->aktualna->ziemia[g->y][g->x]->dodaj_obiekt(g->p_ramie); g->p_ramie=NULL;
+                                                               }
+                                                               break;
+                                             case 3:{Przedmiot*a=new Przedmiot(g->p_ramie);if(g->p_plecak!=NULL && ((Plecak*)g->p_plecak)->s->wloz_przedmiot(a))g->p_ramie=NULL;
+                                                               else delete a;}break;
+                                             case 0:break;
+                                    }
+                                    delete menu; menu=NULL;
+                           }
+                           else if(myszka.buttons&2 && jest_nad_rekami(myszka) && g->p_rece!=NULL)
+                           {
+                                     poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[6]; for(int i=0;i<6;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(n, 6, 8);int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    switch (wybor)
+                                    {
+                                             case 1:{
+                                                      Item*nasz=g->p_rece;g->p_rece=NULL;
+                                                      Item* aa=uzyj(nasz); if(aa!=NULL) g->p_rece=aa;
+                                                      swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki();
+                                             }break;
+                                             case 2:{Przedmiot*a=new Przedmiot(g->p_rece);if(g->p_plecak!=NULL && ((Plecak*)g->p_plecak)->s->wloz_przedmiot(a))g->p_rece=NULL;
+                                                               else delete a;}break;
+                                             case 3:{if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
+                                             swiat->aktualna->ziemia[g->y][g->x]->dodaj_obiekt(g->p_rece); g->p_rece=NULL;
+                                                               }break;
+                                             case 4:{if(g->p_rece->jest_bronia_na_ramie() || g->p_rece->jest_ubraniem())
+                                             {
+                                                      Item **a;
+                                                      if(g->p_rece->jest_bronia_na_ramie()) a=&g->p_ramie;
+                                                      else if(g->p_rece->jest_kapeluszem()) a=&g->p_glowa;
+                                                      else if(g->p_rece->jest_korpusem()) a=&g->p_korpus;
+                                                      else if(g->p_rece->jest_spodniami()) a=&g->p_spodnie;
+                                                      else if(g->p_rece->jest_butami()) a=&g->p_buty;
+                                                      else if(g->p_rece->jest_rekawicami()) a=&g->p_rekawice;
+                                                      if(*a==NULL) {*a=g->p_rece; g->p_rece=NULL;}
+                                                      else {Item *b=g->p_rece; g->p_rece=*a; *a=b;}
+                                             }
+                                             }break;
+                                             case 5:{if(g->ilosc_kieszeni<'1') show_message("Nie masz kieszeni!");
+                                             else if(g->ilosc_kieszeni<'2' && g->p_kieszenl==NULL){g->p_kieszenl=g->p_rece;g->p_rece=NULL;}
+                                             else if(g->ilosc_kieszeni<'3' && g->p_kieszenp==NULL){g->p_kieszenp=g->p_rece;g->p_rece=NULL;}
+                                             else if(g->ilosc_kieszeni<'2'){Item*a=g->p_rece;g->p_rece=g->p_kieszenl;g->p_kieszenl=a;}
+                                             }break;
+                                             case 6:{informacje(g->p_rece);}break;
+                                             case 0:break;
+                                    }
+                                    delete menu; menu=NULL;
+                           }
+                           else if(myszka.buttons&2 && ((jest_nad_kieszenl(myszka) && g->p_kieszenl!=NULL)||(jest_nad_kieszenp(myszka) && g->p_kieszenp!=NULL)))
+                           {
+                                     poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[6]; for(int i=0;i<6;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(n, 6, 9);int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    Item**kieszen=&g->p_kieszenl;if(jest_nad_kieszenp(myszka))kieszen=&g->p_kieszenp;
+                                    switch (wybor)
+                                    {
+                                             case 1:{
+                                                      Item*nasz=*kieszen;*kieszen=NULL;
+                                                      Item* aa=uzyj(nasz); if(aa!=NULL) *kieszen=aa;swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz)->zaktualizuj_widoki();
+                                             }break;
+                                             case 2:{if(g->p_rece==NULL){g->p_rece=*kieszen;*kieszen=NULL;}
+                                             else {Item*a=*kieszen;*kieszen=g->p_rece;g->p_rece=a;}}break;
+                                             case 3:{if((*kieszen)->jest_bronia_na_ramie() || (*kieszen)->jest_ubraniem())
+                                             {
+                                                      Item **a;
+                                                      if((*kieszen)->jest_bronia_na_ramie()) a=&g->p_ramie;
+                                                      else if((*kieszen)->jest_kapeluszem()) a=&g->p_glowa;
+                                                      else if((*kieszen)->jest_korpusem()) a=&g->p_korpus;
+                                                      else if((*kieszen)->jest_spodniami()) a=&g->p_spodnie;
+                                                      else if((*kieszen)->jest_butami()) a=&g->p_buty;
+                                                      else if((*kieszen)->jest_rekawicami()) a=&g->p_rekawice;
+                                                      if(*a==NULL) {*a=*kieszen; *kieszen=NULL;}
+                                                      else {Item *b=*kieszen; *kieszen=*a; *a=b;}
+                                             }
+                                             }break;
+                                             case 4:{if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
+                                             swiat->aktualna->ziemia[g->y][g->x]->dodaj_obiekt(*kieszen); *kieszen=NULL;}
+                                             break;
+                                             case 5:{Przedmiot*a=new Przedmiot(*kieszen);if(g->p_plecak!=NULL && ((Plecak*)g->p_plecak)->s->wloz_przedmiot(a))*kieszen=NULL;
+                                                               else delete a;}break;
+                                             case 6:{informacje(*kieszen);}break;
+                                             case 0:break;
+                                    }
+                                    delete menu; menu=NULL;
+                           }
+                           else if(myszka.buttons&2 && ((jest_nad_glowa(myszka)&& g->p_glowa!=NULL) || (jest_nad_korpusem(myszka) && g->p_korpus!=NULL)
+                                                        || (jest_nad_spodniami(myszka) && g->p_spodnie!=NULL) || (jest_nad_butami(myszka) && g->p_buty!=NULL) || (jest_nad_rekawicami(myszka) && g->p_rekawice!=NULL)))
+                           {
+                                     poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[5]; for(int i=0;i<5;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(n, 5, 7);int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    Item** ubranie;
+                                    if(jest_nad_glowa(myszka))ubranie=&g->p_glowa;
+                                    else if(jest_nad_korpusem(myszka))ubranie=&g->p_korpus;
+                                    else if(jest_nad_spodniami(myszka))ubranie=&g->p_spodnie;
+                                    else if(jest_nad_butami(myszka))ubranie=&g->p_buty;
+                                    else if(jest_nad_rekawicami(myszka))ubranie=&g->p_rekawice;
+                                    switch (wybor)
+                                    {
+                                             case 1:{{Przedmiot*a=new Przedmiot(*ubranie);if(g->p_plecak!=NULL && ((Plecak*)g->p_plecak)->s->wloz_przedmiot(a))*ubranie=NULL;else delete a;}}break;
+                                             case 2:{if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
+                                             swiat->aktualna->ziemia[g->y][g->x]->dodaj_obiekt(*ubranie); *ubranie=NULL;}break;
+                                             case 3:{if(g->p_rece==NULL) {g->p_rece=*ubranie;*ubranie=NULL;}
+                                             else {Item*a=g->p_rece;g->p_rece=*ubranie;*ubranie=a;}
+                                             }break;
+                                             case 4:{if(g->ilosc_kieszeni<'1') show_message("Nie masz kieszeni!");
+                                             else if(g->ilosc_kieszeni<'2' && g->p_kieszenl==NULL){g->p_kieszenl=*ubranie;*ubranie=NULL;}
+                                             else if(g->ilosc_kieszeni<'3' && g->p_kieszenp==NULL){g->p_kieszenp=*ubranie;*ubranie=NULL;}
+                                             else if(g->ilosc_kieszeni<'2'){Item*a=*ubranie;*ubranie=g->p_kieszenl;g->p_kieszenl=a;}
+                                             }
+                                             break;
+                                             case 5:{informacje(*ubranie);}break;
+                                             case 0:break;
+                                    }
+                                    delete menu; menu=NULL;
+                           }
+
                   }
+                  else if(myszka.buttons&1 && ((jest_nad_ramieniem(myszka) && g->p_ramie!=NULL && (dla_funkcji=1)==1)||
+                                                        (jest_nad_glowa(myszka) && g->p_glowa!=NULL && (dla_funkcji=2)==2)||
+                                                        (jest_nad_plecakiem(myszka) && g->p_plecak!=NULL && (dla_funkcji=3)==3)||
+                                                        (jest_nad_rekami(myszka) && g->p_rece!=NULL && (dla_funkcji=4)==4)||
+                                                        (jest_nad_korpusem(myszka) && g->p_korpus!=NULL && (dla_funkcji=5)==5)||
+                                                        (jest_nad_rekawicami(myszka) && g->p_rekawice!=NULL && (dla_funkcji=6)==6)||
+                                                        (jest_nad_kieszenl(myszka) && g->p_kieszenl!=NULL && (dla_funkcji=7)==7)||
+                                                        (jest_nad_spodniami(myszka) && g->p_spodnie!=NULL && (dla_funkcji=8)==8)||
+                                                        (jest_nad_kieszenp(myszka) && g->p_kieszenp!=NULL && (dla_funkcji=9)==9)||
+                                                        (jest_nad_butami(myszka) && g->p_buty!=NULL && (dla_funkcji=10)==10)))
+                           {
+                                    Item*ten=NULL;
+                                    switch(dla_funkcji)
+                                    {
+                                             case 1:{ten=g->p_ramie;g->p_ramie=NULL;break;}
+                                             case 2:{ten=g->p_glowa;g->p_glowa=NULL;break;}
+                                             case 3:{ten=g->p_plecak;g->p_plecak=NULL;break;}
+                                             case 4:{ten=g->p_rece;g->p_rece=NULL;break;}
+                                             case 5:{ten=g->p_korpus;g->p_korpus=NULL;break;}
+                                             case 6:{ten=g->p_rekawice;g->p_rekawice=NULL;break;}
+                                             case 7:{ten=g->p_kieszenl;g->p_kieszenl=NULL;break;}
+                                             case 8:{ten=g->p_spodnie;g->p_spodnie=NULL;break;}
+                                             case 9:{ten=g->p_kieszenp;g->p_kieszenp=NULL;break;}
+                                             case 10:{ten=g->p_buty;g->p_buty=NULL;break;}
+                                    }
+                                    args->p_nr_przedmiotu=ten->get_co_to();
+                                    int roznica_x=args->X_kratka/2,roznica_y=args->Y_kratka/2;
+                                    while(true)
+                                    {
+                                             args->p_x=myszka.x-roznica_x; args->p_y=myszka.y-roznica_y; al_rest(0.01); al_get_mouse_state(&myszka); if(!(myszka.buttons&1)) break;
+                                    }
+                                    args->p_nr_przedmiotu=0;
+                                    if(myszka.x>0 && myszka.x<args->X_kratka*22 && myszka.y>0 && myszka.y<args->Y_kratka*14)
+                                       {
+                                             Item* aa=uzyj(ten, true, punkt(myszka.x,myszka.y));
+                                             if(aa!=NULL)
+                                             switch(dla_funkcji)
+                                             {
+                                                      case 1:{g->p_ramie=aa;break;}
+                                                      case 2:{g->p_glowa=aa;break;}
+                                                      case 3:{g->p_plecak=aa;break;}
+                                                      case 4:{g->p_rece=aa;break;}
+                                                      case 5:{g->p_korpus=aa;break;}
+                                                      case 6:{g->p_rekawice=aa;break;}
+                                                      case 7:{g->p_kieszenl=aa;break;}
+                                                      case 8:{g->p_spodnie=aa;break;}
+                                                      case 9:{g->p_kieszenp=aa;break;}
+                                                      case 10:{g->p_buty=aa;break;}
+                                             }
+                                       }
+                                       else if(jest_nad_rekami(myszka)&&g->p_rece==NULL)
+                                       {
+                                             g->p_rece=ten;
+                                       }
+                                       else if(jest_nad_kieszenl(myszka)&&g->p_kieszenl==NULL && ten->mozna_do_kieszeni())
+                                       {
+                                             g->p_kieszenl=ten;
+                                       }
+                                       else if(jest_nad_kieszenp(myszka)&&g->p_kieszenp==NULL && ten->mozna_do_kieszeni())
+                                       {
+                                             g->p_kieszenp=ten;
+                                       }
+                                       else if(((ten->jest_kapeluszem() && g->p_glowa==NULL)||(ten->jest_korpusem() && g->p_korpus==NULL)||(ten->jest_spodniami() && g->p_spodnie==NULL)
+                                               ||(ten->jest_butami() && g->p_buty==NULL)||(ten->jest_rekawicami() && g->p_rekawice==NULL)
+                                               ||(ten->jest_bronia() && g->p_ramie==NULL)||(ten->jest_plecakiem() && g->p_plecak==NULL)))
+                                       {
+                                             {
+                                                               if(ten->jest_kapeluszem() && g->p_glowa==NULL){g->p_glowa=ten;}
+                                                               else if(ten->jest_korpusem() && g->p_korpus==NULL){g->p_korpus=ten;}
+                                                               else if(ten->jest_spodniami() && g->p_spodnie==NULL){g->p_spodnie=ten;}
+                                                               else if(ten->jest_butami() && g->p_buty==NULL){g->p_buty=ten;}
+                                                               else if(ten->jest_rekawicami() && g->p_rekawice==NULL){g->p_rekawice=ten;}
+                                                               else if(ten->jest_bronia() && g->p_ramie==NULL){g->p_ramie=ten;}
+                                                               else if(ten->jest_plecakiem() && g->p_plecak==NULL){g->p_plecak=ten;}
+                                                      }
+                                       }
+                                   else
+                                   {
+                                            switch(dla_funkcji)
+                                             {
+                                                      case 1:{g->p_ramie=ten;break;}
+                                                      case 2:{g->p_glowa=ten;break;}
+                                                      case 3:{g->p_plecak=ten;break;}
+                                                      case 4:{g->p_rece=ten;break;}
+                                                      case 5:{g->p_korpus=ten;break;}
+                                                      case 6:{g->p_rekawice=ten;break;}
+                                                      case 7:{g->p_kieszenl=ten;break;}
+                                                      case 8:{g->p_spodnie=ten;break;}
+                                                      case 9:{g->p_kieszenp=ten;break;}
+                                                      case 10:{g->p_buty=ten;break;}
+                                             }
+                                   }
+                           }
+
          }
          args->otwarte_menu_anatomii=false;;
          swiat->aktualny->powinien_zerknac_w_medycyne = false;

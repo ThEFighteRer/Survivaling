@@ -1,7 +1,36 @@
 #include <iostream>
+#include <list>
+#include "structy.h"
 
 #ifndef GRACZ
 #define GRACZ
+
+enum Objaw
+{
+         bol, mocny_bol
+};
+
+class Objawy
+{
+         ALLEGRO_MUTEX *mutex = al_create_mutex();
+         std::list<Objaw> objaw;
+
+         public:
+         Objawy()
+         {
+
+         }
+         ~Objawy()
+         {
+                  al_destroy_mutex(mutex);
+         }
+
+         std::list<Objaw> zwroc_liste_objawow();///grafika
+         bool jest_taki_objaw(Objaw a);
+
+         void dodaj_objaw(Objaw a);
+         void usun_objaw(Objaw a);
+};
 
 class Rana
 {
@@ -9,10 +38,10 @@ class Rana
          char stan = 0;///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem, 8 i  16 to wytrzymalosc banadaza (0-3), 32 - brudna, 64 - istnieje
 
 
-         void zrob_krwotok(){stan|=2; if(brudna()) stan-=32; if(posmarowana_zelem()) stan-=4;}
+         void zrob_krwotok(){stan|=2; if(!bandaz()) {if(brudna()) stan-=32; if(posmarowana_zelem()) stan-=4; kw();}}
          ///krwawienie wymywa posmarowanie ale tez brud
 
-         void zabrudz(){if(!krwotoczna() && !bandaz()) stan|=32;}///zabrudzic rane mozemy tylko, gdy nie krwawi nie ma bandaza
+         void zabrudz(){if(!krwotoczna() && !bandaz()) {stan|=32; kw();}}///zabrudzic rane mozemy tylko, gdy nie krwawi nie ma bandaza
          void ustaw_bandaz_na(short ile)
          {
                   if(istnieje())
@@ -23,6 +52,7 @@ class Rana
                            else if(ile==0) {if((stan|16)!=0) stan-=16;if((stan|8)!=0) stan-=8;}
                   }
          }
+         void kw();///kluczowe wydarzenie
 
 
          public:
@@ -89,10 +119,12 @@ public:
          void minela_runda(short war);
          void ulecz(short ile);
          void zwitaminuj(short ile){if(glikogen+ile<=300) glikogen+=ile; else glikogen=300;}
+
          void bandazuj_rane(short ile){if(rana.istnieje()) rana.obandazuj(ile);}
-         void oczysc_rane(){if(rana.istnieje()) rana.oczysc();}
+         bool oczysc_rane(){if(rana.istnieje()) return rana.oczysc(); return false;}
          void zerwij_bandaze_rany(){if(rana.istnieje()) rana.zerwij_bandaze();}
-         void posmaruj_rane(){if(rana.istnieje()) rana.posmarowana_zelem();}
+         bool posmaruj_rane(){if(rana.istnieje()) return rana.posmaruj_zelem(); return false;}
+         short bandaze_rany(){return rana.obandazowanie();}
 };
 
 

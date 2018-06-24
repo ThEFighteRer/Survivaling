@@ -469,7 +469,13 @@ Item* Item::wylosuj_item(int szansa_na_ubranie, int szansa_na_plecak, int szansa
          }
          else if(los<=szansa_na_medykamenty+szansa_na_bron+szansa_na_jedzenie+szansa_na_inne+szansa_na_plecak+szansa_na_ubranie)
          {
-                  return stworz_obiekt(2007);
+                  switch(losuj(1,4))
+                  {
+                           case 1: return stworz_obiekt(2007);
+                           case 2: return stworz_obiekt(8024);
+                           case 3: return stworz_obiekt(8025);
+                           case 4: return stworz_obiekt(2008);
+                  }
          }
          else {return stworz_obiekt(2007);}
 }
@@ -509,7 +515,16 @@ Item** Item::wylosuj_liste_itemow(int szansa_na_ubranie,int szansa_na_plecak,int
                            case 3: a[ile++] = stworz_obiekt(2005); break;
                            case 4: a[ile++] = stworz_obiekt(2020); break;
                   }
-         if(losuj(1,100) <= szansa_na_medykamenty) a[ile++] = stworz_obiekt(2007);
+         if(losuj(1,100) <= szansa_na_medykamenty)
+         {
+                  switch(losuj(1,4))
+                  {
+                           case 1: a[ile++] = stworz_obiekt(2007);break;
+                           case 2: a[ile++] = stworz_obiekt(8024);break;
+                           case 3: a[ile++] = stworz_obiekt(8025);break;
+                           case 4: a[ile++] = stworz_obiekt(2008);break;
+                  }
+         }
          if(losuj(1,100) <= szansa_na_bron)
          {
                   short los=losuj(1,11);

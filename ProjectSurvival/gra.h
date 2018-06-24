@@ -16,7 +16,7 @@ class Gra
          Swiat* swiat;
          bool przerwa=false;
          public:
-         bool godmode=1;
+         bool godmode=0;
          ALLEGRO_MUTEX *dla_lewej = al_create_mutex(), *dla_prawej = al_create_mutex();
 
 
@@ -73,7 +73,9 @@ class Gra
          void przesun_mapy(char strona, dla_grafiki *args, Swiat*swiat);
          bool zalozylismy_nowy_plecak=false;
 
+         czesc_ciala* wybierz_czesc_ciala(ALLEGRO_MOUSE_STATE myszka);
          czesc_ciala* wybierz_rane_czesci_ciala(ALLEGRO_MOUSE_STATE myszka);
+         ALLEGRO_MOUSE_STATE wybierz_miejsce_uzycia_w_menu_anatomii(int nr);
          void wykonaj_crafting(Przepis *p, Gracz *g, co_ma_gracz *co_mamy);
 
 
@@ -87,7 +89,7 @@ class Gra
 
          Gra(struct dla_grafiki* arg);
 
-         Item* uzyj(Item*a);
+         Item* uzyj(Item*a, bool wybralem_miejsce=false, punkt = punkt(0, 0));
          void dodaj_jedzenia(int ile);void dodaj_wody(int ile);
 
          void Rozpocznij_gre(struct dla_grafiki* arg);

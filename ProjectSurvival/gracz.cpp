@@ -3,6 +3,46 @@
 #include "swiat.h"
 #include <windows.h>
 
+
+
+
+void Objawy::usun_objaw(Objaw a)
+{
+         al_lock_mutex(mutex);
+         objaw.erase(std::find(objaw.begin(), objaw.end(), a));
+         al_unlock_mutex(mutex);
+}
+
+bool Objawy::jest_taki_objaw(Objaw a)
+{
+         al_lock_mutex(mutex);
+         bool b = std::find(objaw.begin(), objaw.end(), a)!=objaw.end();
+         al_unlock_mutex(mutex);
+         return b;
+}
+
+void Objawy::dodaj_objaw(Objaw a)
+{
+         al_lock_mutex(mutex);
+         if(std::find(objaw.begin(), objaw.end(), a)==objaw.end()) objaw.push_back(a);
+         al_unlock_mutex(mutex);
+}
+
+std::list<Objaw> Objawy::zwroc_liste_objawow()
+{
+         al_lock_mutex(mutex);
+         std::list<Objaw> b = std::list<Objaw>(objaw);
+         al_unlock_mutex(mutex);
+         return b;
+}
+
+void Rana::kw()
+{
+         Objekt *a;
+         if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
+}
+
+
 void Rana::minela_runda(short war)
 {
          if(!istnieje()) return;
@@ -69,6 +109,7 @@ void Rana::kontakt()///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem
                            stan-=4;
          }
          if(pozostalo+opoznienie<120) pozostalo+=opoznienie; else pozostalo=120;
+         kw();
 }
 
 void czesc_ciala::zadaj_obrazenia(short ile)
@@ -113,7 +154,7 @@ void czesc_ciala::ulecz(short ile)
 }
 
 
-Gracz :: Gracz():Objekt_zywy(10), klatka(40, 40), brzuch(30, 30), ramie_l(10, 10), ramie_p(10, 10), l_dlon(5, 5), p_dlon(5, 5)
+Gracz :: Gracz():Objekt_zywy(10), objaw(), klatka(40, 40), brzuch(30, 30), ramie_l(10, 10), ramie_p(10, 10), l_dlon(5, 5), p_dlon(5, 5)
                   , l_udo(15, 15), p_udo(15, 15), l_golen(10, 10), p_golen(10, 10)
 {
          czesc_ciala **t = new czesc_ciala*[4]; t[0]=&brzuch; t[1]=&ramie_l; t[2]=&ramie_p;t[3]=NULL; klatka.set_czesci_sasiednie(t);
@@ -435,7 +476,7 @@ int Gracz::szansa(Bron *b)
 
 what_happened Gracz::zostan_uderzony(int obrazenia, int kto, int ekstra, short wsp_zajecia)
 {
-         if(*Objekt::args->godmode) return success;
+         //if(*Objekt::args->godmode) return success;
          if(this==NULL) {std::cout<<"NULL na Gracz::zostan_uderzony"; return dead;}
          p_ruchu -= wsp_zajecia; if(p_ruchu<3) p_ruchu=3;
          int aaa=losuj(1,10); bool br=false;
@@ -501,6 +542,8 @@ bool Gracz::odejmij_hp_z_powodu_niedozywienia()
 
 bool Gracz::czy_zyje()
 {
+         if(*Objekt::args->godmode) return true;
+
          if(klatka.ile_hp()<=0 || brzuch.ile_hp()<=0)
          {
                   args->otwarte_menu_anatomii=true;Sleep(3000);args->otwarte_menu_anatomii=true;

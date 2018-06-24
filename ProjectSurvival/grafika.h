@@ -30,7 +30,7 @@ class graficzny
          void narysuj_duze_cyfry(int x, int y, int a);
          void namaluj_paski();
          static int najmniej_zero(int a);
-         void namaluj_paskek_anatomii(stan_czesci_ciala s, int a, int maxx, int x, int y);
+         void namaluj_paskek_anatomii(stan_czesci_ciala s, const int a, const int maxx, const int x, const int y);
          void namaluj_rane(int x, int y, char stan);
 
          dane_rysownicze jak_narysowac(int nr);
@@ -80,7 +80,7 @@ class graficzny
          *strzelanie_menu1,*strzelanie_menu1_1,*strzelanie_menu1_2,*strzelanie_menu1_3,*strzelanie_menu1_4,*strzelanie_menu2,*strzelanie_menu2_1,*strzelanie_menu2_2,
          *strzelanie_menu3,*strzelanie_menu3_1,*strzelanie_menu11,*strzelanie_menu12, *menu_szalasu, *menu_spania, *cyfry_duze,
          *menu_drzwi1,*menu_drzwi2,*menu_drzwi3, *submenu_przemieszcz, *uniwersalne_menu,*stol_sub_2,*stol_sub_1,*menu_strony,*zjawiska, *crafting_tlo, *woda_menu,
-         *crafting_el,*crafting_napisy, *menu_walka_lezacy, *menu_walka_lezacy_1, *menu_walka_lezacy_2, *efekty_medyczne, *cross;
+         *crafting_el,*crafting_napisy, *menu_walka_lezacy, *menu_walka_lezacy_1, *menu_walka_lezacy_2, *efekty_medyczne, *cross, *objaw;
          ALLEGRO_BITMAP **message = new ALLEGRO_BITMAP*[1], *kursor_aim;
 
 

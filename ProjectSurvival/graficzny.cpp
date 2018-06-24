@@ -434,6 +434,11 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   al_destroy_bitmap(pom);
                   al_convert_mask_to_alpha(krajobraz, al_map_rgb(255,0,255));
 
+                  pom= al_load_bitmap("img/interface/objaw.bmp");
+                  objaw = wyskaluj(pom, X,Y);
+                  al_destroy_bitmap(pom);
+                  al_convert_mask_to_alpha(objaw, al_map_rgb(255,0,255));
+
                   pom= al_load_bitmap("img/interface/efekty_medyczne.bmp");
                   efekty_medyczne = wyskaluj(pom, X,Y);
                   al_destroy_bitmap(pom);
@@ -1208,7 +1213,7 @@ int graficzny::najmniej_zero(int a)
          if(a>0) return a; else return 0;
 }
 
-void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, int a, int maxx, int x, int y)
+void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, const int a, const int maxx, const int x, const int y)
 {
          graficzny*g=this;
          al_draw_bitmap_region(g->pasek_anatomii, 0,0,a*2*g->args->X_kratka/maxx, 2*g->args->Y_kratka/3,x, y,0);
@@ -1232,7 +1237,7 @@ void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, int a, int maxx,
          al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero((maxx-maxx/100*100)/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+1.5*(20*g->args->rozdz_X/1920), y,0);
          al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(maxx-maxx/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+2.5*(20*g->args->rozdz_X/1920), y,0);}
 
-         namaluj_rane(x+g->X, y, stan.stan_rany);
+         namaluj_rane(x, y+g->Y, stan.stan_rany);
 }
 
 void graficzny::namaluj_rane(int x, int y, char stan)
