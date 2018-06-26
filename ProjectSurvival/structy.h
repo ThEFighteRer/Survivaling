@@ -3,6 +3,7 @@
 #include <random>
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 #include <algorithm>
 #include <memory>
@@ -365,14 +366,30 @@ public:
          }
 };
 
-struct stan_czesci_ciala
-{
-         char stan_rany;
-};
 
 class dla_grafiki
 {
+         std::list<Objaw> objawy;
+         ALLEGRO_MUTEX *mutex_listy_objawow = al_create_mutex();
+
          public:
+
+
+
+         std::list<Objaw> get_objawy()
+         {
+                  al_lock_mutex(mutex_listy_objawow);
+                  std::list<Objaw> o(objawy);
+                  al_unlock_mutex(mutex_listy_objawow);
+                  return o;
+         }
+         void zrob_objawy(std::list<Objaw> a)
+         {
+                  al_lock_mutex(mutex_listy_objawow);
+                  objawy.clear();
+                  objawy.insert(objawy.begin(), a.begin(), a.end());
+                  al_unlock_mutex(mutex_listy_objawow);
+         }
 
          unsigned char nat_osw = 1; ///naturalne oswietlenie calego swiata
          unsigned char nat_osw_alt = 0;
@@ -551,11 +568,29 @@ enum what_happened
 };
 
 
+punkt gdzie_ten_defekt(char czesc_ciala, char stan, char co, dla_grafiki *args);
 
 
 
 
 int losuj(int min, int max);
+
+
+
+///1-rana, 2-siniak, 4-cos, 8-bol
+         /*0 klatka;
+          1 brzuch;
+          2 ramie_l;
+          3 ramie_p;
+          4 l_dlon;
+          5 p_dlon;
+          6 l_udo;
+          7 p_udo;
+          8 l_golen;
+          9 p_golen;*/
+
+
+
 
 
 

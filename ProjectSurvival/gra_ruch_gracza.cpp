@@ -15,7 +15,31 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
          Gracz *gracz=swiat->aktualny, *g=swiat->aktualny; int X=args->X_kratka, Y=args->Y_kratka, mx=(myszka.x-args->X_kratka/2)/args->X_kratka
          , my=(myszka.y-args->Y_kratka/2)/args->Y_kratka;
          Plansza*p=swiat->aktualna;
-         if(swiat->aktualny==NULL) return;
+         if(swiat->aktualny==NULL) {masz_otworzyc_ekw=false; return;}
+         else if(masz_otworzyc_ekw && !g->ukryty && g->p_plecak!=NULL)
+         {
+                  masz_otworzyc_ekw=false;
+                  {zzn:zalozylismy_nowy_plecak=false;
+                           if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
+                  swiat->aktualna->ziemia[g->y][g->x]=Skrzynka::zamien_skrzynke_na_itemy(otwarty_ekw(myszka,klawiatura,args, new Skrzynka( swiat->aktualna->ziemia[g->y][g->x],9,20)));
+                  if(swiat->aktualna->ziemia[g->y][g->x]->ilosc==0) {delete swiat->aktualna->ziemia[g->y][g->x];swiat->aktualna->ziemia[g->y][g->x]=NULL;}
+                  if(zalozylismy_nowy_plecak)goto zzn;}
+         }
+         else if(masz_otworzyc_ekw && !g->ukryty && g->p_plecak==NULL)
+         {
+                  masz_otworzyc_ekw=false;
+                 {zzno:zalozylismy_nowy_plecak=false;
+                           if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
+                           swiat->aktualna->ziemia[g->y][g->x]=Skrzynka::zamien_skrzynke_na_itemy(otwarty_ekw(myszka,klawiatura,args, new Skrzynka( swiat->aktualna->ziemia[g->y][g->x],9,20)));
+                  if(swiat->aktualna->ziemia[g->y][g->x]->ilosc==0) {delete swiat->aktualna->ziemia[g->y][g->x];swiat->aktualna->ziemia[g->y][g->x]=NULL;}
+                  if(zalozylismy_nowy_plecak)goto zzno;}
+         }
+         else if(masz_wykonac_nast_runde)
+         {
+                  masz_wykonac_nast_runde = false;
+                  args->lewy_krok=false;args->dol_krok=false;args->gora_krok=false;args->prawy_krok=false;
+                   args->myszka_zajeta=true;swiat->Nastepna_runda();args->myszka_zajeta=false;
+         }
          else if(!g->ukryty && (myszka.buttons & 1) && jest_na_polu(args, myszka, gracz->x, gracz->y))
          {
                   args->lewy_krok=false;args->prawy_krok=false;args->gora_krok=false;args->dol_krok=false;

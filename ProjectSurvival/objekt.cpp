@@ -562,9 +562,6 @@ zrodlo_swiatla Objekt::swiatlo()
                   else if(g->p_kieszenp!=NULL && g->p_kieszenp->czym_jest==2201) return zrodlo_swiatla(1, 38);
          }
 
-
-
-
          if(this->stan&1) return zrodlo_swiatla(1, 90, 33);
          return zrodlo_swiatla(0,0);
 }

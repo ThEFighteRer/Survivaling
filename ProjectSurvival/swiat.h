@@ -555,6 +555,7 @@ class Objekt_pol_martwy : public Objekt
 
 class Gracz : public Objekt_zywy///10
 {
+         czesc_ciala **czesc = NULL;
          void ogrzej_sie_od_zrodel_ognia();
 
          Objekt_zywy * sprzymierzeni = nullptr;
@@ -569,10 +570,11 @@ class Gracz : public Objekt_zywy///10
 
          ALLEGRO_MUTEX *mutex_itemow_zalozonych = al_create_mutex();
          int *graph = new int[10];///to tablica tylko dla grafiki
+         const Objawy objaw;
 
          public:
 
-         const Objaw objaw;
+
 
          bool powinien_zerknac_w_medycyne = false;
 
@@ -639,6 +641,7 @@ class Gracz : public Objekt_zywy///10
          void dodaj_skupienie(Objekt *a);
          short ile_bloku(Objekt *a);
          short suma_hp_rak() {return ramie_l.ile_hp() + ramie_p.ile_hp() + p_dlon.ile_hp() + l_dlon.ile_hp();}
+         std::list<Objaw> lista_objawow(){return objaw.zwroc_liste_objawow();}
 
          void dodaj_cieplo(short ile) {if(cieplo_a+ile<cieplo_max) cieplo_a+=ile; else cieplo_a=cieplo_max;}
 

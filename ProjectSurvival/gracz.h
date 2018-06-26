@@ -10,10 +10,15 @@ enum Objaw
          bol, mocny_bol
 };
 
+class Choroba
+{
+
+};
+
 class Objawy
 {
          ALLEGRO_MUTEX *mutex = al_create_mutex();
-         std::list<Objaw> objaw;
+         std::list<Objaw> *objaw = new std::list<Objaw>();
 
          public:
          Objawy()
@@ -23,13 +28,48 @@ class Objawy
          ~Objawy()
          {
                   al_destroy_mutex(mutex);
+                  delete objaw;
          }
 
-         std::list<Objaw> zwroc_liste_objawow();///grafika
-         bool jest_taki_objaw(Objaw a);
+         std::list<Objaw> zwroc_liste_objawow() const;///grafika
+         bool jest_taki_objaw(Objaw a) const;
 
-         void dodaj_objaw(Objaw a);
-         void usun_objaw(Objaw a);
+         void dodaj_objaw(Objaw a) const;
+         void usun_objaw(Objaw a) const;
+};
+
+class Siniak
+{
+         char pozostalo = 0;
+         char stan = 0;///1(*2), 2 - bity dla zawansowania 0123, 4 - posmarowany zelem, 8 - istnieje
+
+         void kw();///kluczowe wydarzenie
+         void ustaw_zaawansowanie_na(short ile)
+         {
+                  if(istnieje())
+                  {
+                           if(ile>2) {stan|=1; stan|=2;}
+                           else if(ile==2) {stan|=1; if((stan&2)!=0) stan-=2;}
+                           else if(ile==1) {stan|=2;if((stan&1)!=0) stan-=1;}
+                           else if(ile==0) {if((stan&2)!=0) stan-=2;if((stan&1)!=0) stan-=1;}
+                  }
+         }
+
+         public:
+
+         Siniak()
+         {
+
+         }
+
+         short zaawansowanie() {return istnieje()*((((stan&1)!=0)*2) + ((stan&2)!=0));}
+         bool posmarowany_zelem() {return istnieje() && (stan&4) != 0;}
+         char stan_() {return stan;}
+         bool istnieje() {return (stan&8)!=0;}
+
+         bool posmaruj_zelem(){if(istnieje()) {stan|=4; return true;} return false;}
+         void minela_runda(short war);
+         void kontakt();
 };
 
 class Rana
@@ -47,9 +87,9 @@ class Rana
                   if(istnieje())
                   {
                            if(ile>2) {stan|=8; stan|=16;}
-                           else if(ile==2) {stan|=8; if((stan|16)!=0) stan-=16;}
-                           else if(ile==1) {stan|=16;if((stan|8)!=0) stan-=8;}
-                           else if(ile==0) {if((stan|16)!=0) stan-=16;if((stan|8)!=0) stan-=8;}
+                           else if(ile==2) {stan|=8; if((stan&16)!=0) stan-=16;}
+                           else if(ile==1) {stan|=16;if((stan&8)!=0) stan-=8;}
+                           else if(ile==0) {if((stan&16)!=0) stan-=16;if((stan&8)!=0) stan-=8;}
                   }
          }
          void kw();///kluczowe wydarzenie
@@ -89,17 +129,25 @@ class Rana
          void zerwij_bandaze(){if((stan&16)!=0) stan-=16;if((stan&8)!=0) stan-=8;}
 };
 
-
+struct stan_czesci_ciala
+{
+         char stan_rany;
+         char stan_siniaka;
+         bool boli;
+         char co_jest;
+};
 class czesc_ciala
 {
+         bool boli = false;
+
          czesc_ciala **sasiednie = NULL;///ostatni to null
          const char max_bezwzgledny;
          char hp=0, maxx=0, leczenie=0, glikogen = 60; ///leczymy co 60; glokogen to magazynowanie maksymalne leczenia
          Rana rana;
+         Siniak siniak;
          czesc_ciala *polaczone = NULL; ///czesci ciala bezposrednio polaczone
 
 public:
-
          czesc_ciala(short hp, short maxx):max_bezwzgledny(maxx)
          {
                   this->hp = hp; this->maxx = maxx;
@@ -109,11 +157,24 @@ public:
                   delete [] sasiednie;
          }
 
+         stan_czesci_ciala stan();
          short ile_hp(){return short(hp);}
          short jaki_max_bezwzgledny(){return short(max_bezwzgledny);}
          bool da_sie_uleczyc(){return hp<maxx;}
          char stan_rany(){return rana.stan_();}
          void set_czesci_sasiednie(czesc_ciala **c){if(sasiednie==NULL) sasiednie = c; else {std::cout<<"juz sa sasiednie"; throw "G";}}
+         bool czy_boli() {return boli;}
+         char co_jest(){return rana.istnieje() + 2*siniak.istnieje() + 4*0 + 8*boli;}///1-rana, 2-siniak, 4-cos, 8-bol
+         /*0 klatka;
+          1 brzuch;
+          2 ramie_l;
+          3 ramie_p;
+          4 l_dlon;
+          5 p_dlon;
+          6 l_udo;
+          7 p_udo;
+          8 l_golen;
+          9 p_golen;*/
 
          void zadaj_obrazenia(short ile);
          void minela_runda(short war);

@@ -378,6 +378,8 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   pom = al_load_bitmap("img/interface/menu_strony.bmp"); menu_strony=wyskaluj_menu(pom,menu_x,menu_y);
                   pom = al_load_bitmap("img/interface/beczka_sub.bmp"); beczka_sub=wyskaluj_menu(pom,menu_x,menu_y);
                   pom = al_load_bitmap("img/interface/woda_menu.bmp"); woda_menu=wyskaluj_menu(pom,menu_x,menu_y);
+                  pom = al_load_bitmap("img/interface/menuplecakanatomia.bmp"); menuplecakanatomia=wyskaluj_menu(pom,menu_x,menu_y);
+
 
                   pom = al_load_bitmap("img/interface/menu_szalas.bmp"); menu_szalasu=wyskaluj_menu(pom,menu_x,menu_y);
 
@@ -677,16 +679,37 @@ void graficzny::rysuj_menu_anatomii()
 {
          graficzny*g = this;
          al_draw_bitmap(g->anatomia, 0,0,0);
-         g->namaluj_paskek_anatomii(g->args->rbrzuch, g->args->brzuch_a, g->args->brzuch_max, 10*g->args->X_kratka, 5*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rklatka, g->args->klatka_a, g->args->klatka_max, 10*g->args->X_kratka, 2*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rramie_l, g->args->l_ramie_a, g->args->l_ramie_max, 13*g->args->X_kratka, 4*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rramie_p, g->args->p_ramie_a, g->args->p_ramie_max, 7*g->args->X_kratka, 4*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rl_dlon, g->args->l_dlon_a, g->args->l_dlon_max, 15*g->args->X_kratka, 7*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rp_dlon, g->args->p_dlon_a, g->args->p_dlon_max, 5*g->args->X_kratka, 7*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rl_udo, g->args->l_udo_a, g->args->l_udo_max, 12*g->args->X_kratka, 9*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rp_udo, g->args->p_udo_a, g->args->p_udo_max, 8*g->args->X_kratka, 9*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rl_golen, g->args->l_golen_a, g->args->l_golen_max, 13*g->args->X_kratka, 12*g->args->Y_kratka);
-         g->namaluj_paskek_anatomii(g->args->rp_golen, g->args->p_golen_a, g->args->p_golen_max, 7*g->args->X_kratka, 12*g->args->Y_kratka);
+         g->namaluj_paskek_anatomii(g->args->rbrzuch, g->args->brzuch_a, g->args->brzuch_max, 10*g->args->X_kratka, 5*g->args->Y_kratka, 1, 0);
+         g->namaluj_paskek_anatomii(g->args->rklatka, g->args->klatka_a, g->args->klatka_max, 10*g->args->X_kratka, 2*g->args->Y_kratka, 0, 0);
+         g->namaluj_paskek_anatomii(g->args->rramie_l, g->args->l_ramie_a, g->args->l_ramie_max, 13*g->args->X_kratka, 4*g->args->Y_kratka, 2, 1);
+         g->namaluj_paskek_anatomii(g->args->rramie_p, g->args->p_ramie_a, g->args->p_ramie_max, 7*g->args->X_kratka, 4*g->args->Y_kratka, 3, 2);
+         g->namaluj_paskek_anatomii(g->args->rl_dlon, g->args->l_dlon_a, g->args->l_dlon_max, 15*g->args->X_kratka, 7*g->args->Y_kratka, 4, 2);
+         g->namaluj_paskek_anatomii(g->args->rp_dlon, g->args->p_dlon_a, g->args->p_dlon_max, 5*g->args->X_kratka, 7*g->args->Y_kratka, 5, 1);
+         g->namaluj_paskek_anatomii(g->args->rl_udo, g->args->l_udo_a, g->args->l_udo_max, 12*g->args->X_kratka, 9*g->args->Y_kratka, 6, 1);
+         g->namaluj_paskek_anatomii(g->args->rp_udo, g->args->p_udo_a, g->args->p_udo_max, 8*g->args->X_kratka, 9*g->args->Y_kratka, 7, 2);
+         g->namaluj_paskek_anatomii(g->args->rl_golen, g->args->l_golen_a, g->args->l_golen_max, 13*g->args->X_kratka, 12*g->args->Y_kratka, 8, 0);
+         g->namaluj_paskek_anatomii(g->args->rp_golen, g->args->p_golen_a, g->args->p_golen_max, 7*g->args->X_kratka, 12*g->args->Y_kratka, 9, 0);
+         rysuj_objawy();
+}
+/// 1234 - 0, 123g4 -1, 4g312 - 2
+
+void graficzny::rysuj_objawy()
+{
+         std::list<Objaw> ob = args->get_objawy();
+         short licznik = 0;
+         for(auto it=ob.begin(); it != ob.end(); ++it)
+         {
+                  switch(*it)
+                  {
+                  case bol:
+                           al_draw_bitmap_region(objaw, 0, 0, X*5, Y, 1275, 150 + licznik++*75, 0);
+                           break;
+                  case mocny_bol:
+                           al_draw_bitmap_region(objaw, 0, Y, X*5, Y, 1275, 150 + licznik++*75, 0);
+                           break;
+                  }
+         }
+
 }
 
 void graficzny::narysuj_zegarek()
@@ -867,6 +890,7 @@ case 52:{return menu_walka_lezacy;}
 case 53:{return menu_walka_lezacy_1;}
 case 54:{return menu_walka_lezacy_2;}
 case 55:{return woda_menu;}
+case 56:{return menuplecakanatomia;}
 
 
     ///statyczne numery musza byc <256
@@ -1213,7 +1237,7 @@ int graficzny::najmniej_zero(int a)
          if(a>0) return a; else return 0;
 }
 
-void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, const int a, const int maxx, const int x, const int y)
+void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, const int a, const int maxx, const int x, const int y, char czesc_ciala, char rozklad)
 {
          graficzny*g=this;
          al_draw_bitmap_region(g->pasek_anatomii, 0,0,a*2*g->args->X_kratka/maxx, 2*g->args->Y_kratka/3,x, y,0);
@@ -1237,7 +1261,25 @@ void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, const int a, con
          al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero((maxx-maxx/100*100)/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+1.5*(20*g->args->rozdz_X/1920), y,0);
          al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(maxx-maxx/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+2.5*(20*g->args->rozdz_X/1920), y,0);}
 
-         namaluj_rane(x, y+g->Y, stan.stan_rany);
+         if((stan.co_jest&1)!=0)
+         {
+                  punkt zm = gdzie_ten_defekt(czesc_ciala, stan.co_jest, 1, args);
+                  namaluj_rane(zm.x, zm.y, stan.stan_rany);
+         }
+         if((stan.co_jest&2)!=0)
+         {
+                  punkt zm = gdzie_ten_defekt(czesc_ciala, stan.co_jest, 2, args);
+                  namaluj_siniak(zm.x, zm.y, stan.stan_siniaka);
+         }
+         //zm = gdzie_ta_rana(czesc_ciala, stan.co_jest, 4);
+         //namaluj_rane(zm.x, zm.y, stan.stan_rany);
+         if(stan.boli)
+         {
+                  punkt zm = gdzie_ten_defekt(czesc_ciala, stan.co_jest, 8, args);
+                  namaluj_bol(zm.x, zm.y, stan.stan_rany);
+         }
+
+
 }
 
 void graficzny::namaluj_rane(int x, int y, char stan)
@@ -1261,6 +1303,22 @@ void graficzny::namaluj_rane(int x, int y, char stan)
                   }
                   if((stan&4)!=0) al_draw_bitmap_region(efekty_medyczne, X*8, 0, X, Y, x, y, 0);
          }
+}
+
+void graficzny::namaluj_siniak(int x, int y, char stan)
+{
+         ///1(*2), 2 - bity dla zawansowania 0123, 4 - posmarowany zelem, 8 - istnieje
+         if((stan&8)!=0)
+         {
+                  al_draw_bitmap_region(efekty_medyczne, X*(((stan&1)!=0)*2+((stan&2)!=0)), Y, X, Y, x, y, 0);
+                  if((stan&4)!=0)
+                           al_draw_bitmap_region(efekty_medyczne, X*8, 0, X, Y, x, y, 0);
+         }
+}
+
+void graficzny::namaluj_bol(int x, int y, char stan)
+{
+         al_draw_bitmap_region(efekty_medyczne, X*4, Y, X, Y, x, y, 0);
 }
 
 void graficzny::namaluj_paski()

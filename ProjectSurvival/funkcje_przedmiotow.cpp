@@ -366,7 +366,7 @@ czesc_ciala* Gra::wybierz_czesc_ciala(ALLEGRO_MOUSE_STATE myszka)
 
 czesc_ciala* Gra::wybierz_rane_czesci_ciala(ALLEGRO_MOUSE_STATE myszka)
 {
-         if(jest_nad_klatka_rana(myszka)) return &swiat->aktualny->klatka;
+         if(jest_nad_klatka_rana(myszka)) return &swiat->aktualny->klatka;//return gdzie_ta_rana(0, swiat->aktualny->co_jest(), 1);
          if(jest_nad_brzuch_rana(myszka)) return &swiat->aktualny->brzuch;
          if(jest_nad_l_ramie_rana(myszka)) return &swiat->aktualny->ramie_l;
          if(jest_nad_p_ramie_rana(myszka)) return &swiat->aktualny->ramie_p;
@@ -379,8 +379,9 @@ czesc_ciala* Gra::wybierz_rane_czesci_ciala(ALLEGRO_MOUSE_STATE myszka)
          return NULL;
 }
 
-bool Gra::jest_nad_klatka_rana(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>10*args->X_kratka&&myszka.x<11*args->X_kratka&&myszka.y>3*args->Y_kratka&&myszka.y<4*args->Y_kratka);}
+/*bool Gra::jest_nad_klatka_rana(ALLEGRO_MOUSE_STATE myszka)
+{//return gdzie_ten_defekt(0, swiat->aktualny->klatka->co_jest(), 1, args);
+         return (myszka.x>10*args->X_kratka&&myszka.x<11*args->X_kratka&&myszka.y>3*args->Y_kratka&&myszka.y<4*args->Y_kratka);}
 bool Gra::jest_nad_brzuch_rana(ALLEGRO_MOUSE_STATE myszka)
 {return (myszka.x>10*args->X_kratka&&myszka.x<11*args->X_kratka&&myszka.y>6*args->Y_kratka&&myszka.y<7*args->Y_kratka);}
 bool Gra::jest_nad_l_ramie_rana(ALLEGRO_MOUSE_STATE myszka)
@@ -398,9 +399,51 @@ bool Gra::jest_nad_p_udo_rana(ALLEGRO_MOUSE_STATE myszka)
 bool Gra::jest_nad_p_golen_rana(ALLEGRO_MOUSE_STATE myszka)
 {return (myszka.x>7*args->X_kratka&&myszka.x<8*args->X_kratka&&myszka.y>13*args->Y_kratka&&myszka.y<14*args->Y_kratka);}
 bool Gra::jest_nad_l_golen_rana(ALLEGRO_MOUSE_STATE myszka)
-{return (myszka.x>13*args->X_kratka&&myszka.x<14*args->X_kratka&&myszka.y>13*args->Y_kratka&&myszka.y<14*args->Y_kratka);}
+{return (myszka.x>13*args->X_kratka&&myszka.x<14*args->X_kratka&&myszka.y>13*args->Y_kratka&&myszka.y<14*args->Y_kratka);}*/
 
+bool Gra::jest_nad_klatka_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(0, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_brzuch_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(1, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_l_ramie_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(2, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_p_ramie_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(3, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_l_dlon_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(4, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_p_dlon_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(5, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_l_udo_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(6, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_p_udo_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(7, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_p_golen_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(8, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
+bool Gra::jest_nad_l_golen_rana(ALLEGRO_MOUSE_STATE myszka)
+{punkt zm = gdzie_ten_defekt(9, swiat->aktualny->klatka.co_jest(), 1, args);
+return (myszka.x>zm.x&&myszka.x<zm.x+args->X_kratka&&myszka.y>zm.y&&myszka.y<zm.y+args->Y_kratka);}
 
+///0-ogolnie czesc ciala, 1-rana, 2-siniak, 4-cos, 8-bol
+
+         /*0 klatka;
+          1 brzuch;
+          2 ramie_l;
+          3 ramie_p;
+          4 l_dlon;
+          5 p_dlon;
+          6 l_udo;
+          7 p_udo;
+          8 l_golen;
+          9 p_golen;*/
 
 
 

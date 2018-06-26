@@ -105,9 +105,90 @@ int losuj(int min, int max)
          return rand()%(max-min+1)+min;
 }
 
+///1-rana, 2-siniak, 4-cos, 8-bol
+         /*0 klatka;
+          1 brzuch;
+          2 ramie_l;
+          3 ramie_p;
+          4 l_dlon;
+          5 p_dlon;
+          6 l_udo;
+          7 p_udo;
+          8 l_golen;
+          9 p_golen;*/
 
+/// 1234 - 0, 123g4 -1, 4g312 - 2
+punkt gdzie_ten_defekt(char czesc_ciala, char stan, char co, dla_grafiki *args)///co 0 nic, 1-rana, 2-siniak, 3-cos, 4-bol
+{
+         punkt zm; short rozklad;
+         switch(czesc_ciala)///lewy gorny rog paska hp
+         {
+                  case 0: zm.x=10*args->X_kratka; zm.y=2*args->Y_kratka; rozklad = 0; break;
+                  case 1: zm.x=10*args->X_kratka; zm.y=5*args->Y_kratka; rozklad = 0; break;
+                  case 2: zm.x=13*args->X_kratka; zm.y=4*args->Y_kratka; rozklad = 1; break;
+                  case 3: zm.x=7*args->X_kratka ; zm.y=4*args->Y_kratka; rozklad = 2; break;
+                  case 4: zm.x=15*args->X_kratka ; zm.y=7*args->Y_kratka; rozklad = 2; break;
+                  case 5: zm.x=5*args->X_kratka ; zm.y=7*args->Y_kratka; rozklad = 1; break;
+                  case 6: zm.x=12*args->X_kratka ; zm.y=9*args->Y_kratka; rozklad = 1; break;
+                  case 7: zm.x=8*args->X_kratka ; zm.y=9*args->Y_kratka; rozklad = 2; break;
+                  case 8: zm.x=7*args->X_kratka ; zm.y=12*args->Y_kratka; rozklad = 0; break;
+                  case 9: zm.x=13*args->X_kratka ; zm.y=12*args->Y_kratka; rozklad = 0; break;
+                  default: std::cout<<"NIE MA TAKIEJ CZESCI CIALA"; throw "G";
+         }
 
+         if(co!=0) zm.y += args->Y_kratka;
+         switch(rozklad)
+         {
+         case 0:
+                  {
+                           if(co==0) break;
+                           else if(co==1) {break;}
+                           else if(co==2) {if((stan&1)!=0) zm.x+=args->X_kratka;break;}
+                           else if(co==3) {if((stan&1)!=0 && (stan&2)!=0) zm.x-=args->X_kratka; else if((stan&1)!=0 || (stan&2)!=0) zm.x+=args->X_kratka;break;}
+                           else if(co==4)
+                           {
+                                    short ile = (stan&1)!=0 + (stan&2)!=0 + (stan&4)!=0;
+                                    if(ile==3) zm.x+=2*args->X_kratka;
+                                    else if(ile==2) zm.x-=args->X_kratka;
+                                    else if(ile==1) zm.x+=args->X_kratka;
+                                    break;
+                           }
+                  break;}
+         case 1:
+                  {
+                           if(co==0) break;
+                           else if(co==1) {break;}
+                           else if(co==2) {if((stan&1)!=0) zm.x+=args->X_kratka;break;}
+                           else if(co==3) {if((stan&1)!=0 && (stan&2)!=0) {zm.x+=2*args->X_kratka;} else if((stan&1)!=0 || (stan&2)!=0) zm.x+=args->X_kratka;break;}
+                           else if(co==4)
+                           {
+                                    short ile = (stan&1)!=0 + (stan&2)!=0 + (stan&4)!=0;
+                                    if(ile==3) {zm.x+=2*args->X_kratka; zm.y-=args->Y_kratka;}
+                                    else if(ile==2) zm.x+=2*args->X_kratka;
+                                    else if(ile==1) zm.x+=args->X_kratka;
+                                    break;
+                           }
+                  break;}
+         case 2:
+                  {
+                           if(co==0) break;
+                           else if(co==1) {break;}
+                           else if(co==2) {if((stan&1)!=0) zm.x+=args->X_kratka;break;}
+                           else if(co==3) {if((stan&1)!=0 && (stan&2)!=0) {zm.x-=args->X_kratka;} else if((stan&1)!=0 || (stan&2)!=0) zm.x+=args->X_kratka;break;}
+                           else if(co==4)
+                           {
+                                    short ile = (stan&1)!=0 + (stan&2)!=0 + (stan&4)!=0;
+                                    if(ile==3) {zm.x-=args->X_kratka; zm.y-=args->Y_kratka;}
+                                    else if(ile==2) zm.x-=args->X_kratka;
+                                    else if(ile==1) zm.x+=args->X_kratka;
+                                    break;
+                           }
+                  break;}
+         }
+///1-rana, 2-siniak, 4-cos, 8-bol
 
+         return zm;
+}
 
 
 

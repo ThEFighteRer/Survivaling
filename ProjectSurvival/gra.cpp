@@ -307,21 +307,27 @@ void* Obliczanie_grafiki(ALLEGRO_THREAD *thr,void * arg)
 
                   if(ggg)
                   {
-                  args->cos_nowego_w_medycynie = ggg->powinien_zerknac_w_medycyne;
-                  Gracz*g=ggg;args->kondycja=g->kondycja;
-                  args->woda_a=g->woda_a,args->jedzenie_max=g->jedzenie_max, args->jedzenie_a=g->jedzenie_a,args->cieplo_max=g->cieplo_max,
-                  args->woda_max=g->woda_max,args->cieplo_a=g->cieplo_a,args->energia_max=g->energia_max, args->energia_a=g->energia_a;
+                           args->cos_nowego_w_medycynie = ggg->powinien_zerknac_w_medycyne;
+                           Gracz*g=ggg;args->kondycja=g->kondycja;
+                           args->woda_a=g->woda_a,args->jedzenie_max=g->jedzenie_max, args->jedzenie_a=g->jedzenie_a,args->cieplo_max=g->cieplo_max,
+                           args->woda_max=g->woda_max,args->cieplo_a=g->cieplo_a,args->energia_max=g->energia_max, args->energia_a=g->energia_a;
 
-                   args->klatka_max=g->klatka.jaki_max_bezwzgledny(), args->klatka_a=g->klatka.ile_hp(), args->brzuch_max=g->brzuch.jaki_max_bezwzgledny(), args->brzuch_a=g->brzuch.ile_hp(),
-                   args->l_ramie_max=g->ramie_l.jaki_max_bezwzgledny(),args->l_ramie_a=g->ramie_l.ile_hp(), args->p_ramie_max=g->ramie_p.jaki_max_bezwzgledny(), args->p_ramie_a=g->ramie_p.ile_hp(),
-                   args->l_dlon_max=g->l_dlon.jaki_max_bezwzgledny(), args->l_dlon_a=g->l_dlon.ile_hp(), args->p_dlon_max=g->p_dlon.jaki_max_bezwzgledny(), args->p_dlon_a=g->p_dlon.ile_hp()
-                  , args->l_udo_max=g->l_udo.jaki_max_bezwzgledny(), args->l_udo_a=g->l_udo.ile_hp(), args->p_udo_max=g->p_udo.jaki_max_bezwzgledny(), args->p_udo_a=g->p_udo.ile_hp(),
-                   args->l_golen_max=g->l_golen.jaki_max_bezwzgledny(), args->l_golen_a=g->l_golen.ile_hp(), args->p_golen_max=g->p_golen.jaki_max_bezwzgledny(), args->p_golen_a=g->p_golen.ile_hp();
+                           if(args->otwarte_menu_anatomii)
+                           {
+                                    args->klatka_max=g->klatka.jaki_max_bezwzgledny(), args->klatka_a=g->klatka.ile_hp(), args->brzuch_max=g->brzuch.jaki_max_bezwzgledny(), args->brzuch_a=g->brzuch.ile_hp(),
+                                     args->l_ramie_max=g->ramie_l.jaki_max_bezwzgledny(),args->l_ramie_a=g->ramie_l.ile_hp(), args->p_ramie_max=g->ramie_p.jaki_max_bezwzgledny(), args->p_ramie_a=g->ramie_p.ile_hp(),
+                                     args->l_dlon_max=g->l_dlon.jaki_max_bezwzgledny(), args->l_dlon_a=g->l_dlon.ile_hp(), args->p_dlon_max=g->p_dlon.jaki_max_bezwzgledny(), args->p_dlon_a=g->p_dlon.ile_hp()
+                                    , args->l_udo_max=g->l_udo.jaki_max_bezwzgledny(), args->l_udo_a=g->l_udo.ile_hp(), args->p_udo_max=g->p_udo.jaki_max_bezwzgledny(), args->p_udo_a=g->p_udo.ile_hp(),
+                                     args->l_golen_max=g->l_golen.jaki_max_bezwzgledny(), args->l_golen_a=g->l_golen.ile_hp(), args->p_golen_max=g->p_golen.jaki_max_bezwzgledny(), args->p_golen_a=g->p_golen.ile_hp();
 
-                   args->rklatka.stan_rany=g->klatka.stan_rany(),args->rbrzuch.stan_rany=g->brzuch.stan_rany(), args->rramie_l.stan_rany=g->ramie_l.stan_rany(), args->rramie_p.stan_rany=g->ramie_p.stan_rany(),
-                    args->rl_dlon.stan_rany=g->l_dlon.stan_rany(),args->rp_dlon.stan_rany=g->p_dlon.stan_rany(),args->rl_udo.stan_rany=g->l_udo.stan_rany(),
-                    args->rp_udo.stan_rany=g->p_udo.stan_rany(), args->rl_golen.stan_rany=g->l_golen.stan_rany(), args->rp_golen.stan_rany=g->p_golen.stan_rany();
-                   }
+                                     args->rklatka=g->klatka.stan(),args->rbrzuch=g->brzuch.stan(), args->rramie_l=g->ramie_l.stan(), args->rramie_p=g->ramie_p.stan(),
+                                      args->rl_dlon=g->l_dlon.stan(),args->rp_dlon=g->p_dlon.stan(),args->rl_udo=g->l_udo.stan(),
+                                      args->rp_udo=g->p_udo.stan(), args->rl_golen=g->l_golen.stan(), args->rp_golen=g->p_golen.stan();
+
+                                    args->zrob_objawy(ggg->lista_objawow());
+                           }
+
+                  }
                   if(args->melduj_grafike) std::cout<<"3";
 
                   if(args->otwarty_ekwipunek)
@@ -753,6 +759,7 @@ Skrzynka* Gra::otwarty_ekw(ALLEGRO_MOUSE_STATE myszka,
                   else if(myszka.buttons&1 && myszka.x>args->X_kratka*14 && myszka.x<args->X_kratka*19 && myszka.y>12*args->Y_kratka && myszka.y<14*args->Y_kratka)
                   {
                            poczekaj_na_myszke(1); crafting(myszka, klawiatura);
+                           if(masz_wykonac_nast_runde) break;
                   }
                   else if(lewa!=NULL && args->eq_przesuiniecie_z>0 && myszka.buttons&1 && myszka.x>args->X_kratka*10 && myszka.x<args->X_kratka*11 && myszka.y>1*args->Y_kratka && myszka.y<2*args->Y_kratka)
                   {
@@ -1375,6 +1382,8 @@ Skrzynka* Gra::otwarty_ekw(ALLEGRO_MOUSE_STATE myszka,
                   else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y>args->p_pozycja_y+7*args->Y_kratka)
                   {
                            poczekaj_na_myszke(1);anatomia(myszka,klawiatura);
+                           if(masz_wykonac_nast_runde)
+                                    break;
                   }
                   else akt = false;
 
@@ -1491,6 +1500,10 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                   {
                            poczekaj_na_myszke(1); break;
                   }
+                  else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y<args->Y_kratka*2.5)
+                  {
+                           masz_wykonac_nast_runde = true; break;
+                  }
                   else if(myszka.buttons&2)
                   {
                            poczekaj_na_myszke(2);
@@ -1527,6 +1540,35 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                                              case 0:break;
                                     }
                                     delete menu; menu=NULL;
+                           }
+                           else if(!g->ukryty && myszka.buttons&2 && jest_nad_plecakiem(myszka) && g->p_plecak!=NULL)
+                           {
+                                     poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[2]; for(int i=0;i<2;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(n, 2, 56);int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    switch (wybor)
+                                    {
+                                             case 1:if(args->otwarty_ekwipunek==false && pobierz_punkty_ruchu(3))
+                                                      masz_otworzyc_ekw=true;
+                                             break;
+                                             case 2:{informacje(g->p_plecak);}break;
+                                             case 0:break;
+                                    }
+                                    delete menu; menu=NULL;
+                                    if(wybor==1) break;
+                           }
+                           else if(!g->ukryty && myszka.buttons&2 && jest_nad_plecakiem(myszka) && g->p_plecak==NULL)
+                           {
+                                     poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[1]; for(int i=0;i<1;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
+                                    specyfikacja_menu* menu=new specyfikacja_menu(n, 1, 25);int wybor=Menu(myszka.x, myszka.y, args, menu);
+                                    switch (wybor)
+                                    {
+                                             case 1:if(args->otwarty_ekwipunek==false && pobierz_punkty_ruchu(3))
+                                                      masz_otworzyc_ekw=true;
+                                             break;
+                                             case 0:break;
+                                    }
+                                    delete menu; menu=NULL;
+                                    if(wybor==1) break;
                            }
                            else if(myszka.buttons&2 && jest_nad_rekami(myszka) && g->p_rece!=NULL)
                            {
@@ -1821,10 +1863,15 @@ void Gra::crafting(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                   {
                            while(true) {al_rest(0.01);al_get_keyboard_state(&klawiatura);if(!al_key_down(&klawiatura, ALLEGRO_KEY_H))break;}
                            anatomia(myszka,klawiatura);
+                           if(masz_wykonac_nast_runde) break;
                   }
                   else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y>args->p_pozycja_y+7*args->Y_kratka)
                   {
-                           poczekaj_na_myszke(1); anatomia(myszka,klawiatura);
+                           poczekaj_na_myszke(1); anatomia(myszka,klawiatura); if(masz_wykonac_nast_runde) break;
+                  }
+                  else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y<args->Y_kratka*2.5)
+                  {
+                           masz_wykonac_nast_runde = true; break;
                   }
                   /*else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y>args->p_pozycja_y+7*args->Y_kratka)
                   {

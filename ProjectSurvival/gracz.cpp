@@ -6,34 +6,67 @@
 
 
 
-void Objawy::usun_objaw(Objaw a)
+void Objawy::usun_objaw(Objaw a) const
 {
          al_lock_mutex(mutex);
-         objaw.erase(std::find(objaw.begin(), objaw.end(), a));
+         objaw->erase(std::find(objaw->begin(), objaw->end(), a));
          al_unlock_mutex(mutex);
 }
 
-bool Objawy::jest_taki_objaw(Objaw a)
+bool Objawy::jest_taki_objaw(Objaw a) const
 {
          al_lock_mutex(mutex);
-         bool b = std::find(objaw.begin(), objaw.end(), a)!=objaw.end();
+         bool b = std::find(objaw->begin(), objaw->end(), a)!=objaw->end();
          al_unlock_mutex(mutex);
          return b;
 }
 
-void Objawy::dodaj_objaw(Objaw a)
+void Objawy::dodaj_objaw(Objaw a) const
 {
          al_lock_mutex(mutex);
-         if(std::find(objaw.begin(), objaw.end(), a)==objaw.end()) objaw.push_back(a);
+         if(std::find(objaw->begin(), objaw->end(), a)==objaw->end()) objaw->push_back(a);
          al_unlock_mutex(mutex);
 }
 
-std::list<Objaw> Objawy::zwroc_liste_objawow()
+std::list<Objaw> Objawy::zwroc_liste_objawow() const
 {
          al_lock_mutex(mutex);
-         std::list<Objaw> b = std::list<Objaw>(objaw);
+         std::list<Objaw> b = std::list<Objaw>(*objaw);
          al_unlock_mutex(mutex);
          return b;
+}
+
+void Siniak::minela_runda(short war)
+{
+         pozostalo += war + posmarowany_zelem()*2;
+}
+
+void Siniak::kontakt()///1(*2), 2 - bity dla zawansowania 0123, 4 - posmarowany zelem, 8 - istnieje
+{
+         short opoznienie=60;
+         std::cout<<zaawansowanie()<<'\n';
+
+         if(!istnieje()) stan=8;
+         else if(zaawansowanie()<3)
+         {
+                  ustaw_zaawansowanie_na(zaawansowanie()+1);
+         }
+         else
+                  opoznienie += 60;
+
+         if(posmarowany_zelem() && losuj(1,3)==1)
+                  stan-=4;
+
+         if(pozostalo+opoznienie<120) pozostalo+=opoznienie; else pozostalo=120;
+
+         if(opoznienie<120)
+                  kw();
+}
+
+void Siniak::kw()
+{
+         //Objekt *a;
+         //if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
 }
 
 void Rana::kw()
@@ -94,7 +127,8 @@ void Rana::kontakt()///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem
                            stan--;
                            if(losuj(1, 10)<=3)
                                     zrob_krwotok();
-                           else if(losuj(1,10)<=9)
+                           else
+                                    if(losuj(1,10)<=9)
                                     zabrudz();
                   }
                   else
@@ -112,6 +146,14 @@ void Rana::kontakt()///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem
          kw();
 }
 
+stan_czesci_ciala czesc_ciala::stan()
+{
+         stan_czesci_ciala a;
+         a.boli = boli; a.co_jest=co_jest(); a.stan_rany=stan_rany();
+         a.stan_siniaka = siniak.stan_();
+         return a;
+}
+
 void czesc_ciala::zadaj_obrazenia(short ile)
 {
          if(hp-ile<0) hp=0;
@@ -119,6 +161,7 @@ void czesc_ciala::zadaj_obrazenia(short ile)
          leczenie -= 30;
 
          if(losuj(0,1)) rana.kontakt();
+         if(losuj(0,1)) siniak.kontakt();
 }
 
 void czesc_ciala::minela_runda(short war)
@@ -131,6 +174,7 @@ void czesc_ciala::minela_runda(short war)
          if(glikogen>60 && Objekt::swiat->czas%3==0) glikogen--;
 
          rana.minela_runda(war);
+         siniak.minela_runda(war);
 
          if(rana.istnieje() && rana.krew_cieknie())
          {
@@ -145,7 +189,7 @@ void czesc_ciala::minela_runda(short war)
          }
 
 
-         maxx = std::ceil(float(max_bezwzgledny)*(100 - (rana.istnieje() ? (rana.rana_prosta() ? 9 : 15) : 0))/100);
+         maxx = std::ceil(float(max_bezwzgledny)*(100 - (rana.istnieje() ? (rana.rana_prosta() ? 9 : 15) : 0) -  siniak.istnieje()*siniak.zaawansowanie()*6)/100);
 }
 
 void czesc_ciala::ulecz(short ile)
@@ -168,46 +212,50 @@ Gracz :: Gracz():Objekt_zywy(10), objaw(), klatka(40, 40), brzuch(30, 30), ramie
          t = new czesc_ciala*[2]; t[0]=&l_udo;  t[1]=NULL;l_golen.set_czesci_sasiednie(t);
          t = new czesc_ciala*[2]; t[0]=&p_udo; t[1]=NULL;p_golen.set_czesci_sasiednie(t);
          t = NULL;
+          czesc = new czesc_ciala*[10];
+          czesc[0] = &klatka;
+          czesc[1] = &brzuch;
+          czesc[2] = &ramie_l;
+          czesc[3] = &ramie_p;
+          czesc[4] = &l_dlon;
+          czesc[5] = &p_dlon;
+          czesc[6] = &l_udo;
+          czesc[7] = &p_udo;
+          czesc[8] = &l_golen;
+          czesc[9] = &p_golen;
 
          wykonuje_ruch=false;
          wysokosc=1; if(postawa=='r') wysokosc=3; else if(postawa=='s') wysokosc=2;
 }
 
-void Gracz::ogrzej_sie_od_zrodel_ognia()
-{
-         Plansza *p = swiat->zwroc_taka_plansze_TYLKO(px, py, pz);
-         for(short f=x-1; f<=x+1; ++f)
-         {
-                  for(short g=y-1; g<=y+1; ++g)
-                  {
-                           if(Strefa::w_planszy(f, g))
-                           {
-                                    if(p->srodowisko[g][f]!=NULL)
-                                    {
-                                             if((p->srodowisko[g][f]->stan&1)==1)
-                                                      dodaj_cieplo(10);
-                                             if(p->srodowisko[g][f]->wierzch() && p->srodowisko[g][f]->wierzch()->czym_jest==24 && ((Ognisko*)p->srodowisko[g][f]->wierzch())->getPaliSie())
-                                                      dodaj_cieplo(10);
-                                    }
-                                    if(p->otoczenie[g][f]!=NULL && (p->otoczenie[g][f]->stan&1)==1)
-                                             dodaj_cieplo(10);
-                           }
-                  }
-         }
-         if(p->srodowisko[y][x]!=NULL && (p->srodowisko[y][x]->stan&1)==1)
-                  dodaj_cieplo(40);
-}
-
 bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
 {
+         ///niszczenie sie ekwipunku
          if(p_rece!=NULL && p_rece->czym_jest==2201) if(p_rece->wykorzystaj()) {Item*h=p_rece; p_rece=new Konsumpcjum(2202, 0); delete h;}
          if(p_kieszenl!=NULL && p_kieszenl->czym_jest==2201) if(p_kieszenl->wykorzystaj()) {Item*h=p_kieszenl; p_kieszenl=new Konsumpcjum(2202, 0); delete h;}
          if(p_kieszenp!=NULL && p_kieszenp->czym_jest==2201) if(p_kieszenp->wykorzystaj()) {Item*h=p_kieszenp; p_kieszenp=new Konsumpcjum(2202, 0); delete h;}
 
          if(*Objekt::args->godmode) return true;
 
-         short pogoda = swiat->pogoda;
+         short pogoda = swiat->pogoda;///spanie
          if(pozostalo_snu>1) return true;
+
+         ///efekty
+         short ile_boli = 0;
+         for(short g=0; g<10; ++g) if(czesc[g]->czy_boli()) ile_boli++;
+         if(ile_boli>=3)
+         {
+                  objaw.usun_objaw(bol);
+                  objaw.dodaj_objaw(mocny_bol);
+         }
+         else if(ile_boli>=1)
+         {
+                  objaw.usun_objaw(mocny_bol);
+                  objaw.dodaj_objaw(bol);
+         }
+
+
+
 
          ogrzej_sie_od_zrodel_ognia();///ogrzewanie sie
 
@@ -223,6 +271,10 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          else kondycja+=ile_zal_kond;
 
          short punkty_do_otrzymania = 10;///p_ruchu
+         if(objaw.jest_taki_objaw(bol)) punkty_do_otrzymania--;
+         if(objaw.jest_taki_objaw(mocny_bol)) punkty_do_otrzymania--;
+
+         if(punkty_do_otrzymania<3) punkty_do_otrzymania = 3;
          if(punkty_do_otrzymania<10)
          {
                   if(p_ruchu+punkty_do_otrzymania<10)
@@ -254,6 +306,31 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          p_golen.minela_runda(war);
 
          return czy_zyje();
+}
+
+void Gracz::ogrzej_sie_od_zrodel_ognia()
+{
+         Plansza *p = swiat->zwroc_taka_plansze_TYLKO(px, py, pz);
+         for(short f=x-1; f<=x+1; ++f)
+         {
+                  for(short g=y-1; g<=y+1; ++g)
+                  {
+                           if(Strefa::w_planszy(f, g))
+                           {
+                                    if(p->srodowisko[g][f]!=NULL)
+                                    {
+                                             if((p->srodowisko[g][f]->stan&1)==1)
+                                                      dodaj_cieplo(10);
+                                             if(p->srodowisko[g][f]->wierzch() && p->srodowisko[g][f]->wierzch()->czym_jest==24 && ((Ognisko*)p->srodowisko[g][f]->wierzch())->getPaliSie())
+                                                      dodaj_cieplo(10);
+                                    }
+                                    if(p->otoczenie[g][f]!=NULL && (p->otoczenie[g][f]->stan&1)==1)
+                                             dodaj_cieplo(10);
+                           }
+                  }
+         }
+         if(p->srodowisko[y][x]!=NULL && (p->srodowisko[y][x]->stan&1)==1)
+                  dodaj_cieplo(40);
 }
 
 bool Gracz::gracz_widzi_do_konca_w_strone(char strona)
@@ -482,21 +559,22 @@ what_happened Gracz::zostan_uderzony(int obrazenia, int kto, int ekstra, short w
          int aaa=losuj(1,10); bool br=false;
          if(kto==-3) aaa = losuj(9, 10);
          else if(kto==-4) aaa = losuj(7, 10);
+         bool pierwsza_krew = true;///bedzie istniala tylko jedna konczyna taka, ze bedzie zadawona_obrazen(0) celowo
 
          while(1)
          {
                   switch(aaa)
                   {
-                           case 1:if(klatka.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia,'k');klatka.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 2:if(brzuch.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia);brzuch.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 3:if(ramie_l.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia);ramie_l.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 4:if(ramie_p.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia);ramie_p.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 5:if(l_dlon.ile_hp()>0){obrazenia=uzycie_ubrania(&p_rekawice, obrazenia); l_dlon.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 6:if(p_dlon.ile_hp()>0){obrazenia=uzycie_ubrania(&p_rekawice, obrazenia);p_dlon.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 7:if(l_udo.ile_hp()>0){obrazenia=uzycie_ubrania(&p_spodnie, obrazenia); l_udo.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 8:if(p_udo.ile_hp()>0){obrazenia=uzycie_ubrania(&p_spodnie, obrazenia); p_udo.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 9:if(l_golen.ile_hp()>0){obrazenia=uzycie_ubrania(&p_buty, obrazenia); l_golen.zadaj_obrazenia(obrazenia); br=true;break;}
-                           case 10:if(p_golen.ile_hp()>0){obrazenia=uzycie_ubrania(&p_buty, obrazenia);p_golen.zadaj_obrazenia(obrazenia); br=true;break;}
+                           case 1:if(klatka.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia,'k');klatka.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {klatka.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 2:if(brzuch.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia);brzuch.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {brzuch.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 3:if(ramie_l.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia);ramie_l.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {ramie_l.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 4:if(ramie_p.ile_hp()>0){obrazenia=uzycie_ubrania(&p_korpus, obrazenia);ramie_p.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {ramie_p.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 5:if(l_dlon.ile_hp()>0){obrazenia=uzycie_ubrania(&p_rekawice, obrazenia); l_dlon.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {l_dlon.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 6:if(p_dlon.ile_hp()>0){obrazenia=uzycie_ubrania(&p_rekawice, obrazenia);p_dlon.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {p_dlon.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 7:if(l_udo.ile_hp()>0){obrazenia=uzycie_ubrania(&p_spodnie, obrazenia); l_udo.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {l_udo.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 8:if(p_udo.ile_hp()>0){obrazenia=uzycie_ubrania(&p_spodnie, obrazenia); p_udo.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {p_udo.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 9:if(l_golen.ile_hp()>0){obrazenia=uzycie_ubrania(&p_buty, obrazenia); l_golen.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {l_golen.zadaj_obrazenia(0);pierwsza_krew=false;}
+                           case 10:if(p_golen.ile_hp()>0){obrazenia=uzycie_ubrania(&p_buty, obrazenia);p_golen.zadaj_obrazenia(obrazenia); br=true;break;} else if(pierwsza_krew) {p_golen.zadaj_obrazenia(0);pierwsza_krew=false;}
                   }
                   if(br)break; aaa=1;br=true;
          }
@@ -635,6 +713,7 @@ Gracz::~Gracz()
          al_destroy_mutex(mutex_blokow);
          al_destroy_mutex(mutex_unikow);
          al_destroy_mutex(mutex_skupien);
+         delete [] czesc;
 }
 
 int Gracz::kamuflaz()

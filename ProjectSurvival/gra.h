@@ -16,9 +16,10 @@ class Gra
          Swiat* swiat;
          bool przerwa=false;
          public:
-         bool godmode=0;
+         bool godmode=1;
          ALLEGRO_MUTEX *dla_lewej = al_create_mutex(), *dla_prawej = al_create_mutex();
-
+         bool masz_otworzyc_ekw = false;
+         bool masz_wykonac_nast_runde = false;
 
          private:
 

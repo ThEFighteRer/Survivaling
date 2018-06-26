@@ -11,8 +11,6 @@ int main(int argc, char **argv)
          //ios_base::sync_with_stdio(false);
          cin.tie(NULL);
 
-
-
          //A* s=new B; B*y=(B*)s;
         // cout<<y->a<<std::endl;
          //for(int g=0; g<1000; g++) cout<<losuj(0, 14)<<endl; return 0;
