@@ -279,7 +279,7 @@ class Swiat ///kostka do gry
          //Druzyna *druzyna;
          bool* pauza ;
          const int promien_obszaru_zywego=2;//3; ///to wartosc x, yto x+1
-         int czas=1080;//720;
+         int czas=720;
          short pogoda=0; ///0 1 2 3 4 5
          int od_ostatniej_zmiany_pogody=140;
          bool zaczynamy_rundy_od_poczatku=false;///zmienna porzadkowa
@@ -641,6 +641,7 @@ class Gracz : public Objekt_zywy///10
          void dodaj_skupienie(Objekt *a);
          short ile_bloku(Objekt *a);
          short suma_hp_rak() {return ramie_l.ile_hp() + ramie_p.ile_hp() + p_dlon.ile_hp() + l_dlon.ile_hp();}
+         short suma_hp_nog() {return l_udo.ile_hp() + p_udo.ile_hp() + l_golen.ile_hp() + p_golen.ile_hp();}
          std::list<Objaw> lista_objawow(){return objaw.zwroc_liste_objawow();}
 
          void dodaj_cieplo(short ile) {if(cieplo_a+ile<cieplo_max) cieplo_a+=ile; else cieplo_a=cieplo_max;}
@@ -1064,6 +1065,8 @@ class Ognisko:public Objekt_pol_martwy///24
          bool rusz_sie();
          int na_ile_hp_wyglada(){return HP;}
          short latwopalnosc(){return 100;}
+         bool swieci(){return pali_sie;}
+         zrodlo_swiatla jak_swieci(){return pali_sie ? zrodlo_swiatla(1, 80-30*(paliwo>10)) : zrodlo_swiatla(0,0);}
 };
 
 class Ognisko_przejsciowe:public Objekt_przejsciowy

@@ -5,10 +5,12 @@
 
 using namespace std;
 
-
 int main(int argc, char **argv)
 {
          //ios_base::sync_with_stdio(false);
+         //for(short h=0;h<100;++h) std::cout<<losuj(1,6);throw"F";
+
+
          cin.tie(NULL);
 
          //A* s=new B; B*y=(B*)s;
@@ -48,7 +50,7 @@ int main(int argc, char **argv)
          cout<<*a;*/
 
     //int rozdz_X=1024, rozdz_Y=768;
-    int rozdz_X=1920, rozdz_Y=1080;
+
     //int rozdz_X=640, rozdz_Y=480;
     al_init();
     al_install_keyboard();
@@ -57,6 +59,15 @@ int main(int argc, char **argv)
     ALLEGRO_THREAD* Grafika;
 
     al_install_mouse();
+
+
+    ALLEGRO_MONITOR_INFO monitor;
+    al_get_monitor_info(0, &monitor);
+    int rozdz_X=monitor.x2, rozdz_Y=monitor.y2;
+
+
+
+    //int rozdz_X=640, rozdz_Y=480;
 
     ///bool t[13][21]; for(int i=0; i<14; i++) {for(int j=0; j<22;j++){t[i][j]=true;}}
    ///t[1][2]=false;t[1][3]=false; t[2][1]=false;t[2][2]=false; t[2][3]=false;t[3][1]=false; t[3][2]=false;//t[0][3]=true;//t[5][1]=true;t[4][1]=true;

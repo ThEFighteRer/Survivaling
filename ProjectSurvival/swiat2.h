@@ -303,8 +303,8 @@ class Reflektor:public Objekt_martwy///37
          int get_HP();
          int na_ile_hp_wyglada(){return HP;}
          short latwopalnosc();
-         void wlacz();
-         void wylacz();
+         void wlacz(){wlaczony=true; swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->zaktualizuj_widoki();}
+         void wylacz(){wlaczony=false; swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->zaktualizuj_widoki();}
          bool swieci(){return wlaczony;}
 };
 

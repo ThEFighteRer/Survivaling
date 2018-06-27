@@ -38,6 +38,30 @@ class Objawy
          void usun_objaw(Objaw a) const;
 };
 
+class Bol
+{
+         char pozostalo = 0;
+         char stan = 0;///1 - istnieje, 2 - posmarowany zelem
+
+         void kw();///kluczowe wydarzenie
+
+         public:
+
+         Bol()
+         {
+
+         }
+
+         bool posmarowany_zelem() {return istnieje() && (stan&2) != 0;}
+         char stan_() {return stan;}
+         bool istnieje() {return (stan&1)!=0;}
+         void wylecz(){if(istnieje()) stan=0;}
+
+         bool posmaruj_zelem(){if(istnieje()) {stan|=2; return true;} return false;}
+         void minela_runda(short war);
+         void kontakt();
+};
+
 class Siniak
 {
          char pozostalo = 0;
@@ -133,18 +157,17 @@ struct stan_czesci_ciala
 {
          char stan_rany;
          char stan_siniaka;
-         bool boli;
+         char stan_bolu;
          char co_jest;
 };
 class czesc_ciala
 {
-         bool boli = false;
-
          czesc_ciala **sasiednie = NULL;///ostatni to null
          const char max_bezwzgledny;
          char hp=0, maxx=0, leczenie=0, glikogen = 60; ///leczymy co 60; glokogen to magazynowanie maksymalne leczenia
          Rana rana;
          Siniak siniak;
+         Bol bol;
          czesc_ciala *polaczone = NULL; ///czesci ciala bezposrednio polaczone
 
 public:
@@ -162,9 +185,10 @@ public:
          short jaki_max_bezwzgledny(){return short(max_bezwzgledny);}
          bool da_sie_uleczyc(){return hp<maxx;}
          char stan_rany(){return rana.stan_();}
+         char stan_bolu(){return rana.stan_();}
          void set_czesci_sasiednie(czesc_ciala **c){if(sasiednie==NULL) sasiednie = c; else {std::cout<<"juz sa sasiednie"; throw "G";}}
-         bool czy_boli() {return boli;}
-         char co_jest(){return rana.istnieje() + 2*siniak.istnieje() + 4*0 + 8*boli;}///1-rana, 2-siniak, 4-cos, 8-bol
+         bool czy_boli() {return bol.istnieje();}
+         char co_jest(){return rana.istnieje() + 2*siniak.istnieje() + 4*0 + 8*bol.istnieje();}///1-rana, 2-siniak, 4-cos, 8-bol
          /*0 klatka;
           1 brzuch;
           2 ramie_l;
@@ -186,6 +210,7 @@ public:
          void zerwij_bandaze_rany(){if(rana.istnieje()) rana.zerwij_bandaze();}
          bool posmaruj_rane(){if(rana.istnieje()) return rana.posmaruj_zelem(); return false;}
          short bandaze_rany(){return rana.obandazowanie();}
+         void wylecz_bol(){return bol.wylecz();}
 };
 
 

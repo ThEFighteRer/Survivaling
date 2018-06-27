@@ -550,6 +550,7 @@ zrodlo_swiatla Objekt::swiatlo()
          if(czym_jest==36 &&  ((Lampa*)this)->swieci()) return ((Lampa*)this)->jak_swieci();
          if(czym_jest==37 && ((Reflektor*)this)->swieci()) return ((Reflektor*)this)->jak_swieci();
          if(czym_jest==39 && ((WLampa*)this)->swieci()) return ((WLampa*)this)->jak_swieci();
+         if(czym_jest==24 && ((Ognisko*)this)->swieci()) return ((Ognisko*)this)->jak_swieci();
          if(czym_jest==10)
          {
                   Gracz *g=(Gracz*)this;
@@ -1536,6 +1537,15 @@ void Objekt::przewroc()
          Plansza*p=swiat->zwroc_taka_plansze_TYLKO(px,py,pz);
          if(czym_jest==2) {p->dodaj_upadlego(this, x, y);p->otoczenie[y][x]=NULL;((Zombie*)this)->lezy=true;}
          else if(czym_jest==34) {((Beczka*)p->otoczenie[y][x])->przewroc_mnie(zwrot);}
+         else if(czym_jest==10)
+         {
+                  ((Gracz*)this)->postawa = 'c';
+                  if(losuj(1, 60)<=40-((Gracz*)this)->suma_hp_rak())
+                  {
+                           Item *a = ((Gracz*)this)->p_rece; ((Gracz*)this)->p_rece = NULL;
+                           swiat->zwroc_taka_plansze_TYLKO(px, py, pz)->rzuc_na_ziemie(x, y, a);
+                  }
+         }
          p->zaktualizuj_widoki(x,y,x,y);
 }
 

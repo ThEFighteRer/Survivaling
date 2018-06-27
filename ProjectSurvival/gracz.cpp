@@ -36,9 +36,37 @@ std::list<Objaw> Objawy::zwroc_liste_objawow() const
          return b;
 }
 
+void Bol::minela_runda(short war)
+{
+         if(!istnieje() || war==0) return;
+
+         pozostalo -= war + 1;
+
+         if(pozostalo<=0) stan=0;
+}
+
+void Bol::kontakt()///1 - istnieje, 2 - posmarowany zelem
+{
+         if(!istnieje()) stan=1;
+
+         pozostalo = 60;
+
+         kw();
+}
+
 void Siniak::minela_runda(short war)
 {
-         pozostalo += war + posmarowany_zelem()*2;
+         if(!istnieje() || war==0) return;
+
+         pozostalo -= war + posmarowany_zelem()*2;
+
+         if(pozostalo<=0)
+         {
+                  pozostalo = 120;
+                  if(zaawansowanie()>0)
+                           ustaw_zaawansowanie_na(zaawansowanie()-1);
+                  else stan = 0;
+         }
 }
 
 void Siniak::kontakt()///1(*2), 2 - bity dla zawansowania 0123, 4 - posmarowany zelem, 8 - istnieje
@@ -63,6 +91,12 @@ void Siniak::kontakt()///1(*2), 2 - bity dla zawansowania 0123, 4 - posmarowany 
                   kw();
 }
 
+void Bol::kw()
+{
+         //Objekt *a;
+         //if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
+}
+
 void Siniak::kw()
 {
          //Objekt *a;
@@ -78,7 +112,7 @@ void Rana::kw()
 
 void Rana::minela_runda(short war)
 {
-         if(!istnieje()) return;
+         if(!istnieje() || war==0) return;
 
          if(posmarowana_zelem()) pozostalo--;
          if(!brudna()) pozostalo--;
@@ -149,8 +183,8 @@ void Rana::kontakt()///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem
 stan_czesci_ciala czesc_ciala::stan()
 {
          stan_czesci_ciala a;
-         a.boli = boli; a.co_jest=co_jest(); a.stan_rany=stan_rany();
-         a.stan_siniaka = siniak.stan_();
+         a.co_jest=co_jest(); a.stan_rany=stan_rany();
+         a.stan_siniaka = siniak.stan_(); a.stan_bolu = bol.stan_();
          return a;
 }
 
@@ -160,8 +194,8 @@ void czesc_ciala::zadaj_obrazenia(short ile)
          else hp-=ile;
          leczenie -= 30;
 
-         if(losuj(0,1)) rana.kontakt();
-         if(losuj(0,1)) siniak.kontakt();
+         if(losuj(0,2)==0) {rana.kontakt(); if(losuj(0,3)==0) bol.kontakt();}
+         if(losuj(0,1)==0) {siniak.kontakt(); if(losuj(0,2)==0) bol.kontakt();}
 }
 
 void czesc_ciala::minela_runda(short war)
@@ -175,6 +209,7 @@ void czesc_ciala::minela_runda(short war)
 
          rana.minela_runda(war);
          siniak.minela_runda(war);
+         bol.minela_runda(war);
 
          if(rana.istnieje() && rana.krew_cieknie())
          {
@@ -235,7 +270,6 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          if(p_kieszenl!=NULL && p_kieszenl->czym_jest==2201) if(p_kieszenl->wykorzystaj()) {Item*h=p_kieszenl; p_kieszenl=new Konsumpcjum(2202, 0); delete h;}
          if(p_kieszenp!=NULL && p_kieszenp->czym_jest==2201) if(p_kieszenp->wykorzystaj()) {Item*h=p_kieszenp; p_kieszenp=new Konsumpcjum(2202, 0); delete h;}
 
-         if(*Objekt::args->godmode) return true;
 
          short pogoda = swiat->pogoda;///spanie
          if(pozostalo_snu>1) return true;
@@ -243,18 +277,20 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          ///efekty
          short ile_boli = 0;
          for(short g=0; g<10; ++g) if(czesc[g]->czy_boli()) ile_boli++;
-         if(ile_boli>=3)
+         if(ile_boli>=5)
          {
                   objaw.usun_objaw(bol);
                   objaw.dodaj_objaw(mocny_bol);
+                  if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
          }
-         else if(ile_boli>=1)
+         else if(ile_boli>=2)
          {
                   objaw.usun_objaw(mocny_bol);
                   objaw.dodaj_objaw(bol);
+                  if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
          }
 
-
+         if(*Objekt::args->godmode) return true;
 
 
          ogrzej_sie_od_zrodel_ognia();///ogrzewanie sie
@@ -265,7 +301,7 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          if(ocieplenie()<pogoda*10) {if(cieplo_a>0){--cieplo_a;} else if(!odejmij_hp_z_powodu_niedozywienia()){return false;}}else if(cieplo_a<cieplo_max/2)++cieplo_a;
 
          //oszolomieni.wywal_wszystkie_objekty();
-         int ile_zal_kond=(woda_a>0)+p_ruchu/5+postawa=='c';///kondycja
+         int ile_zal_kond=(woda_a>0)+p_ruchu/4+(postawa=='c');///kondycja
          if(kondycja==0 && ile_zal_kond==0) ile_zal_kond+=1;
          if(kondycja+ile_zal_kond>18) kondycja=18;
          else kondycja+=ile_zal_kond;
@@ -288,11 +324,12 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
 
          if(jedzenie_a>150 && woda_a>150 && cieplo_a>150 && energia_a>100) war = 4;
          else if(jedzenie_a>90 && woda_a>90 && cieplo_a>90 && energia_a>60) war = 3;
-         else
+         else if(jedzenie_a>0 && woda_a>0 && cieplo_a>0 && energia_a>0)
          {
                   short licznik = (jedzenie_a>50) + (woda_a>50) + (cieplo_a>70) + (energia_a>40);
                   if(licznik >= 3) war = 2;
          }
+         else war = 0;
 
          klatka.minela_runda(war);
          brzuch.minela_runda(war);
@@ -582,6 +619,15 @@ what_happened Gracz::zostan_uderzony(int obrazenia, int kto, int ekstra, short w
          if(czy_zyje())
          {
                   if(stan_nog()==1 || stan_nog()==2) postawa='c';
+                  if(wsp_zajecia>=3)
+                  {
+                           postawa = 'c';
+
+                           if(losuj(1, 100)<=(80-suma_hp_nog()))
+                           {
+                                    przewroc();
+                           }
+                  }
          }
          else return dead;
          return success;

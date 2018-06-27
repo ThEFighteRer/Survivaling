@@ -220,6 +220,7 @@ struct Crafting_recipes
 ///2014 mieso upieczone
 ///2020 czipsy
 ///2021 masc na rany
+///2022 morfina
 
 ///2101 magazynek AK
 ///2102 magazynek Glock
@@ -262,13 +263,16 @@ struct Crafting_recipes
 
 ///5001 to ruska czapka
 ///5002  zielona czapka
+
 ///5501 kurtka skorzana
 ///5502 niebieska bluza
 ///5503 kurtka pozarowa
+
 ///6001 jeanasy
 ///6002 spodnie wojskowe
 ///6003 zolte shorty
 ///6004 sliskie dresy
+
 ///6501 jasne buty sportowe
 ///6502 buty wyjsciowe
 ///6503 buty szare
@@ -300,6 +304,11 @@ struct Crafting_recipes
 ///8023 gwozdzie
 ///8024 bandaz
 ///8025 opaska uciskowa
+
+
+
+
+///10001 rezerwacja obrzka dla dzwieku na potrzeby craftingu
 
 
 

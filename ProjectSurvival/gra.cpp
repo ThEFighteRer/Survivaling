@@ -167,7 +167,7 @@ void Gra::message(struct dla_grafiki*args,short a)
        }
 }
 
-int Gra:: Menu(int x, int y, struct dla_grafiki*args, struct specyfikacja_menu* menu)
+int Gra::Menu(int x, int y, struct dla_grafiki*args, struct specyfikacja_menu* menu)
 {
          ALLEGRO_KEYBOARD_STATE klawiatura; ALLEGRO_MOUSE_STATE myszka;
 
@@ -713,6 +713,7 @@ bool Gra::jest_nad_rzeczami_konkretnymi(ALLEGRO_MOUSE_STATE myszka)
 Skrzynka* Gra::otwarty_ekw(ALLEGRO_MOUSE_STATE myszka,
          ALLEGRO_KEYBOARD_STATE klawiatura,dla_grafiki*args, Skrzynka*s)
 {
+         ///std::cout<<"ekwipunek";
          int f=300;
          Gracz*g=swiat->aktualny;
          g->otwiera=true; Sleep(f);
@@ -1477,6 +1478,7 @@ void Gra::przesuwanie(char strona,ALLEGRO_MOUSE_STATE myszka, ALLEGRO_KEYBOARD_S
 
 void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
 {///moze byc otwarta podczas otwierania ekwipunku
+         std::cout<<"anatomia";
          swiat->aktualny->powinien_zerknac_w_medycyne = false;
          args->otwarte_menu_anatomii=true;
          short dla_funkcji=0;
@@ -1500,14 +1502,14 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                   {
                            poczekaj_na_myszke(1); break;
                   }
-                  else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y<args->Y_kratka*2.5)
+                  /*else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y<args->Y_kratka*2.5)
                   {
                            masz_wykonac_nast_runde = true; break;
-                  }
+                  }*/
                   else if(myszka.buttons&2)
                   {
                            poczekaj_na_myszke(2);
-                           czesc_ciala *r = wybierz_rane_czesci_ciala(myszka);
+                           czesc_ciala *r = wybierz_defekt_czesci_ciala(myszka, 1);
                            if(r!=0 && (r->stan_rany()&64)!=0 && ((r->stan_rany()&8)!=0 || (r->stan_rany()&16)!=0))
                            {
                                     poczekaj_na_myszke(2);
@@ -1541,7 +1543,7 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                                     }
                                     delete menu; menu=NULL;
                            }
-                           else if(!g->ukryty && myszka.buttons&2 && jest_nad_plecakiem(myszka) && g->p_plecak!=NULL)
+                           /*else if(!g->ukryty && myszka.buttons&2 && jest_nad_plecakiem(myszka) && g->p_plecak!=NULL)
                            {
                                      poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[2]; for(int i=0;i<2;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
                                     specyfikacja_menu* menu=new specyfikacja_menu(n, 2, 56);int wybor=Menu(myszka.x, myszka.y, args, menu);
@@ -1555,8 +1557,8 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                                     }
                                     delete menu; menu=NULL;
                                     if(wybor==1) break;
-                           }
-                           else if(!g->ukryty && myszka.buttons&2 && jest_nad_plecakiem(myszka) && g->p_plecak==NULL)
+                           }*/
+                           /*else if(!g->ukryty && myszka.buttons&2 && jest_nad_plecakiem(myszka) && g->p_plecak==NULL)
                            {
                                      poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[1]; for(int i=0;i<1;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
                                     specyfikacja_menu* menu=new specyfikacja_menu(n, 1, 25);int wybor=Menu(myszka.x, myszka.y, args, menu);
@@ -1569,7 +1571,7 @@ void Gra::anatomia(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                                     }
                                     delete menu; menu=NULL;
                                     if(wybor==1) break;
-                           }
+                           }*/
                            else if(myszka.buttons&2 && jest_nad_rekami(myszka) && g->p_rece!=NULL)
                            {
                                      poczekaj_na_myszke(2);specyfikacja_menu**n=new specyfikacja_menu*[6]; for(int i=0;i<6;++i)n[i]=new specyfikacja_menu(NULL,0,i+1);
@@ -1835,7 +1837,7 @@ std::shared_ptr<co_ma_gracz> Gra::co_ma(Gracz *g, Przepis *p)
 
 void Gra::crafting(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
 {///moze byc otwarta podczas otwierania ekwipunku
-
+         std::cout<<"crafting";
          short *b = NULL;
          args->ktora_kategoria = 0; args->ktora_strona = 0;
          args->przepis = Krafting->daj_strone_z_kategorii(args->ktora_strona, args->ktora_kategoria); ///ostatni null
@@ -1864,15 +1866,16 @@ void Gra::crafting(ALLEGRO_MOUSE_STATE myszka,ALLEGRO_KEYBOARD_STATE klawiatura)
                            while(true) {al_rest(0.01);al_get_keyboard_state(&klawiatura);if(!al_key_down(&klawiatura, ALLEGRO_KEY_H))break;}
                            anatomia(myszka,klawiatura);
                            if(masz_wykonac_nast_runde) break;
+                           else if(masz_otworzyc_ekw) masz_otworzyc_ekw=false;
                   }
                   else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y>args->p_pozycja_y+7*args->Y_kratka)
                   {
                            poczekaj_na_myszke(1); anatomia(myszka,klawiatura); if(masz_wykonac_nast_runde) break;
                   }
-                  else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y<args->Y_kratka*2.5)
+                  /*else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y<args->Y_kratka*2.5)
                   {
                            masz_wykonac_nast_runde = true; break;
-                  }
+                  }*/
                   /*else if(myszka.buttons&1 && myszka.x>22*args->X_kratka && myszka.y>args->p_pozycja_y+7*args->Y_kratka)
                   {
                            poczekaj_na_myszke(1); break;
@@ -2037,6 +2040,8 @@ void Gra::wykonaj_crafting(Przepis *prz, Gracz *g, co_ma_gracz *co_mamy)
                                                                                  bonus += co==2012 ? 20 : 60;
                                                                         g->dostan_item(new Konsumpcjum(co, bonus));
                                                                }
+                                                               else if(co==10001)
+                                                                        swiat->aktualny->wydaj_dzwiek(false, ile, swiat->aktualny->x, swiat->aktualny->y, 10);
                                                                else g->dostan_item(Item::stworz_obiekt(co));
                                                       }
                                                       else
@@ -2171,7 +2176,7 @@ void Gra::Rozpocznij_gre(struct dla_grafiki* arg)
                   if(swiat->aktualny!=NULL && swiat->aktualny->pozostalo_snu>0)
                   {
                            g=swiat->aktualny; --g->pozostalo_snu;
-                           if(g->pozostalo_snu==0 || g->energia_a>=g->energia_max)
+                           if(g->pozostalo_snu==0 || g->energia_a>=g->energia_max || g->jedzenie_a<=0 || g->woda_a<=0 || g->cieplo_a<=0)
                            {
                                     g->pozostalo_snu=0;
                                     Plansza*p=swiat->zwroc_taka_plansze_TYLKO(g->px, g->py, g->pz);

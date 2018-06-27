@@ -188,6 +188,8 @@ void graficzny::rysuj_atrybut_tabeli_craftingu(short ktora, short jaki_wiersz, P
                                     int o_itemie = subs[f];
                                     short nr = ((short*)&o_itemie)[0];
                                     short ile = ((short*)&o_itemie)[1];
+                                    ///if(nr==10001)
+                                    ///{std::cout<<nr<<" "<<najlewiejszy_bit<<" "<<(nr&najlewiejszy_bit)<<'\n';throw"G";}
                                     if(ktora==4)
                                     {
                                              rysujaca = (nr&najlewiejszy_bit)==0 ? &narysuj_miniature_rzeczy : &narysuj_warsztat;
@@ -305,6 +307,9 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   int menu_x=150*args->rozdz_X/1920,menu_y=50*args->rozdz_Y/1080;
                   args->menu_x=menu_x; args->menu_y=menu_y;
                   ALLEGRO_BITMAP *pom;
+
+                  rozx = std::ceil(20.0*float(args->rozdz_X)/1920.0);///rozmiary od paskow na dole
+                  rozy = std::ceil(26.0*float(args->rozdz_Y)/1080.0);
 
                   pom = al_load_bitmap("img/interface/postac1.bmp"); mp=wyskaluj_menu(pom,menu_x,menu_y);
                   pom = al_load_bitmap("img/interface/postacobrocsie.bmp"); mp1=wyskaluj_menu(pom,menu_x,menu_y);
@@ -509,10 +514,17 @@ graficzny::graficzny(struct dla_grafiki *argumenty)
                   al_convert_mask_to_alpha(pasek_anatomii, al_map_rgb(255,0,255));
 
                   pom= al_load_bitmap("img/interface/czczionka_paski.bmp");
+                  czczionka_paski = al_create_bitmap(11*rozx,rozy);
+                  al_set_target_bitmap(czczionka_paski);
+                  al_draw_scaled_bitmap(pom,0,0,220, 26,0,0, rozx*11, rozy,0);
+                  al_destroy_bitmap(pom);
+                  al_convert_mask_to_alpha(czczionka_paski, al_map_rgb(255,0,255));
+
+                  /*pom= al_load_bitmap("img/interface/czczionka_paski.bmp");
                   czczionka_paski = al_create_bitmap(args->rozdz_X*220/1920,args->rozdz_Y*26/1080);
                   al_set_target_bitmap(czczionka_paski); al_draw_scaled_bitmap(pom,0,0,220,26,0,0,args->rozdz_X*220/1920,args->rozdz_Y*26/1080,0);
                   al_destroy_bitmap(pom);
-                  al_convert_mask_to_alpha(czczionka_paski, al_map_rgb(255,0,255));
+                  al_convert_mask_to_alpha(czczionka_paski, al_map_rgb(255,0,255));*/
 
                   pom= al_load_bitmap("img/interface/pasekogolny.bmp");
                   pasek_ogolny = al_create_bitmap(args->rozdz_X*250/1920,args->rozdz_Y*30/1080);
@@ -940,14 +952,14 @@ default:
                 if((args->ktore_menu&(256<<kl))==(256<<kl))
                     ++dl;
 
-            ALLEGRO_BITMAP* ff= al_create_bitmap(150, dl*50);
+            ALLEGRO_BITMAP* ff= al_create_bitmap(args->menu_x, dl*args->menu_y);
             al_set_target_bitmap(ff);
             dl = 0; ///dl jest teraz ostatnia wysokoscia wklejania menu
 
             for(short kl=0; kl<20; ++kl)
                 if((args->ktore_menu&((256<<kl)))==(256<<kl))
                 {
-                    al_draw_bitmap_region(uniwersalne_menu,0,kl*50,150,50,0,dl++*50,0);
+                    al_draw_bitmap_region(uniwersalne_menu,0,kl*args->menu_y,args->menu_x,args->menu_y,0,dl++*args->menu_y,0);
                 }
 
 
@@ -1118,6 +1130,8 @@ dane_rysownicze graficzny::jak_narysowac(int nr)
                   case 8024:{co=g->rzeczy;x_zrodl*=10;y_zrodl*=12;break;}
                   case 8025:{co=g->rzeczy;x_zrodl*=6;y_zrodl*=15;break;}
                   case 2021:{co=g->rzeczy;x_zrodl*=14;y_zrodl*=7;break;}
+                  case 2022:{co=g->rzeczy;x_zrodl*=10;y_zrodl*=13;break;}
+                  case 10001:{co=g->rzeczy;x_zrodl*=18;y_zrodl*=13;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot maly"<<" "<<nr;co=g->rzeczy;x_zrodl*=3;y_zrodl*=8;break; }
          }
          a.x=x_zrodl; a.y=y_zrodl; a.a=co;
@@ -1225,6 +1239,8 @@ void graficzny::namaluj_rzecz(ALLEGRO_BITMAP*a, int nr, int x, int y, int wsp_x,
                   case 8024:{d=g->rzeczy;x_zrodl*=10;y_zrodl*=12;x_rozm*=1;y_rozm*=1;break;}
                   case 8025:{d=g->rzeczy;x_zrodl*=6;y_zrodl*=15;x_rozm*=1;y_rozm*=1;break;}
                   case 2021:{d=g->rzeczy;x_zrodl*=14;y_zrodl*=7;x_rozm*=1;y_rozm*=1;break;}
+                  case 2022:{d=g->rzeczy;x_zrodl*=10;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
+                  case 10001:{d=g->rzeczy;x_zrodl*=18;y_zrodl*=13;x_rozm*=1;y_rozm*=1;break;}
                   default: {std::cout<<"nie wiem jak narysowac ten przedmiot duzy"<<" "<<nr; d=g->rzeczy;x_zrodl*=3;y_zrodl*=8;x_rozm*=1;y_rozm*=1;break;}
          }
          al_set_target_bitmap(a);
@@ -1241,25 +1257,25 @@ void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, const int a, con
 {
          graficzny*g=this;
          al_draw_bitmap_region(g->pasek_anatomii, 0,0,a*2*g->args->X_kratka/maxx, 2*g->args->Y_kratka/3,x, y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*10,0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-0.5*(20*g->args->rozdz_X/1920), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*10,0,rozx, rozy,x+g->args->X_kratka-std::ceil(0.5*float(rozx)), y,0);
          if(a<10)
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*a,0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-1.5*(20*g->args->rozdz_X/1920), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*a,0,rozx, rozy,x+g->args->X_kratka-std::ceil(1.5*float(rozx)), y,0);
          else if(a<100)
-         {al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*(a/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-2.5*(20*g->args->rozdz_X/1920), y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*(a-a/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-1.5*(20*g->args->rozdz_X/1920), y,0);}
+         {al_draw_bitmap_region(g->czczionka_paski, (rozx)*(a/10),0,rozx, rozy,x+g->args->X_kratka-std::ceil(2.5*float(rozx)), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*(a-a/10*10),0,rozx, rozy,x+g->args->X_kratka-std::ceil(1.5*float(rozx)), y,0);}
          else if(a<1000)
-         {al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(a/100),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-3.5*(20*g->args->rozdz_X/1920), y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero((a-a/100*100)/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-2.5*(20*g->args->rozdz_X/1920), y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(a-a/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka-1.5*(20*g->args->rozdz_X/1920), y,0);}
+         {al_draw_bitmap_region(g->czczionka_paski, (rozx)*g->najmniej_zero(a/100),0,rozx, rozy,x+g->args->X_kratka-std::ceil(3.5*float(rozx)), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*g->najmniej_zero((a-a/100*100)/10),0,rozx, rozy,x+g->args->X_kratka-std::ceil(2.5*float(rozx)), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*g->najmniej_zero(a-a/10*10),0,rozx, rozy,x+g->args->X_kratka-std::ceil(1.5*float(rozx)), y,0);}
          if(maxx<10)
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*maxx,0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+0.5*(20*g->args->rozdz_X/1920), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*maxx,0,rozx, rozy,x+g->args->X_kratka+std::ceil(0.5*float(rozx)), y,0);
          else if(maxx<100)
-         {al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*(maxx/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+0.5*(20*g->args->rozdz_X/1920), y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*(maxx-maxx/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+1.5*(20*g->args->rozdz_X/1920), y,0);}
+         {al_draw_bitmap_region(g->czczionka_paski, (rozx)*(maxx/10),0,rozx, rozy,x+g->args->X_kratka+std::ceil(0.5*float(rozx)), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*(maxx-maxx/10*10),0,rozx, rozy,x+g->args->X_kratka+std::ceil(1.5*float(rozx)), y,0);}
          else if(maxx<1000)
-         {al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(maxx/100),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+0.5*(20*g->args->rozdz_X/1920), y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero((maxx-maxx/100*100)/10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+1.5*(20*g->args->rozdz_X/1920), y,0);
-         al_draw_bitmap_region(g->czczionka_paski, (20*g->args->rozdz_X/1920)*g->najmniej_zero(maxx-maxx/10*10),0,20*g->args->rozdz_X/1920, 26*g->args->rozdz_Y/1080,x+g->args->X_kratka+2.5*(20*g->args->rozdz_X/1920), y,0);}
+         {al_draw_bitmap_region(g->czczionka_paski, (rozx)*g->najmniej_zero(maxx/100),0,rozx, rozy,x+g->args->X_kratka+std::ceil(0.5*float(rozx)), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*g->najmniej_zero((maxx-maxx/100*100)/10),0,rozx, rozy,x+g->args->X_kratka+std::ceil(1.5*float(rozx)), y,0);
+         al_draw_bitmap_region(g->czczionka_paski, (rozx)*g->najmniej_zero(maxx-maxx/10*10),0,rozx, rozy,x+g->args->X_kratka+std::ceil(2.5*float(rozx)), y,0);}
 
          if((stan.co_jest&1)!=0)
          {
@@ -1273,10 +1289,10 @@ void graficzny::namaluj_paskek_anatomii(stan_czesci_ciala stan, const int a, con
          }
          //zm = gdzie_ta_rana(czesc_ciala, stan.co_jest, 4);
          //namaluj_rane(zm.x, zm.y, stan.stan_rany);
-         if(stan.boli)
+         if(stan.stan_bolu&1)
          {
                   punkt zm = gdzie_ten_defekt(czesc_ciala, stan.co_jest, 8, args);
-                  namaluj_bol(zm.x, zm.y, stan.stan_rany);
+                  namaluj_bol(zm.x, zm.y, stan.stan_bolu);
          }
 
 
@@ -1287,10 +1303,10 @@ void graficzny::namaluj_rane(int x, int y, char stan)
          ///1 - czy prosta, 2 - czy krwotoczna, 4 - posmarowana zelem, 8 i  16 to wytrzymalosc banadaza (0-3), 32 - brudna, 64 - istnieje
          if((stan&64)!=0)
          {
-                  if((stan&2)!=0) al_draw_bitmap_region(efekty_medyczne, X*4, 0, X, Y, x, y, 0);
-                  else if((stan&8)!=0 && (stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*5, 0, X, Y, x, y, 0);
+                  if((stan&8)!=0 && (stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*5, 0, X, Y, x, y, 0);
                   else if((stan&8)!=0) al_draw_bitmap_region(efekty_medyczne, X*6, 0, X, Y, x, y, 0);
                   else if((stan&16)!=0) al_draw_bitmap_region(efekty_medyczne, X*7, 0, X, Y, x, y, 0);
+                  else if((stan&2)!=0) al_draw_bitmap_region(efekty_medyczne, X*4, 0, X, Y, x, y, 0);
                   else if((stan&1)!=0)
                   {
                            if((stan&32)!=0) al_draw_bitmap_region(efekty_medyczne, X*1, 0, X, Y, x, y, 0);
@@ -1318,7 +1334,11 @@ void graficzny::namaluj_siniak(int x, int y, char stan)
 
 void graficzny::namaluj_bol(int x, int y, char stan)
 {
-         al_draw_bitmap_region(efekty_medyczne, X*4, Y, X, Y, x, y, 0);
+         if(stan&1)
+         {
+                  al_draw_bitmap_region(efekty_medyczne, X*4, Y, X, Y, x, y, 0);
+                  if(stan&2) al_draw_bitmap_region(efekty_medyczne, X*8, 0, X, Y, x, y, 0);
+         }
 }
 
 void graficzny::namaluj_paski()
@@ -1335,23 +1355,23 @@ void graficzny::namaluj_paski()
                   al_draw_tinted_bitmap(g->pasek_ogolny, al_map_rgba_f (C1,C2,C3,C4),(125+20+i*415)*g->args->rozdz_X/1920, 14*g->args->Y_kratka,0);
                   al_draw_tinted_bitmap_region(g->pasek_uzytkowy, al_map_rgba_f (C1,C2,C3,C4),0,0,al_get_bitmap_width(g->pasek_uzytkowy)*a/maxx,al_get_bitmap_height(g->pasek_uzytkowy),(125+23+i*415)*g->args->rozdz_X/1920, 14*g->args->Y_kratka,0);
 
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*10,0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-0.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  if(a<10)al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*a,0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-1.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*10,0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(0.5*float(rozx))),14*g->args->Y_kratka,0);
+                  if(a<10)al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*a,0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(1.5*float(rozx))),14*g->args->Y_kratka,0);
                   else if(a<100)
-                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(a/10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-2.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(a-a/10*10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-1.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);}
+                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(a/10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(2.5*float(rozx))),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(a-a/10*10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(1.5*float(rozx))),14*g->args->Y_kratka,0);}
                   else if(a<1000)
-                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(a/100),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-3.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*((a-a/100*100)/10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-2.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(a-a/10*10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-1.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);}
-                  if(maxx<10)al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*maxx,0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+0.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
+                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(a/100),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(3.5*float(rozx))),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*((a-a/100*100)/10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(2.5*float(rozx))),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(a-a/10*10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2-std::ceil(1.5*float(rozx))),14*g->args->Y_kratka,0);}
+                  if(maxx<10)al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*maxx,0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+std::ceil(0.5*float(rozx))),14*g->args->Y_kratka,0);
                   else if(maxx<100)
-                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(maxx/10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+0.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(maxx-maxx/10*10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+1.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);}
+                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(maxx/10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+std::ceil(0.5*float(rozx))),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(maxx-maxx/10*10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+std::ceil(1.5*float(rozx))),14*g->args->Y_kratka,0);}
                   else if(maxx<1000)
-                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(maxx/100),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+0.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*((maxx-maxx/100*100)/10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+1.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);
-                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(20*g->args->rozdz_X/1920)*(maxx-maxx/10*10),0,(20*g->args->rozdz_X/1920),26*g->args->rozdz_Y/1080,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+2.5*(20*g->args->rozdz_X/1920)),14*g->args->Y_kratka,0);}
+                  {al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(maxx/100),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+std::ceil(0.5*float(rozx))),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*((maxx-maxx/100*100)/10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+std::ceil(1.5*float(rozx))),14*g->args->Y_kratka,0);
+                  al_draw_tinted_bitmap_region(g->czczionka_paski, al_map_rgba_f (C1,C2,C3,C4),(rozx)*(maxx-maxx/10*10),0,(rozx),rozy,(145+i*415)*g->args->rozdz_X/1920+(al_get_bitmap_width(g->pasek_ogolny)/2+std::ceil(2.5*float(rozx))),14*g->args->Y_kratka,0);}
 
          }
 

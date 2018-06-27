@@ -16,7 +16,7 @@ class Gra
          Swiat* swiat;
          bool przerwa=false;
          public:
-         bool godmode=1;
+         bool godmode=0;
          ALLEGRO_MUTEX *dla_lewej = al_create_mutex(), *dla_prawej = al_create_mutex();
          bool masz_otworzyc_ekw = false;
          bool masz_wykonac_nast_runde = false;
@@ -75,7 +75,7 @@ class Gra
          bool zalozylismy_nowy_plecak=false;
 
          czesc_ciala* wybierz_czesc_ciala(ALLEGRO_MOUSE_STATE myszka);
-         czesc_ciala* wybierz_rane_czesci_ciala(ALLEGRO_MOUSE_STATE myszka);
+         czesc_ciala* wybierz_defekt_czesci_ciala(ALLEGRO_MOUSE_STATE myszka, short);
          ALLEGRO_MOUSE_STATE wybierz_miejsce_uzycia_w_menu_anatomii(int nr);
          void wykonaj_crafting(Przepis *p, Gracz *g, co_ma_gracz *co_mamy);
 
@@ -130,16 +130,16 @@ bool jest_nad_p_udo(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_l_golen(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_p_golen(ALLEGRO_MOUSE_STATE myszka);
 
-bool jest_nad_klatka_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_brzuch_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_l_ramie_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_p_ramie_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_l_dlon_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_p_dlon_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_l_udo_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_p_udo_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_l_golen_rana(ALLEGRO_MOUSE_STATE myszka);
-bool jest_nad_p_golen_rana(ALLEGRO_MOUSE_STATE myszka);
+bool jest_nad_klatka_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_brzuch_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_l_ramie_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_p_ramie_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_l_dlon_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_p_dlon_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_l_udo_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_p_udo_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_l_golen_rana(ALLEGRO_MOUSE_STATE myszka, short);
+bool jest_nad_p_golen_rana(ALLEGRO_MOUSE_STATE myszka, short);
 
 bool jest_nad_strzalka_gora(ALLEGRO_MOUSE_STATE myszka);
 bool jest_nad_strzalka_prawo(ALLEGRO_MOUSE_STATE myszka);

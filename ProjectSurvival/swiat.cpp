@@ -433,6 +433,7 @@ void Plansza::rozejdz_swiatlo_reflektora(const short xxx, const short yyy, short
 
          for(short i=0;true;++i)///dlugosc
          {
+                  //if(zwrot=='l' || zwrot=='g') i-=2;
                   short f = i/2 + 1;
                   if(ile_na_tej_mocy++==zasieg)
                   {
@@ -446,7 +447,7 @@ void Plansza::rozejdz_swiatlo_reflektora(const short xxx, const short yyy, short
 
                            for(int h=0;h<4;h++)
                            {
-                                    short akt_x=e, akt_y=i+yyy + (zwrot=='g' ? -1 : 1); if(zwrot=='p' || zwrot=='l') {akt_x=i+xxx+(zwrot=='p' ? 1 : -1); akt_y=e;}
+                                    short akt_x=e, akt_y=yyy + (zwrot=='g' ? -1-i : 1+i); if(zwrot=='p' || zwrot=='l') {akt_x=xxx+(zwrot=='p' ? 1+i : -1-i); akt_y=e;}
 
                                     if(akt_y<13 && akt_y>-1 && akt_x<21 && akt_x>-1)
                                     {
@@ -756,7 +757,7 @@ void Plansza::zaktualizuj_widoki(int x1,int y1, int x2, int y2, bool akt_widoki)
          }
 
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"^";
-         zamieszanie_ze_swiatlem(true, 0);
+         zamieszanie_ze_swiatlem(akt_widoki, 0);
 
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"@";
 
@@ -790,7 +791,7 @@ void Plansza::zaktualizuj_widoki(bool akt_widoki)
          }
 
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"^";
-         zamieszanie_ze_swiatlem(true, 0);
+         zamieszanie_ze_swiatlem(akt_widoki, 0);
          if(Objekt::args->melduj_co_robi_AI) std::cout<<"@";
 
          for(int i=0; i<21; i++)
@@ -1030,7 +1031,7 @@ void Strefa::generuj_probe()
 {
          biom = 0;
          stworz_budynek(0);
-         postaw_pare_obiektow(new WLampa_przejsciowa, 10, true);
+         postaw_pare_obiektow(new Reflektor_przejsciowy, 20, true);
 }
 
 void Strefa::generuj_las()
@@ -1118,7 +1119,8 @@ void Strefa::generuj_pseudo_miasto()
          if(losuj(0,1)) stworz_budynek(1);
 
          if(losuj(0,1)) postaw_pare_obiektow_na_srodowisku<Lampa_przejsciowa>(losuj(0,2), true);
-         if(losuj(0,1)) postaw_pare_obiektow_na_srodowisku<Reflektor_przejsciowy>(losuj(0,2), true);
+         //if(losuj(0,1)) postaw_pare_obiektow_na_srodowisku<Reflektor_przejsciowy>(losuj(0,2), true);
+         if(losuj(0,1)) postaw_pare_obiektow(new Reflektor_przejsciowy, (losuj(0,2), true));
 
          postaw_pare_obiektow(new Beczka_przejsciowa, 1);
          if(losuj(0,1)) postaw_pare_obiektow(new Beczka_przejsciowa, 1);
@@ -1593,7 +1595,7 @@ dla_grafiki*Objekt::args;
 Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
 {
          gracz->dodaj_obiekt(new Gracz());
-         gracz->obiekt[0]->px=1;gracz->obiekt[0]->py=0;gracz->obiekt[0]->pz=0;
+         gracz->obiekt[0]->px=w_x/2;gracz->obiekt[0]->py=w_y/2;gracz->obiekt[0]->pz=0;
          gracz ->obiekt[0]-> x = 10;aktualny=gracz->obiekt[0];//aktualny->klatka_a=4;
          gracz->obiekt[0]-> y = 5;
          if(godmode) gracz->obiekt[0]->p_ruchu = 99;
@@ -1652,8 +1654,8 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
          }
 
          //area[0][0][0]->ma_gracza=true;
-         area[1][0][0]->ma_gracza=true;
-         Plansza* plansza=(Plansza*)area[1][0][0];
+         area[w_x/2][w_y/2][0]->ma_gracza=true;
+         Plansza* plansza=(Plansza*)area[w_x/2][w_y/2][0];
          aktualna = plansza;
          aktualna -> otoczenie[5][10]=gracz->obiekt[0];//aktualna -> otoczenie[6][10]=gracz->obiekt[1];
          //aktualna -> otoczenie[5][5]=gracz->obiekt[1];gracz->obiekt[1]->jedzenie_a=44;
@@ -1704,6 +1706,7 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
          gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2008));
          gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2021));
          gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(8018));*/
+
 
 
          //for(short t=0;t<16; ++t) gracz->obiekt[0]->dostan_item(Item::stworz_obiekt(2007));
@@ -2340,10 +2343,10 @@ void Plansza::animacja_iskry(short x, short y)
          dla_grafiki *args = Objekt::args;
          args->x_iskry=x*args->X_kratka+args->X_kratka/2; args->y_iskry=y*args->Y_kratka+args->Y_kratka/2;
          oswietlenie_z_innych_plansz[y][x] = 60;
-         if(Strefa::w_planszy(x, y+1)) oswietlenie_z_innych_plansz[y+1][x] = 100;
-         if(Strefa::w_planszy(x+1, y)) oswietlenie_z_innych_plansz[y][x+1] = 100;
-         if(Strefa::w_planszy(x-1, y)) oswietlenie_z_innych_plansz[y][x-1] = 100;
-         if(Strefa::w_planszy(x, y-1)) oswietlenie_z_innych_plansz[y-1][x] = 100;
+         if(Strefa::w_planszy(x, y+1)) oswietlenie_z_innych_plansz[y+1][x] = 50;
+         if(Strefa::w_planszy(x+1, y)) oswietlenie_z_innych_plansz[y][x+1] = 50;
+         if(Strefa::w_planszy(x-1, y)) oswietlenie_z_innych_plansz[y][x-1] = 50;
+         if(Strefa::w_planszy(x, y-1)) oswietlenie_z_innych_plansz[y-1][x] = 50;
          zaktualizuj_widoki(false);
          for(short j=1; j<6; ++j)
          {
@@ -2358,13 +2361,14 @@ void Plansza::iskra(short x, short y)
 {
          if(!Strefa::w_planszy(x, y)) return;
          animacja_iskry(x, y);
-         //std::cout<<y<<" "<<x<<std::endl;
 
-         if(srodowisko[y][x] && (srodowisko[y][x]->wierzch()==NULL || srodowisko[y][x]->wierzch()->czym_jest!=24))
+         if(srodowisko[y][x]!=NULL && srodowisko[y][x]->wierzch()!=NULL)
          {
-                  srodowisko[y][x]->sproboj_podpalic();
+                  if(srodowisko[y][x]->wierzch()->czym_jest!=24)
+                           srodowisko[y][x]->sproboj_podpalic();
+                  else if(losuj(1,10)<4) ((Ognisko*)srodowisko[y][x]->wierzch())->podpal();
          }
-         else if(losuj(1,10)<4) ((Ognisko*)srodowisko[y][x]->wierzch())->podpal();
+
          zaktualizuj_widoki();
 }
 

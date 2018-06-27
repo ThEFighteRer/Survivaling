@@ -20,6 +20,8 @@ class graficzny
 {
          const short najlewiejszy_bit = 1<<15;
          int cross_x, cross_y;
+         short rozx;///rozmiary od paskow na dole
+         short rozy;
 
          public:
 

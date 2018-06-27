@@ -15,9 +15,10 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
          Gracz *gracz=swiat->aktualny, *g=swiat->aktualny; int X=args->X_kratka, Y=args->Y_kratka, mx=(myszka.x-args->X_kratka/2)/args->X_kratka
          , my=(myszka.y-args->Y_kratka/2)/args->Y_kratka;
          Plansza*p=swiat->aktualna;
-         if(swiat->aktualny==NULL) {masz_otworzyc_ekw=false; return;}
-         else if(masz_otworzyc_ekw && !g->ukryty && g->p_plecak!=NULL)
+         if(swiat->aktualny==NULL) {masz_otworzyc_ekw=false; masz_wykonac_nast_runde=false; return;}
+         /*else if(masz_otworzyc_ekw && !g->ukryty && g->p_plecak!=NULL)
          {
+                  std::cout<<"XD1";
                   masz_otworzyc_ekw=false;
                   {zzn:zalozylismy_nowy_plecak=false;
                            if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
@@ -27,6 +28,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
          }
          else if(masz_otworzyc_ekw && !g->ukryty && g->p_plecak==NULL)
          {
+                  std::cout<<"XD2";
                   masz_otworzyc_ekw=false;
                  {zzno:zalozylismy_nowy_plecak=false;
                            if(swiat->aktualna->ziemia[g->y][g->x]==NULL)swiat->aktualna->ziemia[g->y][g->x]=new Kontener<Item>();
@@ -36,10 +38,11 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
          }
          else if(masz_wykonac_nast_runde)
          {
+                  std::cout<<"XD3";
                   masz_wykonac_nast_runde = false;
                   args->lewy_krok=false;args->dol_krok=false;args->gora_krok=false;args->prawy_krok=false;
                    args->myszka_zajeta=true;swiat->Nastepna_runda();args->myszka_zajeta=false;
-         }
+         }*/
          else if(!g->ukryty && (myszka.buttons & 1) && jest_na_polu(args, myszka, gracz->x, gracz->y))
          {
                   args->lewy_krok=false;args->prawy_krok=false;args->gora_krok=false;args->dol_krok=false;
@@ -257,7 +260,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                    while(true) {al_rest(0.01);al_get_keyboard_state(&klawiatura);if(!al_key_down(&klawiatura,ALLEGRO_KEY_E))break;}
                    swiat->aktualna->zaktualizuj_widoki();
          }
-         else if(godmode && al_key_down(&klawiatura, ALLEGRO_KEY_Z))
+         else if(al_key_down(&klawiatura, ALLEGRO_KEY_Z))
          {
                 if(swiat->aktualna)
                 {
@@ -2022,6 +2025,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            delete menu; menu=NULL;
                   }
 
+
                   else if(!g->ukryty && myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==31 && Objekt::zaraz_obok(g->x,g->y,mx,my))
                   {///stol
                            poczekaj_na_myszke(2); Stol *s = (Stol*)p->otoczenie[my][mx];
@@ -2191,6 +2195,63 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            }
                            delete menu; menu=NULL;
                   }
+                  else if(!g->ukryty && myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==37 && Objekt::zaraz_obok(g->x,g->y,mx,my))
+                  {///reflektor
+                           poczekaj_na_myszke(2); Reflektor *s = (Reflektor*)p->otoczenie[my][mx];
+                           bool prost = Objekt::jest_prostopadle(g->x,g->y,mx,my);
+                           specyfikacja_menu* menu=
+                                    new specyfikacja_menu(new  specyfikacja_menu* [2+prost*2],2+prost*2,
+                                                          256+prost*1024+prost*65536+(s->swieci() ? 4194304 : 2097152));
+                                    menu->item[0]=new specyfikacja_menu(NULL,0,1);
+                                    if(prost)
+                                    {
+                                             menu->item[1]=new specyfikacja_menu(new specyfikacja_menu*[2],2,45);
+                                             menu->item[1]->item[0] = new specyfikacja_menu(NULL,0,5);
+                                             menu->item[1]->item[1] = new specyfikacja_menu(NULL,0,6);
+
+                                             menu->item[2]=new specyfikacja_menu(NULL, 0, 10);
+                                             menu->item[3]=new specyfikacja_menu(NULL,0,s->swieci() ? 3 : 2);
+                                    }
+                                    else
+                                    {
+                                             menu->item[1]=new specyfikacja_menu(NULL,0,s->swieci() ? 3 : 2);
+                                    }
+                           int wybor=Menu(myszka.x, myszka.y, args, menu);
+                           switch(wybor)
+                           {
+                                    case 0:break;
+                                    case 1:if((g->p_rece==NULL || g->p_rece->jest_bronia_biala()) &&pobierz_punkty_ruchu_i_kondycje(3,1)){///zniszcz
+                                             g->animacja_ataku(w_ktora_to_strone(g->x,g->y,mx,my));
+                                             int obr=losuj(1,6); if(g->p_rece!=NULL) {obr=((Bron*)g->p_rece)->get_obrazenia();
+                                             if(g->p_rece && ((Bron*)g->p_rece)->wykorzystaj()){Bron*a=(Bron*)g->p_rece;g->p_rece=NULL;delete a;}}
+                                             p->otoczenie[my][mx]->zostan_uderzony(obr,0,0,g->wart_zajecia());
+                                    }break;
+                                    case 2:if(pobierz_punkty_ruchu(3)){///wlacz
+                                             s->wlacz();
+                                    }break;
+                                    case 3:if(pobierz_punkty_ruchu(3)){///wylacz
+                                             s->wylacz();
+                                    }break;
+                                    case 5:if(pobierz_punkty_ruchu_i_kondycje(3,1)){///pchnij
+                                             s->przesun(w_ktora_to_strone(g->x,g->y,mx,my));
+                                    }break;
+                                    case 6:if(pobierz_punkty_ruchu_i_kondycje(4,1)){///pociagnij
+                                             g->zwrot=g->daj_zwrot_do_punktu(mx,my);
+                                             what_happened aaa;
+                                             if((aaa = g->przesun(Objekt::przeciwna(w_ktora_to_strone(g->x,g->y,mx,my)), false))==success)
+                                             {
+                                                      if(p->otoczenie[my][mx]==s) s->przesun(Objekt::przeciwna(w_ktora_to_strone(g->x,g->y,mx,my)));
+                                             }
+                                             else if (aaa==dead) break;
+                                    }break;
+                                    case 10:
+                                             {
+                                                      if(g->p_ruchu>=4 && g->przejdz_nad_pod_objektem(mx, my) && pobierz_punkty_ruchu(4));///przejdz nad pod
+                                             }break;
+                                    default:break;
+                           }
+                           delete menu; menu=NULL;
+                  }
                   else if(myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==33 && ((Ukryty_pod*)p->otoczenie[my][mx])->ukrywa_go(g))
                   {///zwloki gdy sie w nich my ukrywamy
                            poczekaj_na_myszke(2); Ukryty_pod *s = (Ukryty_pod*)p->otoczenie[my][mx];
@@ -2207,6 +2268,7 @@ void Gra::ruch_gracza(ALLEGRO_MOUSE_STATE myszka,
                            }
                            delete menu; menu=NULL;
                   }
+
 
                   else if(!g->ukryty && myszka.buttons&2 && p->otoczenie[my][mx]!=NULL && p->otoczenie[my][mx]->czym_jest==34 && (Objekt::zaraz_obok(g->x,g->y,mx,my)||(g->p_rece && g->p_rece->jest_bronia_palna())))
                   {///beczka

@@ -290,7 +290,7 @@ int Item::typ_wielkosci()
                   case 4251: case 4252: case 4255: case 4253: return 6;
                   case 4004: return 3;
                   case 4005: return 5;
-                  case 2101: case 2003:case 2004:case 2005:case 8022: case 8003:case 8019: case 2008: case 2009: case 2010: case 2201: case 2202: return 2;
+                  case 2101: case 2003:case 2004:case 2005:case 8022: case 8003:case 8019: case 2008: case 2009: case 2010: case 2201: case 2202: case 2020: return 2;
                   case 4006: return 10;
                   case 6505: case 4752: case 4751:case 8002:return 8;
                   case 6504:case 6503:case 6502:case 6501:case 6004: case 6002:case 6001:case 5503:case 5502:case 5501:
@@ -318,6 +318,7 @@ int Item::get_co_to()
 Item* Item::stworz_obiekt(int co)
 {
          Item*a;
+         if(co==2022) return new Konsumpcjum(co, 10);
          if(co==2021) return new Konsumpcjum(co, 5);
          if(co==2201 || co==2202) return new Konsumpcjum(co, 0);
          if(co==2203) return new Konsumpcjum(co, 60);
@@ -459,22 +460,23 @@ Item* Item::wylosuj_item(int szansa_na_ubranie, int szansa_na_plecak, int szansa
          }
          else if(los<=szansa_na_jedzenie+szansa_na_bron+szansa_na_inne+szansa_na_plecak+szansa_na_ubranie)
          {
-                  switch(losuj(1,4))
+                  if(losuj(1,12)==1) return stworz_obiekt(2005);
+                  else switch(losuj(1,3))
                   {
                            case 1: return stworz_obiekt(2001);
                            case 2: return stworz_obiekt(2006);
                            case 3: return stworz_obiekt(2020);
-                           case 4: return stworz_obiekt(2005);
                   }
          }
          else if(los<=szansa_na_medykamenty+szansa_na_bron+szansa_na_jedzenie+szansa_na_inne+szansa_na_plecak+szansa_na_ubranie)
          {
-                  switch(losuj(1,4))
+                  switch(losuj(1,5))
                   {
                            case 1: return stworz_obiekt(2007);
                            case 2: return stworz_obiekt(8024);
                            case 3: return stworz_obiekt(8025);
                            case 4: return stworz_obiekt(2008);
+                           case 5: return stworz_obiekt(2022);
                   }
          }
          else {return stworz_obiekt(2007);}
@@ -508,21 +510,24 @@ Item** Item::wylosuj_liste_itemow(int szansa_na_ubranie,int szansa_na_plecak,int
                            case 8: a[ile++] = stworz_obiekt(2203); break;
                   }
          if(losuj(1,100) <= szansa_na_jedzenie)
-                  switch(losuj(1,4))
+         {
+                  if(losuj(1,12)==1) a[ile++] = stworz_obiekt(2005);
+                  else switch(losuj(1,3))
                   {
                            case 1: a[ile++] = stworz_obiekt(2001); break;
                            case 2: a[ile++] = stworz_obiekt(2006); break;
-                           case 3: a[ile++] = stworz_obiekt(2005); break;
-                           case 4: a[ile++] = stworz_obiekt(2020); break;
+                           case 3: a[ile++] = stworz_obiekt(2020); break;
                   }
+         }
          if(losuj(1,100) <= szansa_na_medykamenty)
          {
-                  switch(losuj(1,4))
+                  switch(losuj(1,5))
                   {
                            case 1: a[ile++] = stworz_obiekt(2007);break;
                            case 2: a[ile++] = stworz_obiekt(8024);break;
                            case 3: a[ile++] = stworz_obiekt(8025);break;
                            case 4: a[ile++] = stworz_obiekt(2008);break;
+                           case 5: a[ile++] = stworz_obiekt(2022);break;
                   }
          }
          if(losuj(1,100) <= szansa_na_bron)
@@ -1188,7 +1193,7 @@ Przepis** Crafting_recipes::daj_liste_przepisow(short kategoria)///ostatni null
          else if(kategoria == 2)
          {
                   Przepis **t = new Przepis*[5];
-                  t[0] = new Przepis(stworz_inty(4003, 1, 8023, 1),0,0,0,stworz_inty(4004, 1),2,0,0,0,1);
+                  t[0] = new Przepis(stworz_inty(4003, 1, 8023, 1),0,0,0,stworz_inty(4004, 1, 10001, 12),2,0,0,0,2);
                   t[1] = new Przepis(stworz_inty(2005, 1, 8023, 1),0,0,0,stworz_inty(8022, 1),2,0,0,0,1);
                   t[2] = new Przepis(stworz_inty(8022, 1),0,0,0,stworz_inty(2005, 1, 8023, 1),1,0,0,0,2);
                   t[3] = new Przepis(stworz_inty(2008, 1, 8020, 1),0,stworz_inty(8017, 1),0,stworz_inty(8019, 1),2,0,1,0,1);
@@ -1210,21 +1215,13 @@ rozmiary_tabeli Crafting_recipes::rozmiary(short strona, short kategoria)
 {
         switch(kategoria)
         {
-        case 0:
-            switch(strona)
-            {
-                case 0: return rozmiary_tabeli(5,0,1,0,4);
+                case 0: return rozmiary_tabeli(4,1,1,1,3);
+                case 1: return rozmiary_tabeli(5,1,1,1,2);
                 case 2: return rozmiary_tabeli(5,1,1,1,2);
-                default : break;
-            }
 
             default : break;
         }
-
-
-        return rozmiary_tabeli(5,1,1,1,1);
-
-
+        return rozmiary_tabeli(4,1,1,1,3);
          {std::cout<<"niezdefiniowany rozmiar w rozmiary::CraftingRecipes"; throw "D";}
 
 }

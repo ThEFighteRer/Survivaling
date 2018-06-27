@@ -1435,16 +1435,6 @@ void Reflektor::zapisz(std::ofstream *a)
 
 }
 
-void Reflektor::wlacz()
-{
-
-}
-
-void Reflektor::wylacz()
-{
-
-}
-
 Reflektor::Reflektor(Reflektor_przejsciowy* a,int xx, int yy,int ppx,int ppy,int ppz):Objekt_martwy(37)
 {
          x=xx;y=yy;nie_wykonal_ruchu=true;wykonuje_ruch=false;wysokosc=1;

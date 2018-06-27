@@ -282,6 +282,13 @@ void graficzny::rysuj()
                                                       a=g->acc->srodowisko[w][v][0]; a-=4600;
                                                       al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*(a),g->Y*16,g->X,g->Y, j*g->X+g->acc->przesuniecie_srodowisk[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie_srodowisk[w][v].y-(g->args->Y_kratka/2),0);
                                              }
+                                             else if(g->acc->srodowisko[w][v][0]>=4700 && g->acc->srodowisko[w][v][0]<4800)///reflektor
+                                             {
+                                                      a=g->acc->srodowisko[w][v][0]; a-=4700;
+                                                      al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*((a>=8)*2+(a&1)),g->Y*17,g->X,g->Y, j*g->X+g->acc->przesuniecie_srodowisk[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie_srodowisk[w][v].y-(g->args->Y_kratka/2),0);
+                                                      if(a&4)
+                                                      al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*(4+((a&2)==0)),g->Y*17,g->X,g->Y, j*g->X+g->acc->przesuniecie_srodowisk[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie_srodowisk[w][v].y-(g->args->Y_kratka/2),0);
+                                             }
                                     }
                                     for(int v=1; v<23; v++)
                                     {
@@ -459,10 +466,9 @@ void graficzny::rysuj()
                                              else if(g->acc->otoczenie[w][v][0]>=4700 && g->acc->otoczenie[w][v][0]<4800)///reflektor
                                              {
                                                       a=g->acc->otoczenie[w][v][0]; a-=4700;
-
                                                       al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*((a>=8)*2+(a&1)),g->Y*17,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
-                                                      if(a&2 || a&4)
-                                                      al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*(4+((a^2)==2)),g->Y*17,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
+                                                      if(a&4)
+                                                      al_draw_tinted_bitmap_region(g->krajobraz, al_map_rgba_f (C1,C2,C3,C4),g->X*(4+((a&2)!=2)),g->Y*17,g->X,g->Y, j*g->X+g->acc->przesuniecie[w][v].x-(g->args->X_kratka/2), i*g->Y+g->acc->przesuniecie[w][v].y-(g->args->Y_kratka/2),0);
                                              }
                                              else if(g->acc->otoczenie[w][v][0]>=4800 && g->acc->otoczenie[w][v][0]<4900)///beczka
                                              {
