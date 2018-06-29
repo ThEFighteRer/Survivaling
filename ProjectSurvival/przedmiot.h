@@ -5,6 +5,19 @@
 #include <iostream>
 #include "structy.h"
 
+class Zapis
+{
+         char* bytes=NULL;
+         short ile=0;
+public:
+         Zapis();
+         Zapis(char*, short);
+         ~Zapis();
+         char* get_bytes();
+         short how_many();
+};
+
+
 class Przedmiot;class Item;
 
 class Skrzynka
@@ -39,13 +52,18 @@ class Skrzynka
          Przedmiot* przedmiot(int xx, int yy);///przedmiot z danych wspolrzednych
          std::pair<std::vector<std::pair<int, punkt>>,std::pair<int, int>> raport_obrazkowy();
          void usun_mutex();
+         Zapis zapisz();
+         char* wczytaj(char* zapis);///zwraca, gdzie skonczyla
+         int ile_zajmie_bajtow();
 };
 
 class Przedmiot
 {
+         friend class Skrzynka;
+         Przedmiot(){}
          public:
          Item* item=NULL;
-         int x=-1,y=-1;///pozycja w skrzynce
+         char x=-1,y=-1;///pozycja w skrzynce
 
          Przedmiot(Item* item);
          ~Przedmiot();///!!!!!!!!!! nie usuwa zawartosci
@@ -53,6 +71,9 @@ class Przedmiot
          int get_co_to();
          int typ_wielkosci();
          bool jest_ubraniem(),jest_plecakiem(), jest_kapeluszem(), jest_korpusem(), jest_spodniami(), jest_butami(), jest_rekawicami(), jest_bronia_na_ramie(),jest_bronia();
+         Zapis zapis();
+         char* wczytaj(char *zapis);
+         int ile_zajmie_bajtow();
 };
 
 class Item
@@ -63,13 +84,14 @@ class Item
 
          int czym_jest; /// 2000+ konsumpcjum, 3000+ plecak, 4000+bron na ramie, 4500+ bron nie na ramie, 5000+glowa, 5500+korpus, 6000+spodnie, 6500+buty, 7000+rekawice, 8000+ inne
 
-         bool jest_klodkom(),jest_kluczem(),jest_mala_bronia(),jest_bronia_biala(),jest_bronia_palna(),jest_ubraniem(),jest_plecakiem(), jest_kapeluszem(), jest_korpusem(), jest_spodniami(), jest_butami(), jest_rekawicami(), jest_bronia(),jest_bronia_na_ramie();
+         bool jest_konsumpcjum(), jest_klodkom(),jest_kluczem(),jest_mala_bronia(),jest_bronia_biala(),jest_bronia_palna(),jest_ubraniem(),jest_plecakiem(), jest_kapeluszem(), jest_korpusem(), jest_spodniami(), jest_butami(), jest_rekawicami(), jest_bronia(),jest_bronia_na_ramie();
 
          int get_co_to();
          int typ_wielkosci();///1 1x1, 2 1x2, 3 2x8, 4 9x6, 5 2x6, 6 9x3, 7 8x1, 8 2x2, 9 2x1, 10 2x11, 11 9x2, 12 1x8, 13 1x5, 14 1x4, 15 3x2, 16 1x6
          int wartosc_ataku_rzucanego();
          void destruct(){delete this;}
          static Item* stworz_obiekt(int co);
+         static std::pair<Item*, char*> stworz_obiekt(char *ktory);
          static Item* wylosuj_item(int szansa_na_ubranie,int szansa_na_plecak,int szansa_na_bron,int szansa_na_inne,int szansa_na_jedzenie,int szansa_na_medykamenty);
          static Item* wylosuj_item(char skad); /// s-standard,
          static Item** wylosuj_liste_itemow(int szansa_na_ubranie,int szansa_na_plecak,int szansa_na_bron,int szansa_na_inne,int szansa_na_jedzenie,int szansa_na_medykamenty);
@@ -78,12 +100,14 @@ class Item
          bool mozna_do_kieszeni();
          virtual bool wykorzystaj(){if(this==NULL) return false;}; ///true jesli wykorzystany
          bool jest_ostrzem();
+         virtual Zapis zapis() = 0;
+         int ile_zajmie_bajtow();
 };
 
 class Ubranie:public Item
 {
          public:
-         int wytrzymalosc=20;
+         short wytrzymalosc=20;
 
          Ubranie(int ktore);
          ~Ubranie();
@@ -93,11 +117,13 @@ class Ubranie:public Item
          int kamuflaz();
          bool wykorzystaj();
          short obrazenia_butow();
+         Zapis zapis() override;
 
 };
 
 class Konsumpcjum:public Item
 {
+         friend class Item;
          short pozostalo_uzyc=1;
          public:
 
@@ -106,6 +132,7 @@ class Konsumpcjum:public Item
          short get_uzycia() {return pozostalo_uzyc;}
          bool wykorzystaj(); ///true jesli wykorzystany
          void dodaj_uzyc(short ile){if(ile>0) pozostalo_uzyc+=ile;}
+         Zapis zapis() override;
 };
 
 class Plecak:public Item
@@ -117,13 +144,14 @@ class Plecak:public Item
          ~Plecak();
          int kamuflaz();
          bool wykorzystaj(){return false;}
+         Zapis zapis() override;
 };
 
 class Bron:public Item
 {
          public:
-         int wytrzymalosc=20;
-         int mag=0;
+         short wytrzymalosc=20;
+         short mag=0;
 
          Bron(int ktore);
          ~Bron();
@@ -141,6 +169,7 @@ class Bron:public Item
          int grubosc_strzalu();
          int glosnosc_broni();
          bool dwureczna();
+         Zapis zapis() override;
 
 };
 
@@ -149,14 +178,16 @@ class Inne:public Item
          public:
          Inne(int co);
          bool wykorzystaj(){return false;}
+         Zapis zapis() override;
 };
 class Klodka:public Item
 {
          public:
-         int HP=300;
+         short HP=300;
          Klodka(int co);
          int max_hp();
          bool wykorzystaj(){return false;}
+         Zapis zapis() override;
 };
 class Klucz:public Item
 {
@@ -165,6 +196,7 @@ class Klucz:public Item
          Klucz(int co);
          Klucz(int co, Klodka*do_cz);
          bool wykorzystaj(){return false;}
+         Zapis zapis() override;
 };
 
 

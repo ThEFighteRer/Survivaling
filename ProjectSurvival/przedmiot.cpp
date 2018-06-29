@@ -126,7 +126,7 @@ bool Skrzynka::wloz_przedmiot(int xx, int yy, Przedmiot*a)
                   {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;goto tu;;}break;
                   case 16: aa=1,bb=6;if(xx+aa-1<x && yy+bb-1<y){bool zle=false;for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){if(zawartosc[j][i]!=NULL)
                   {zle=true;break;}}if(zle)break;} if(!zle)for(int i=xx;i<xx+aa;++i){for(int j=yy;j<yy+bb;++j){zawartosc[j][i]=a;}}else break; a->y=yy; a->x=xx;++wersja;goto tu;;}break;
-                  default: {std::cout<<"ja nie wiem jak wlozyc ten przedmiot"<<'\n'; throw "ja nie wiem jak wlozyc ten przedmiot";}
+                  default: {std::cout<<"ja nie wiem jak wlozyc ten przedmiot"<<a->item->czym_jest<<'\n'; throw "ja nie wiem jak wlozyc ten przedmiot";}
          }
          items.usun_objekt(a);
          if(mutex) al_unlock_mutex(mutex);
@@ -349,6 +349,11 @@ bool Item::jest_bronia_palna()
 
 bool Item::jest_bronia_biala()
 {return (czym_jest>4000&&czym_jest<4250)||(czym_jest>4500&&czym_jest<4750);}
+
+bool Item::jest_konsumpcjum()
+{
+         return czym_jest>2000 && czym_jest<3000;
+}
 
 int Item::wartosc_ataku_rzucanego()
 {
@@ -1001,6 +1006,216 @@ int Bron::glosnosc_broni()
          }
 }
 
+Zapis::Zapis(char*a, short b)
+{
+         bytes = a; ile=b;
+}
+Zapis::Zapis()
+{
+
+}
+Zapis::~Zapis()
+{
+         delete [] bytes;
+}
+char* Zapis::get_bytes()
+{
+         return bytes;
+}
+short Zapis::how_many()
+{
+         return ile;
+}
+
+Zapis Skrzynka::zapisz()
+{
+         if(items.ilosc==0)
+         {
+                  char* pom = new char[4];
+                  for(short t=0;t<4;++t) pom[t]=0;
+                  return Zapis(pom, 4);
+         }
+         else
+         {
+                  int wielkosc = 0;
+                  Zapis *z = new Zapis[items.ilosc];
+                  for(short t=0;t<items.ilosc;++t) {z[t] = items.obiekt[t]->zapis(); wielkosc+=z[t].how_many();}
+                  char* pom = new char[4+wielkosc];
+
+                  for(short t=0;t<4;++t) pom[t] = ((char*)&items.ilosc)[t];
+                  int akt = 4;
+                  for(short t=0;t<items.ilosc;++t)
+                  {
+                           for(short g=0; g<z[t].how_many(); ++g)
+                                    pom[akt++] = z[t].get_bytes()[g];
+                  }
+                  return Zapis(pom, akt);
+         }
+}
+
+char* Skrzynka::wczytaj(char* zapis)
+{
+         int wielkosc = 0;
+         for(short t=0;t<4;++t) ((char*)&wielkosc)[t] = zapis[t];
+         zapis += 4;
+         if(wielkosc!=0)
+         {
+                  for(short h=0; h<wielkosc; ++h)
+                  {
+                           Przedmiot *a = new Przedmiot;
+                           zapis = a->wczytaj(zapis);
+                           wloz_przedmiot(a->x, a->y, a);
+                  }
+         }
+         return zapis;
+}
+
+int Skrzynka::ile_zajmie_bajtow()
+{
+         short ilosc=0;
+         for(short g=0; g<items.ilosc; ++g)
+                  ilosc+=items.obiekt[g]->ile_zajmie_bajtow();
+         return ilosc;
+}
+
+int Item::ile_zajmie_bajtow()
+{
+         if(this==NULL) return 8;
+         if(jest_plecakiem())
+         {
+                  return 8+((Plecak*)this)->s->ile_zajmie_bajtow();
+         }
+         else return 8;
+}
+
+char* Przedmiot::wczytaj(char *zapis)
+{
+         std::pair<Item*, char*> rez = Item::stworz_obiekt(zapis);
+         zapis = rez.second;
+         item = rez.first;
+         x = zapis[0];
+         y = zapis[1];
+         return zapis+2;
+}
+
+Zapis Przedmiot::zapis()
+{
+         Zapis a = item->zapis();
+         char* d = new char[a.how_many()+2];
+         for(short t=0;t<a.how_many();++t) d[t] = a.get_bytes()[t];
+         d[a.how_many()]=x;
+         d[a.how_many()+1]=y;
+         return Zapis(d, a.how_many()+2);
+}
+
+int Przedmiot::ile_zajmie_bajtow()
+{
+         return item->ile_zajmie_bajtow() + 2;
+}
+
+std::pair<Item*, char*> Item::stworz_obiekt(char *ktory)
+{
+         int co;
+         for(short t=0;t<4;++t) ((char*)&co)[t] = ktory[t];
+
+         if(co==0) return std::pair<Item*, char*>(NULL, ktory+8);
+
+         Item* a = stworz_obiekt(co);
+         if(a->jest_bronia())
+         {
+                  short w;
+                  for(short t=0;t<2;++t) ((char*)&w)[t] = ktory[t+4];
+                  ((Bron*)a)->wytrzymalosc = w;
+                  for(short t=0;t<2;++t) ((char*)&w)[t] = ktory[t+6];
+                  ((Bron*)a)->mag = w;
+                  ktory+=8;
+         }
+         else if(a->jest_konsumpcjum())
+         {
+                  short w;
+                  for(short t=0;t<2;++t) ((char*)&w)[t] = ktory[t+4];
+                  ((Konsumpcjum*)a)->pozostalo_uzyc = w;
+                  ktory+=8;
+         }
+         else if(a->jest_ubraniem())
+         {
+                  short w;
+                  for(short t=0;t<2;++t) ((char*)&w)[t] = ktory[t+4];
+                  ((Ubranie*)a)->wytrzymalosc = w;
+                  ktory+=8;
+         }
+         else if(a->jest_plecakiem())
+         {
+                  ktory = ((Plecak*)a)->s->wczytaj(ktory+4);
+         }
+         else
+         {
+                  ktory +=8;
+         }
+
+         return std::pair<Item*, char*>(a, ktory);
+}
+
+Zapis Bron::zapis()
+{
+         char *c = new char[8];
+         for(short t=0;t<4;++t) c[t] = ((char*)&czym_jest)[t];
+         for(short t=0;t<2;++t) c[t+4] = ((char*)&wytrzymalosc)[t];
+         for(short t=0;t<2;++t) c[t+6] = ((char*)&mag)[t];
+         return Zapis(c, 8);
+}
+
+Zapis Konsumpcjum::zapis()
+{
+         char *c = new char[8];
+         for(short t=0;t<4;++t) c[t] = ((char*)&czym_jest)[t];
+         for(short t=0;t<2;++t) c[t+4] = ((char*)&pozostalo_uzyc)[t];
+         for(short t=0;t<2;++t) c[t+6]=0;
+         return Zapis(c, 8);
+}
+
+Zapis Ubranie::zapis()
+{
+         char *c = new char[8];
+         for(short t=0;t<4;++t) c[t] = ((char*)&czym_jest)[t];
+         for(short t=0;t<2;++t) c[t+4] = ((char*)&wytrzymalosc)[t];
+         for(short t=0;t<2;++t) c[t+6]=0;
+         return Zapis(c, 8);
+}
+
+Zapis Plecak::zapis()///zapisujemy przedmioty
+{
+         Zapis a = s->zapisz();
+         char* d = new char[a.how_many()+4];
+         for(short t=0;t<a.how_many();++t) d[t+4] = a.get_bytes()[t];
+         for(short t=0;t<4;++t) d[t] = ((char*)&czym_jest)[t];
+         return Zapis(d, a.how_many()+4);
+}
+
+Zapis Inne::zapis()
+{
+         char *c = new char[8];
+         for(short t=0;t<4;++t) c[t] = ((char*)&czym_jest)[t];
+         for(short t=0;t<4;++t) c[t] = c[4+t]=0;
+         return Zapis(c, 8);
+}
+
+Zapis Klucz::zapis()
+{
+         char *c = new char[8];
+         for(short t=0;t<4;++t) c[t] = ((char*)&czym_jest)[t];
+         for(short t=0;t<4;++t) c[t] = c[4+t]=0;
+         return Zapis(c, 8);
+}
+
+Zapis Klodka::zapis()
+{
+         char *c = new char[8];
+         for(short t=0;t<4;++t) c[t] = ((char*)&czym_jest)[t];
+         for(short t=0;t<4;++t) c[t] = c[4+t]=0;
+         return Zapis(c, 8);
+}
+
 Inne::Inne(int co)
 {
          czym_jest=co;
@@ -1034,8 +1249,6 @@ int Klodka::max_hp()
                   case 8007: return 300;case 8008: return 250;case 8009: return 200;
          }
 }
-
-
 
 
 

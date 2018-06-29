@@ -2,24 +2,29 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="gra_ruch_gracza.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="grafika.h" open="1" top="0" tabpos="19" split="0" active="1" splitpos="0" zoom_1="-4" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1329" topLine="15" />
+			<Cursor1 position="496" topLine="21" />
 		</Cursor>
 	</File>
-	<File name="grafika.cpp" open="1" top="0" tabpos="20" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="gra.h" open="1" top="0" tabpos="20" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="55536" topLine="654" />
+			<Cursor1 position="636" topLine="6" />
 		</Cursor>
 	</File>
 	<File name="swiat.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="9779" topLine="262" />
+			<Cursor1 position="21452" topLine="556" />
 		</Cursor>
 	</File>
-	<File name="gracz.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="gracz.cpp" open="1" top="1" tabpos="7" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="156" topLine="0" />
+			<Cursor1 position="14414" topLine="388" />
+		</Cursor>
+	</File>
+	<File name="przedmiot.cpp" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="47932" topLine="1135" />
 		</Cursor>
 	</File>
 	<File name="graficzny.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
@@ -27,89 +32,84 @@
 			<Cursor1 position="83812" topLine="1329" />
 		</Cursor>
 	</File>
-	<File name="swiat.cpp" open="1" top="1" tabpos="8" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="grafika.cpp" open="1" top="0" tabpos="21" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="88219" topLine="1659" />
+			<Cursor1 position="55536" topLine="654" />
 		</Cursor>
 	</File>
 	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1430" topLine="57" />
+			<Cursor1 position="549" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="zwierzeta2.cpp" open="1" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="objekt.cpp" open="1" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2871" topLine="6" />
+			<Cursor1 position="104553" topLine="1927" />
 		</Cursor>
 	</File>
-	<File name="przedmiot.cpp" open="1" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="gracz.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="22526" topLine="426" />
+			<Cursor1 position="297" topLine="87" />
 		</Cursor>
 	</File>
-	<File name="elementy_stale.cpp" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="przedmiot.h" open="1" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="39822" topLine="1407" />
+			<Cursor1 position="3938" topLine="84" />
 		</Cursor>
 	</File>
-	<File name="objekt.cpp" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="structy.h" open="1" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="84683" topLine="1518" />
+			<Cursor1 position="382" topLine="9" />
 		</Cursor>
 	</File>
-	<File name="gra.cpp" open="1" top="0" tabpos="22" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="gra.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="161259" topLine="2168" />
+			<Cursor1 position="159882" topLine="2225" />
 		</Cursor>
 	</File>
-	<File name="przedmiot.h" open="1" top="0" tabpos="21" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7627" topLine="275" />
-		</Cursor>
-	</File>
-	<File name="structy.cpp" open="1" top="0" tabpos="18" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3954" topLine="81" />
-		</Cursor>
-	</File>
-	<File name="gra.h" open="1" top="0" tabpos="19" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="402" topLine="6" />
-		</Cursor>
-	</File>
-	<File name="grafika.h" open="1" top="0" tabpos="17" split="0" active="1" splitpos="0" zoom_1="-4" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="496" topLine="21" />
-		</Cursor>
-	</File>
-	<File name="swiat2.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="swiat2.h" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="8876" topLine="268" />
 		</Cursor>
 	</File>
-	<File name="structy.h" open="1" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="gra_ruch_gracza.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="13245" topLine="471" />
+			<Cursor1 position="1329" topLine="15" />
 		</Cursor>
 	</File>
-	<File name="zombie.cpp" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="zombie.cpp" open="1" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="5577" topLine="105" />
 		</Cursor>
 	</File>
-	<File name="zwierzeta.cpp" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="elementy_stale.cpp" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="21104" topLine="763" />
+		</Cursor>
+	</File>
+	<File name="zwierzeta.cpp" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="527" topLine="27" />
 		</Cursor>
 	</File>
-	<File name="gracz.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="structy.cpp" open="1" top="0" tabpos="17" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1974" topLine="80" />
+			<Cursor1 position="28" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="funkcje_przedmiotow.cpp" open="1" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+	<File name="funkcje_przedmiotow.cpp" open="1" top="0" tabpos="18" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="427" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="zwierzeta2.cpp" open="1" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2871" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="swiat.cpp" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="-5" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="87170" topLine="1650" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

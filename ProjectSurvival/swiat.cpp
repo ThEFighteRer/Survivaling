@@ -1664,7 +1664,11 @@ Swiat::Swiat(bool*p, int X, int Y,dla_grafiki*arg, bool godmode)
          Ustaw_aktualna(gracz->obiekt[0]->px,gracz->obiekt[0]->py,gracz->obiekt[0]->pz);
 
 
-         Plecak*pl=new Plecak(3001);gracz->obiekt[0]->p_plecak=pl;
+         if(gracz->obiekt[0]->wczytaj_postac()==false)
+         {
+                  Plecak*pl=new Plecak(3001);gracz->obiekt[0]->p_plecak=pl;
+         }
+
          //Bron*pll=new Bron(4252);pll->mag=30;
          //gracz->obiekt[0]->p_rece=pll;
          //gracz->obiekt[0]->p_glowa=new Ubranie(5001);

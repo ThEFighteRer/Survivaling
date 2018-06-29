@@ -7,33 +7,26 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-         //ios_base::sync_with_stdio(false);
-         //for(short h=0;h<100;++h) std::cout<<losuj(1,6);throw"F";
+
+         /*std::list<int> *sss= new std::list<int>;
+         sss->push_back(3);
+         sss->erase(std::find(sss->begin(), sss->end(), 5));
+         cout<<(std::find(sss->begin(), sss->end(), true)!=sss->end())<<" ";*/
+
+         /*std::list<int> *sss= new std::list<int>;
+         sss->push_back(3);
+         sss->erase(sss->end());
+         cout<<(std::find(sss->begin(), sss->end(), true)!=sss->end())<<" ";*/
+
+
+
+
+
+
 
 
          cin.tie(NULL);
 
-         //A* s=new B; B*y=(B*)s;
-        // cout<<y->a<<std::endl;
-         //for(int g=0; g<1000; g++) cout<<losuj(0, 14)<<endl; return 0;
-
-         /*std::list<int> aaa;
-         aaa.push_back(1);
-         aaa.push_back(2);
-         aaa.push_back(3);
-         aaa.push_back(4);
-         aaa.push_back(5);
-         aaa.push_back(6);
-         for(std::list<int>::iterator i=aaa.begin(); i!=aaa.end();++i)
-         {
-                  cout<<*i;
-                  if(*i==3) i=aaa.erase(i);
-
-         }
-         for(std::list<int>::iterator i=aaa.begin(); i!=aaa.end();++i)
-         {
-                  std::cout<<*i<<std::endl;
-         }*/
 
 
 

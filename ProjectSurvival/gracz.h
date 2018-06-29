@@ -5,6 +5,8 @@
 #ifndef GRACZ
 #define GRACZ
 
+
+
 enum Objaw
 {
          bol, mocny_bol
@@ -33,9 +35,11 @@ class Objawy
 
          std::list<Objaw> zwroc_liste_objawow() const;///grafika
          bool jest_taki_objaw(Objaw a) const;
+         char ile_objawow() const;
 
          void dodaj_objaw(Objaw a) const;
          void usun_objaw(Objaw a) const;
+         void oczysc() const;
 };
 
 class Bol
@@ -56,10 +60,12 @@ class Bol
          char stan_() {return stan;}
          bool istnieje() {return (stan&1)!=0;}
          void wylecz(){if(istnieje()) stan=0;}
+         char ile_zostalo(){return pozostalo;}
 
          bool posmaruj_zelem(){if(istnieje()) {stan|=2; return true;} return false;}
          void minela_runda(short war);
          void kontakt();
+         void wczytaj(char a, char b){stan=a; pozostalo=b;}
 };
 
 class Siniak
@@ -90,10 +96,12 @@ class Siniak
          bool posmarowany_zelem() {return istnieje() && (stan&4) != 0;}
          char stan_() {return stan;}
          bool istnieje() {return (stan&8)!=0;}
+         char ile_zostalo() {return pozostalo;}
 
          bool posmaruj_zelem(){if(istnieje()) {stan|=4; return true;} return false;}
          void minela_runda(short war);
          void kontakt();
+         void wczytaj(char a, char b){stan=a; pozostalo=b;}
 };
 
 class Rana
@@ -135,6 +143,7 @@ class Rana
          char stan_() {return stan;}
          bool istnieje() {return (stan&64)!=0;}
          bool krew_cieknie(){return istnieje() && krwotoczna() && !bandaz();}
+         char ile_zostalo(){return pozostalo;}
 
          bool oczysc(){if(istnieje() && !bandaz() && brudna()) {stan-=32; return true;} return false;}
          void obandazuj(short wytrz_bandaza)
@@ -151,6 +160,7 @@ class Rana
          void minela_runda(short war);
          void kontakt();
          void zerwij_bandaze(){if((stan&16)!=0) stan-=16;if((stan&8)!=0) stan-=8;}
+         void wczytaj(char a, char b){stan=a; pozostalo=b;}
 };
 
 struct stan_czesci_ciala
@@ -168,7 +178,6 @@ class czesc_ciala
          Rana rana;
          Siniak siniak;
          Bol bol;
-         czesc_ciala *polaczone = NULL; ///czesci ciala bezposrednio polaczone
 
 public:
          czesc_ciala(short hp, short maxx):max_bezwzgledny(maxx)
@@ -189,6 +198,9 @@ public:
          void set_czesci_sasiednie(czesc_ciala **c){if(sasiednie==NULL) sasiednie = c; else {std::cout<<"juz sa sasiednie"; throw "G";}}
          bool czy_boli() {return bol.istnieje();}
          char co_jest(){return rana.istnieje() + 2*siniak.istnieje() + 4*0 + 8*bol.istnieje();}///1-rana, 2-siniak, 4-cos, 8-bol
+         char* zwroc_zapis();
+         void wczytaj(char *bytes);
+
          /*0 klatka;
           1 brzuch;
           2 ramie_l;

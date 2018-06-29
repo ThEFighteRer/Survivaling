@@ -5,11 +5,19 @@
 
 
 
+void Objawy::oczysc() const
+{
+         al_lock_mutex(mutex);
+         objaw->clear();
+         al_unlock_mutex(mutex);
+}
 
 void Objawy::usun_objaw(Objaw a) const
 {
          al_lock_mutex(mutex);
-         objaw->erase(std::find(objaw->begin(), objaw->end(), a));
+         auto it = std::find(objaw->begin(), objaw->end(), a);
+         if(it != objaw->end())
+                  objaw->erase(it);
          al_unlock_mutex(mutex);
 }
 
@@ -34,6 +42,11 @@ std::list<Objaw> Objawy::zwroc_liste_objawow() const
          std::list<Objaw> b = std::list<Objaw>(*objaw);
          al_unlock_mutex(mutex);
          return b;
+}
+
+char Objawy::ile_objawow() const
+{
+         return std::count(objaw->begin(), objaw->end(), true);
 }
 
 void Bol::minela_runda(short war)
@@ -232,9 +245,35 @@ void czesc_ciala::ulecz(short ile)
          if(hp+ile<maxx) hp+=ile; else hp=maxx;
 }
 
+char* czesc_ciala::zwroc_zapis()
+{
+         char *bytes = new char[10];
+         bytes[0] = hp;
+         bytes[1] = maxx;
+         bytes[2] = leczenie;
+         bytes[3] = glikogen;
+         bytes[4] = rana.stan_();
+         bytes[5] = rana.ile_zostalo();
+         bytes[6] = siniak.stan_();
+         bytes[7] = siniak.ile_zostalo();
+         bytes[8] = bol.stan_();
+         bytes[9] = bol.ile_zostalo();
 
-Gracz :: Gracz():Objekt_zywy(10), objaw(), klatka(40, 40), brzuch(30, 30), ramie_l(10, 10), ramie_p(10, 10), l_dlon(5, 5), p_dlon(5, 5)
-                  , l_udo(15, 15), p_udo(15, 15), l_golen(10, 10), p_golen(10, 10)
+         return bytes;
+}
+
+void czesc_ciala::wczytaj(char *bytes)
+{
+         hp = bytes[0];
+         maxx=bytes[1];
+         leczenie=bytes[2];
+         glikogen=bytes[3];
+         rana.wczytaj(bytes[4], bytes[5]);
+         siniak.wczytaj(bytes[6], bytes[7]);
+         bol.wczytaj(bytes[8], bytes[9]);
+}
+
+void Gracz::ustal_sasiednie_czesci_ciala()
 {
          czesc_ciala **t = new czesc_ciala*[4]; t[0]=&brzuch; t[1]=&ramie_l; t[2]=&ramie_p;t[3]=NULL; klatka.set_czesci_sasiednie(t);
          t = new czesc_ciala*[4]; t[0]=&klatka; t[1]=&l_udo; t[2]=&p_udo;  t[3]=NULL;brzuch.set_czesci_sasiednie(t);
@@ -247,6 +286,12 @@ Gracz :: Gracz():Objekt_zywy(10), objaw(), klatka(40, 40), brzuch(30, 30), ramie
          t = new czesc_ciala*[2]; t[0]=&l_udo;  t[1]=NULL;l_golen.set_czesci_sasiednie(t);
          t = new czesc_ciala*[2]; t[0]=&p_udo; t[1]=NULL;p_golen.set_czesci_sasiednie(t);
          t = NULL;
+}
+
+Gracz :: Gracz():Objekt_zywy(10), objaw(), klatka(40, 40), brzuch(30, 30), ramie_l(10, 10), ramie_p(10, 10), l_dlon(5, 5), p_dlon(5, 5)
+                  , l_udo(15, 15), p_udo(15, 15), l_golen(10, 10), p_golen(10, 10)
+{
+         ustal_sasiednie_czesci_ciala();
           czesc = new czesc_ciala*[10];
           czesc[0] = &klatka;
           czesc[1] = &brzuch;
@@ -265,6 +310,7 @@ Gracz :: Gracz():Objekt_zywy(10), objaw(), klatka(40, 40), brzuch(30, 30), ramie
 
 bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
 {
+
          ///niszczenie sie ekwipunku
          if(p_rece!=NULL && p_rece->czym_jest==2201) if(p_rece->wykorzystaj()) {Item*h=p_rece; p_rece=new Konsumpcjum(2202, 0); delete h;}
          if(p_kieszenl!=NULL && p_kieszenl->czym_jest==2201) if(p_kieszenl->wykorzystaj()) {Item*h=p_kieszenl; p_kieszenl=new Konsumpcjum(2202, 0); delete h;}
@@ -283,14 +329,14 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
                   objaw.dodaj_objaw(mocny_bol);
                   if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
          }
-         else if(ile_boli>=2)
+         else if(ile_boli>=3)
          {
                   objaw.usun_objaw(mocny_bol);
                   objaw.dodaj_objaw(bol);
                   if(!Objekt::args->otwarte_menu_anatomii) Objekt::swiat->aktualny->powinien_zerknac_w_medycyne=true;
          }
 
-         if(*Objekt::args->godmode) return true;
+         //if(*Objekt::args->godmode) return true;
 
 
          ogrzej_sie_od_zrodel_ognia();///ogrzewanie sie
@@ -342,7 +388,39 @@ bool Gracz::zaktualizuj_po_rundzie()///jesli martwy to zwroc false
          l_golen.minela_runda(war);
          p_golen.minela_runda(war);
 
-         return czy_zyje();
+         if(czy_zyje()==false)
+         {
+                  return false;
+         }
+         else
+         {
+                  //zapisz_postac(); return true;/////////////////////////////////////////////////////////
+                  if((swiat->czas%60)==0)
+                  {
+                           bool mozna_zapisac = true;
+                           Plansza *pl = swiat->zwroc_taka_plansze_TYLKO(px, py, pz);
+                           for(short u=0; u<21; ++u)
+                                    for(short h=0; h<13; ++h)
+                                    {
+                                             if(pl->otoczenie[h][u]!=NULL && pl->otoczenie[h][u]->zywy && (((Objekt_zywy*)pl->otoczenie[h][u])->jest_cel || ((Objekt_zywy*)pl->otoczenie[h][u])->jest_ofiara))
+                                             {
+                                                      mozna_zapisac = false; break;
+                                             }
+                                             if(!mozna_zapisac) break;
+                                    }
+
+                           if(mozna_zapisac)
+                           {
+                                    zapisz_postac();
+                                    ile_zostalo_do_zapisu = co_ile_zapisywac;
+                           }
+                  }
+                  else
+                  {
+                           //ile_zostalo_do_zapisu--;
+                  }
+                  return true;
+         }
 }
 
 void Gracz::ogrzej_sie_od_zrodel_ognia()
@@ -705,6 +783,7 @@ bool Gracz::czy_zyje()
                            }
                   }
                   smierc();
+                  usun_zapis();
                   return false;
          }
          return true;
@@ -934,3 +1013,248 @@ void Gracz::wykorzystaj_item(short jaki)
 {
 
 }
+
+
+
+
+
+
+
+#include <iostream>
+#include <fstream>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <sys/stat.h>
+
+void Gracz::zapisz_postac()
+{
+         //return;
+
+         remove( "character.survive" );
+
+
+                  std::fstream hfile;
+                  hfile.open("character.survive", std::ios::binary|std::ios::in|std::ios::app|std::ios::out);
+                  if(hfile.is_open())
+                  {
+                           /*hfile.seekp(0);
+                           hfile.seekg(std::ios_base::end);*/
+
+                           char *pom = NULL;
+
+                           hfile.write((char*)&woda_a, 2);
+                           hfile.write((char*)&jedzenie_a, 2);
+                           hfile.write((char*)&cieplo_a, 2);
+                           hfile.write((char*)&energia_a, 2);
+                           hfile.write((char*)&p_ruchu, 4);
+                           hfile.write((char*)&postawa, 1);
+                           hfile.write((char*)&kondycja, 4);
+
+                           for(short t=0; t<10; ++t)
+                           {
+                                    pom = czesc[t]->zwroc_zapis();
+                                    hfile.write(pom, 10);
+                                    delete [] pom; pom = NULL;
+                           }
+
+                           std::list<Objaw> o = objaw.zwroc_liste_objawow();
+                           char ttt = std::count(o.begin(), o.end(), true);
+                           hfile.write(&ttt, 1);
+                           for(auto it=o.begin(); it!=o.end(); ++it)
+                           {
+                                    ttt = 0;
+                                    switch(*it)
+                                    {
+                                             case bol: ttt=1; hfile.write(&ttt, 1); break;
+                                             case mocny_bol: ttt=2; hfile.write(&ttt, 1); break;
+                                             default: hfile.write(&ttt, 1);break;
+                                    }
+                           }
+
+
+                           int ilosc_bajtow=0;
+                           for(short y=0; y<10; ++y)
+                           {
+                                    Item *a = NULL;
+                                    switch(y)
+                                    {
+                                             case 0: a = p_rece; break;
+                                             case 1: a = p_kieszenl; break;
+                                             case 2: a = p_kieszenp; break;
+                                             case 3: a = p_ramie; break;
+                                             case 4: a = p_glowa; break;
+                                             case 5: a = p_korpus; break;
+                                             case 6: a = p_spodnie; break;
+                                             case 7: a = p_buty; break;
+                                             case 8: a = p_rekawice; break;
+                                             case 9: a = p_plecak; break;
+                                    }
+
+                                    if(a==NULL)
+                                    {
+                                             ilosc_bajtow+=8;
+                                    }
+                                    else
+                                    {
+                                             ilosc_bajtow+=a->ile_zajmie_bajtow();
+                                    }
+                           }
+
+                           char *osemka = new char[8]; for(short g=0; g<8; ++g) osemka[g]=0;
+                           hfile.write((char*)&ilosc_bajtow, 4);
+
+                           for(short y=0; y<10; ++y)
+                           {
+                                    Item *a = NULL;
+                                    switch(y)
+                                    {
+                                             case 0: a = p_rece; break;
+                                             case 1: a = p_kieszenl; break;
+                                             case 2: a = p_kieszenp; break;
+                                             case 3: a = p_ramie; break;
+                                             case 4: a = p_glowa; break;
+                                             case 5: a = p_korpus; break;
+                                             case 6: a = p_spodnie; break;
+                                             case 7: a = p_buty; break;
+                                             case 8: a = p_rekawice; break;
+                                             case 9: a = p_plecak; break;
+                                    }
+
+                                    if(a==NULL)
+                                    {
+                                             hfile.write(osemka, 8);
+                                             ilosc_bajtow+=8;
+                                    }
+                                    else
+                                    {
+                                             Zapis z = a->zapis();
+                                             hfile.write(z.get_bytes(), z.how_many());
+                                             ilosc_bajtow+=z.how_many();
+                                    }
+                           }
+                           delete [] osemka;
+
+                           /*long long int actual = hfile.tellp();
+
+                           hfile.seekp(put_pos);
+
+                           std::cout<<" "<<ilosc_bajtow<<" "; throw "F";
+                           hfile.write((char*)&ilosc_bajtow, 4);
+
+                           ///zapisz ilosc
+                           hfile.seekp(actual+4);*/
+
+
+                           //long long int actual = hfile.tellp();
+
+
+                           ///zapisz ilosc
+                           //hfile.seekp(actual+4);
+
+
+                  }
+                  hfile.close();
+
+
+
+}
+
+void Gracz::usun_zapis()
+{
+         remove( "character.survive" );
+}
+
+bool Gracz::wczytaj_postac()
+{
+         //return false;
+
+         std::ifstream hfile ("character.survive" , std::ios::in | std::ios::binary);
+
+         if (!hfile)
+         {
+                  return false;
+         }
+         else
+         {
+                  hfile.read ((char*)&woda_a, 2);
+                  hfile.read((char*)&jedzenie_a, 2);
+                  hfile.read((char*)&cieplo_a, 2);
+                  hfile.read((char*)&energia_a, 2);
+                  hfile.read((char*)&p_ruchu, 4);
+                  hfile.read((char*)&postawa, 1); if(postawa=='r') wysokosc=3; else if(postawa=='s') wysokosc=2; else if(postawa=='c') wysokosc=1;
+                  hfile.read((char*)&kondycja, 4);
+
+                  for(short t=0; t<10; ++t)
+                  {
+                           char *pom = new char[10];
+                           hfile.read(pom, 10);
+                           czesc[t]->wczytaj(pom);
+                           delete [] pom; pom = NULL;
+                  }
+
+
+                  objaw.oczysc();
+                  char *ile = new char[1], *pom = new char[1];
+                  hfile.read(ile, 1);
+
+                  for(short t=0; t<*ile; ++t)
+                  {
+                           hfile.read(pom, 1);
+                           switch(*pom)
+                           {
+                                    case 1: objaw.dodaj_objaw(bol); break;
+                                    case 2: objaw.dodaj_objaw(mocny_bol); break;
+                                    default: break;
+                           }
+                  }
+                  delete ile; delete pom;
+
+
+
+
+
+
+
+                  int ilosc_bajtow = 0;
+                  hfile.read((char*)&ilosc_bajtow, 4);
+
+
+                  char *actual = new char[ilosc_bajtow];
+
+                  hfile.read(actual, ilosc_bajtow);
+
+                  for(short y=0; y<10; ++y)
+                  {
+                           Item **a = NULL;
+                           switch(y)
+                           {
+                                    case 0: a = &p_rece; break;
+                                    case 1: a = &p_kieszenl; break;
+                                    case 2: a = &p_kieszenp; break;
+                                    case 3: a = &p_ramie; break;
+                                    case 4: a = &p_glowa; break;
+                                    case 5: a = &p_korpus; break;
+                                    case 6: a = &p_spodnie; break;
+                                    case 7: a = &p_buty; break;
+                                    case 8: a = &p_rekawice; break;
+                                    case 9: a = &p_plecak; break;
+                           }
+
+                           std::pair<Item*, char*> para = Item::stworz_obiekt(actual);
+                           *a = para.first;
+                           actual = para.second;
+                  }
+                  delete [] actual;
+
+         }
+
+         ///pamietaj zasetowac sasiednie czesci ciala od nowa
+
+         return true;
+}
+
+
+
+
+
+

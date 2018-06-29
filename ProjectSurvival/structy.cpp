@@ -4,6 +4,10 @@
 
 
 
+
+
+
+
 specyfikacja_menu::specyfikacja_menu(specyfikacja_menu **item,int ilosc,int ktore)
 {
          this->ilosc=ilosc; this->ktore=ktore; this->item=item;

@@ -10,8 +10,11 @@
 #include <mutex>
 #include "allegro5/allegro.h"
 
-#ifndef GRANDFATHER_H
-#define GRANDFATHER_H
+
+
+
+#ifndef ssss
+#define ssss
 
 #include "gracz.h"
 
@@ -20,6 +23,7 @@
 
 #define obrazenia_od_wybuchu -99
 #define obrazenia_od_ognia -100
+
 
 
 
@@ -595,7 +599,7 @@ int losuj(int min, int max);
 
 
 
-#endif /* GRANDFATHER_H */
+#endif /* ssss */
 
 
 

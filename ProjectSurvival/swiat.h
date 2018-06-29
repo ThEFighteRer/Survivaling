@@ -12,7 +12,6 @@
 
 
 
-
 bool wolna_prosta(planszowa<bool> o, int x1, int y1, int x2, int y2);
 
 class Punkt{public: int a,b,odn;};
@@ -558,21 +557,23 @@ class Gracz : public Objekt_zywy///10
          czesc_ciala **czesc = NULL;
          void ogrzej_sie_od_zrodel_ognia();
 
-         Objekt_zywy * sprzymierzeni = nullptr;
-         int ilosc_sprzymierzonych = 0;
-
          std::list<std::pair<Objekt*, short>> zablokowani;
          std::list<Objekt*> uniknieci;
          std::list<Objekt*> skupieni;
          ALLEGRO_MUTEX *mutex_blokow = al_create_mutex();
          ALLEGRO_MUTEX *mutex_unikow = al_create_mutex();
          ALLEGRO_MUTEX *mutex_skupien = al_create_mutex();
+         void ustal_sasiednie_czesci_ciala();
 
          ALLEGRO_MUTEX *mutex_itemow_zalozonych = al_create_mutex();
          int *graph = new int[10];///to tablica tylko dla grafiki
          const Objawy objaw;
 
+         short ile_zostalo_do_zapisu = 45;
+         const short co_ile_zapisywac = 45;
+
          public:
+
 
 
 
@@ -680,6 +681,10 @@ class Gracz : public Objekt_zywy///10
          bool ma_umiejetnosc(short jaka);
          bool jest_obok_objektu(short jakiego);
          void wykorzystaj_item(short jaki);
+
+         void zapisz_postac();
+         bool wczytaj_postac();
+         void usun_zapis();
 };
 
 class Czlowiek : public Objekt_zywy

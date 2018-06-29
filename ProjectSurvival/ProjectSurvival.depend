@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1530135606 source:c:\users\damian\desktop\the game\projectsurvival\main.cpp
+1530228446 source:c:\users\damian\desktop\the game\projectsurvival\main.cpp
 	"grafika.h"
 	"gra.h"
 	<iostream>
@@ -295,7 +295,7 @@
 
 1499157080 source:c:\users\damian\desktop\the game\projectsurvival\menu.cpp
 
-1530140087 source:c:\users\damian\desktop\the game\projectsurvival\swiat.cpp
+1530188634 source:c:\users\damian\desktop\the game\projectsurvival\swiat.cpp
 	"swiat.h"
 	"swiat2.h"
 	<iostream>
@@ -303,7 +303,7 @@
 	<algorithm>
 	<windows.h>
 
-1530128025 c:\users\damian\desktop\the game\projectsurvival\swiat.h
+1530237354 c:\users\damian\desktop\the game\projectsurvival\swiat.h
 	<cstdio>
 	"structy.h"
 	<iostream>
@@ -334,7 +334,7 @@
 1500040224 c:\users\damian\desktop\the game\projectsurvival\objekt.h
 	<stack>
 
-1530135628 c:\users\damian\desktop\the game\projectsurvival\gra.h
+1530237029 c:\users\damian\desktop\the game\projectsurvival\gra.h
 	"swiat.h"
 	"swiat2.h"
 	"structy.h"
@@ -345,7 +345,7 @@
 	"allegro5/allegro_image.h"
 	"allegro5/allegro_primitives.h"
 
-1529930476 c:\users\damian\desktop\the game\projectsurvival\structy.h
+1530144936 c:\users\damian\desktop\the game\projectsurvival\structy.h
 	<ctime>
 	<cstdlib>
 	<random>
@@ -358,7 +358,7 @@
 	"allegro5/allegro.h"
 	"gracz.h"
 
-1529933742 source:c:\users\damian\desktop\the game\projectsurvival\structy.cpp
+1530144936 source:c:\users\damian\desktop\the game\projectsurvival\structy.cpp
 	"structy.h"
 
 1500041204 source:c:\users\damian\desktop\the game ó kopia\projectsurvival\gra.cpp
@@ -424,11 +424,11 @@
 	"windows.h"
 	"swiat2.h"
 
-1530052764 c:\users\damian\desktop\the game\projectsurvival\przedmiot.h
+1530233220 c:\users\damian\desktop\the game\projectsurvival\przedmiot.h
 	<iostream>
 	"structy.h"
 
-1530052738 source:c:\users\damian\desktop\the game\projectsurvival\przedmiot.cpp
+1530236603 source:c:\users\damian\desktop\the game\projectsurvival\przedmiot.cpp
 	"przedmiot.h"
 
 1530050512 source:c:\users\damian\desktop\the game\projectsurvival\funkcje_przedmiotow.cpp
@@ -553,14 +553,19 @@
 1527870787 source:c:\users\szukamåniegu\desktop\the game\projectsurvival\graficzny.cpp
 	"grafika.h"
 
-1530046465 c:\users\damian\desktop\the game\projectsurvival\gracz.h
+1530225827 c:\users\damian\desktop\the game\projectsurvival\gracz.h
 	<iostream>
 	<list>
 	"structy.h"
 
-1530128756 source:c:\users\damian\desktop\the game\projectsurvival\gracz.cpp
+1530238093 source:c:\users\damian\desktop\the game\projectsurvival\gracz.cpp
 	"gracz.h"
 	"structy.h"
 	"swiat.h"
 	<windows.h>
+	<iostream>
+	<fstream>
+	<sys/stat.h>
+	<stdio.h>
+	<sys/stat.h>
 
