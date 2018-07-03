@@ -1,5 +1,6 @@
-# Gra dalej tworzona
+# Gra jest dalej tworzona
 # Survivaling
-Procedurally Generated Turn-based Tactical Surviving Game
+Gameplay:
+https://www.youtube.com/watch?v=uhOdEA4Ee3g&lc=z233ib0wzw3fedk0nacdp435pah4nxwrzey1yvkerz1w03c010c
 
-To compile game on your own on Windows You have to install Code Blocks and copy the allegro folder onto C disc. The ProjectSurvival folder must be in some folder on Desktop.
+Procedurally Generated Turn-based Tactical Surviving Game
